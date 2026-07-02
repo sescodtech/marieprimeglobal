@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream-100 text-ink-900 antialiased;
+  }
+
+  ::selection {
+    @apply bg-gold-400 text-forest-900;
+  }
+
+  :focus-visible {
+    outline: 2px solid theme("colors.gold.500");
+    outline-offset: 3px;
+  }
+}
+
+@layer utilities {
+  /* Perforated edge used on boarding-pass style cards — the site's signature device */
+  .perforated-edge {
+    background-image: radial-gradient(
+      circle,
+      theme("colors.cream.100") 3px,
+      transparent 3.5px
+    );
+    background-size: 14px 14px;
+    background-position: center;
+  }
+
+  .route-dashes {
+    background-image: repeating-linear-gradient(
+      90deg,
+      theme("colors.gold.500") 0,
+      theme("colors.gold.500") 6px,
+      transparent 6px,
+      transparent 14px
+    );
+    height: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

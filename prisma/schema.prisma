@@ -1,0 +1,151 @@
+// MariePrime Global Services — Database Schema
+// Covers all phases of the platform: auth, CMS, enquiries, SEO, media.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Phase 2 — Admin auth
+// ---------------------------------------------------------------------------
+
+enum AdminRole {
+  SUPER_ADMIN
+  EDITOR
+}
+
+model Admin {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         AdminRole @default(EDITOR)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastLoginAt  DateTime?
+}
+
+// ---------------------------------------------------------------------------
+// Phase 2/3 — CMS content
+// ---------------------------------------------------------------------------
+
+// Generic key/value site settings: hero copy, mission/vision/values,
+// contact details, social links, WhatsApp number, etc. One row per key
+// keeps the admin UI simple (a settings form per section) without needing
+// a new table for every editable string.
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
+  group     String // e.g. "home_hero", "about", "contact", "social"
+  updatedAt DateTime @updatedAt
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  routeCode   String // short boarding-pass-style code, e.g. "MPG-VISA"
+  summary     String
+  description String   @db.Text
+  icon        String? // icon key rendered on the frontend
+  imageUrl    String?
+  order       Int      @default(0)
+  isPublished Boolean  @default(true)
+  metaTitle       String?
+  metaDescription String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  clientName  String
+  clientRole  String? // e.g. "Study Abroad Client, 2025"
+  quote       String   @db.Text
+  photoUrl    String?
+  rating      Int      @default(5)
+  isPublished Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model DirectorProfile {
+  id         String   @id @default(cuid())
+  name       String
+  position   String
+  biography  String   @db.Text
+  photoUrl   String?
+  isActive   Boolean  @default(true)
+  updatedAt  DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Phase 3 — Media library
+// ---------------------------------------------------------------------------
+
+model MediaAsset {
+  id           String   @id @default(cuid())
+  url          String
+  cloudinaryId String
+  altText      String?
+  fileName     String
+  fileType     String
+  width        Int?
+  height       Int?
+  uploadedAt   DateTime @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Phase 4 — Enquiry management
+// ---------------------------------------------------------------------------
+
+enum EnquiryStatus {
+  NEW
+  IN_PROGRESS
+  RESPONDED
+  CLOSED
+}
+
+enum ServiceInterest {
+  FLIGHT_BOOKING
+  VISA_IMMIGRATION
+  TRAVEL_LOAN
+  STUDY_ABROAD
+  BUSINESS_REGISTRATION
+  INVESTMENT_SUPPORT
+  GENERAL_ENQUIRY
+}
+
+model Enquiry {
+  id              String          @id @default(cuid())
+  fullName        String
+  email           String
+  phone           String
+  serviceInterest ServiceInterest @default(GENERAL_ENQUIRY)
+  message         String          @db.Text
+  status          EnquiryStatus   @default(NEW)
+  adminNote       String?         @db.Text
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Phase 5 — SEO settings (per-page overrides)
+// ---------------------------------------------------------------------------
+
+model SeoSetting {
+  id              String   @id @default(cuid())
+  page            String   @unique // "home" | "about" | "services" | "contact"
+  metaTitle       String
+  metaDescription String
+  keywords        String? // comma-separated
+  ogImageUrl      String?
+  updatedAt       DateTime @updatedAt
+}
