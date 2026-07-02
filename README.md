@@ -33,9 +33,28 @@ Content is now CMS-driven where it matters most:
 
 You don't need to run this on your machine first. Here's the direct route:
 
-**1. Get a database (2 min)**
-Create a free Postgres project on [Supabase](https://supabase.com) or
-[Neon](https://neon.tech). Copy the connection string — that's `DATABASE_URL`.
+**1. Get a database (5 min) — Supabase**
+
+Yes, create a new Supabase account (or new project if you already have one —
+doesn't need to be shared with any other project).
+
+1. Go to [supabase.com](https://supabase.com) → **Sign up** (GitHub login is fastest)
+2. **New Project** → name it `marieprime` → set a database password (save it
+   somewhere — you'll need it in the connection string) → choose a region
+   close to your users (e.g. an EU or US region close to Nigeria — Supabase
+   doesn't have an African region yet) → **Create new project**
+3. Wait ~2 minutes for it to provision
+4. Go to **Project Settings** (gear icon) → **Database**
+5. Under **Connection string**, you need **two** different strings:
+   - **Transaction pooler** (port `6543`) → this is your `DATABASE_URL`
+   - **Direct connection** (port `5432`) → this is your `DIRECT_URL`
+   - Supabase shows a URI with `[YOUR-PASSWORD]` in it — replace that with
+     the database password from step 2
+   - Add `?pgbouncer=true` to the end of the `DATABASE_URL` one specifically
+
+You'll paste both into Vercel's environment variables in step 5 below —
+Prisma needs the pooled one to run the app and the direct one to run
+migrations, that's just how Supabase's connection pooler works.
 
 **2. Get Cloudinary keys (1 min)**
 From your Cloudinary dashboard: Cloud Name, API Key, API Secret.
@@ -55,7 +74,8 @@ before deploying, add these Environment Variables:
 
 | Variable | Value |
 |---|---|
-| `DATABASE_URL` | from step 1 |
+| `DATABASE_URL` | from step 1 (pooled, port 6543, with `?pgbouncer=true`) |
+| `DIRECT_URL` | from step 1 (direct, port 5432) |
 | `NEXTAUTH_URL` | `https://yourdomain.com` (or the `.vercel.app` URL for now) |
 | `NEXTAUTH_SECRET` | any long random string — e.g. mash the keyboard for 40 characters |
 | `CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` | from step 2 |
