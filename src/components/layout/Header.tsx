@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Menu, X, MessageCircle } from "lucide-react";
+import { Menu, X, MessageCircle, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -25,29 +26,23 @@ export function Header({ whatsapp }: { whatsapp: string }) {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-cream-50/95 shadow-card backdrop-blur"
-          : "bg-transparent"
-      }`}
+      className={cn(
+        "sticky top-0 z-50 transition-all duration-300",
+        scrolled ? "bg-cream-50/95 shadow-card backdrop-blur" : "bg-transparent"
+      )}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
-        <Link href="/" className="flex items-center gap-2.5">
+      <div className="mx-auto container-lg flex items-center justify-between py-4">
+        <Link href="/" className="flex items-center gap-3">
           <MarkIcon />
-          <span className="font-display text-lg font-semibold tracking-tight text-forest-900">
-            MariePrime
-          </span>
+          <div className="flex flex-col leading-none">
+            <span className="font-display text-lg font-semibold text-forest-900">MariePrime</span>
+            <span className="-mt-0.5 text-xs font-mono text-ink-500">Global Services</span>
+          </div>
         </Link>
 
-        <nav className="hidden items-center gap-9 md:flex">
+        <nav className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="font-body text-sm font-medium text-ink-700 transition-colors hover:text-forest-700"
-            >
-              {link.label}
-            </Link>
+            <NavLink key={link.href} href={link.href} label={link.label} />
           ))}
         </nav>
 
@@ -74,29 +69,54 @@ export function Header({ whatsapp }: { whatsapp: string }) {
 
       <AnimatePresence>
         {open && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-black/30 md:hidden"
+            onClick={() => setOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {open && (
           <motion.nav
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="overflow-hidden border-t border-forest-900/10 bg-cream-50 md:hidden"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed right-0 top-0 z-50 h-full w-[85%] max-w-sm overflow-auto bg-cream-50 p-6 md:hidden"
           >
-            <div className="flex flex-col gap-1 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
+                <MarkIcon />
+                <span className="font-display text-lg font-semibold text-forest-900">MariePrime</span>
+              </Link>
+              <button aria-label="Close menu" onClick={() => setOpen(false)} className="text-forest-900">
+                <X size={22} />
+              </button>
+            </div>
+
+            <div className="mt-6 flex flex-col gap-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="rounded-md px-2 py-2.5 font-body text-sm font-medium text-ink-700 hover:bg-forest-700/5"
+                  className="rounded-md px-3 py-3 font-body text-base font-medium text-ink-700 hover:bg-forest-700/5"
                 >
                   {link.label}
                 </Link>
               ))}
+            </div>
+
+            <div className="mt-6 border-t border-forest-900/8 pt-4">
               <a
                 href={`https://wa.me/${whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 inline-flex items-center justify-center gap-2 rounded-stub bg-forest-700 px-5 py-2.5 text-sm font-semibold text-cream-50"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-stub bg-forest-700 px-5 py-3 text-sm font-semibold text-cream-50"
               >
                 <MessageCircle size={16} />
                 WhatsApp Us
@@ -109,12 +129,27 @@ export function Header({ whatsapp }: { whatsapp: string }) {
   );
 }
 
+function NavLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link href={href} className="relative inline-flex items-center px-1 py-1 font-body text-sm font-medium text-ink-700">
+      <span className="relative z-10">{label}</span>
+      <motion.span
+        layoutId={`underline-${label}`}
+        className="absolute left-0 right-0 bottom-0 z-0 h-0.5 bg-gold-400 opacity-0"
+        whileHover={{ opacity: 1, height: 3 }}
+        transition={{ duration: 0.18 }}
+        aria-hidden
+      />
+    </Link>
+  );
+}
+
 function MarkIcon() {
   return (
-    <svg width="28" height="28" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-      <path d="M15 78 L38 22 L48 22 L25 78 Z" fill="#1B4332" />
-      <path d="M40 78 L63 22 L73 22 L50 78 Z" fill="#1B4332" />
-      <path d="M55 78 L78 34 L89 58 L73 78 Z" fill="#14352A" />
+    <svg width="36" height="36" viewBox="0 0 100 100" fill="none" aria-hidden>
+      <rect width="100" height="100" rx="18" fill="#EAF7F0" />
+      <path d="M20 75 L40 25 L50 25 L30 75 Z" fill="#1B4332" />
+      <path d="M45 75 L65 25 L75 25 L55 75 Z" fill="#14352A" />
     </svg>
   );
 }
