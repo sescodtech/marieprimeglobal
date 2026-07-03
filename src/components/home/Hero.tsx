@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import {
@@ -49,6 +50,8 @@ const easing = [0.22, 1, 0.36, 1] as const;
 
 export function Hero({ heroEyebrow, heroHeadline, heroSubtext, heroImageUrl, whatsapp }: HeroProps) {
   const reduceMotion = useReducedMotion();
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = !!heroImageUrl && !imageFailed;
   const [headlineLead, ...headlineRestParts] = heroHeadline.split(", ");
   const headlineRest = headlineRestParts.join(", ");
 
@@ -196,15 +199,16 @@ export function Hero({ heroEyebrow, heroHeadline, heroSubtext, heroImageUrl, wha
             transition={{ duration: 0.9, delay: 0.15, ease: easing }}
             className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl ring-1 ring-cream-50/10"
           >
-            {heroImageUrl ? (
+            {showImage ? (
               <>
                 <Image
-                  src={heroImageUrl}
+                  src={heroImageUrl as string}
                   alt="MariePrime Global Services — international travel and mobility"
                   fill
                   priority
                   sizes="(min-width: 1024px) 45vw, 90vw"
                   className="object-cover"
+                  onError={() => setImageFailed(true)}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-forest-950/80 via-forest-950/10 to-transparent" />
               </>
