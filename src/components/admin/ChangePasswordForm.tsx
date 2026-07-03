@@ -3,7 +3,9 @@
 import { useActionState } from "react";
 import { changePassword } from "@/lib/actions/account";
 
-const initialState = {};
+type State = { error?: string; success?: boolean };
+
+const initialState: State = {};
 
 export function ChangePasswordForm() {
   const [state, formAction, pending] = useActionState(changePassword, initialState);
