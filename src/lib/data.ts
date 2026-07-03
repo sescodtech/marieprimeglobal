@@ -83,6 +83,37 @@ export const services: ServiceItem[] = [
   },
 ];
 
+export type BlogPreviewItem = {
+  title: string;
+  category: string;
+  excerpt: string;
+  readTime: string;
+};
+
+export const homeBlogPreview: BlogPreviewItem[] = [
+  {
+    title: "Five documentation mistakes that get visa applications refused",
+    category: "Visas & Immigration",
+    excerpt:
+      "Most refusals aren't about eligibility — they're about paperwork that doesn't hold up to scrutiny. Here's what we check before any application leaves our hands.",
+    readTime: "4 min read",
+  },
+  {
+    title: "What a realistic study-abroad timeline actually looks like",
+    category: "Study Abroad",
+    excerpt:
+      "Admissions, visas and travel planning rarely move as fast as students hope. We break down the timeline stage by stage, including where delays typically happen.",
+    readTime: "5 min read",
+  },
+  {
+    title: "Registering a business in Nigeria: what founders get wrong",
+    category: "Business Registration",
+    excerpt:
+      "From name reservation to regulatory sign-off, small errors early in the process cause the longest delays. A founder's guide to getting it right the first time.",
+    readTime: "4 min read",
+  },
+];
+
 export type TestimonialItem = {
   clientName: string;
   clientRole: string;

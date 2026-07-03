@@ -4,6 +4,7 @@ import { Trust } from "@/components/home/Trust";
 import { ServicesOverview } from "@/components/home/ServicesOverview";
 import { WhyChoose } from "@/components/home/WhyChoose";
 import { Testimonials } from "@/components/home/Testimonials";
+import { BlogPreview } from "@/components/home/BlogPreview";
 import { ContactCTA } from "@/components/home/ContactCTA";
 import { getContactInfo, getHomeHero, getSeoSetting } from "@/lib/content";
 
@@ -30,6 +31,7 @@ export default async function HomePage() {
       <ServicesOverview />
       <WhyChoose />
       <Testimonials />
+      <BlogPreview />
       <ContactCTA />
     </>
   );
