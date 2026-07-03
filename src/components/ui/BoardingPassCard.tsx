@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, PlaneTakeoff } from "lucide-react";
+import { serviceSlugMap } from "@/lib/servicePages";
 
 type BoardingPassService = {
   slug: string;
@@ -11,9 +12,12 @@ type BoardingPassService = {
 };
 
 export function BoardingPassCard({ service }: { service: BoardingPassService }) {
+  const detailSlug = serviceSlugMap[service.slug];
+  const href = detailSlug ? `/services/${detailSlug}` : `/services#${service.slug}`;
+
   return (
     <Link
-      href={`/services#${service.slug}`}
+      href={href}
       className="group relative flex flex-col overflow-hidden rounded-stub bg-cream-50 shadow-card ring-1 ring-forest-900/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-stub"
     >
       {/* Stub header: route code */}

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X, MessageCircle, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -26,10 +25,12 @@ export function Header({ whatsapp }: { whatsapp: string }) {
 
   return (
     <header
-      className={cn(
-        "sticky top-0 z-50 transition-all duration-300",
-        scrolled ? "bg-cream-50/95 shadow-card backdrop-blur" : "bg-transparent"
-      )}
+      id="top"
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-cream-50/95 shadow-card backdrop-blur"
+          : "bg-transparent"
+      }`}
     >
       <div className="mx-auto container-lg flex items-center justify-between py-4">
         <Link href="/" className="flex items-center gap-3">
@@ -42,7 +43,14 @@ export function Header({ whatsapp }: { whatsapp: string }) {
 
         <nav className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
-            <NavLink key={link.href} href={link.href} label={link.label} />
+            <Link
+              key={link.href}
+              href={link.href}
+              className="group relative font-body text-sm font-medium text-ink-700 transition-colors hover:text-forest-700"
+            >
+              {link.label}
+              <span className="pointer-events-none absolute -bottom-1 left-0 h-px w-0 bg-gold-500 transition-all duration-300 group-hover:w-full" />
+            </Link>
           ))}
         </nav>
 
@@ -88,31 +96,27 @@ export function Header({ whatsapp }: { whatsapp: string }) {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="fixed right-0 top-0 z-50 h-full w-[85%] max-w-sm overflow-auto bg-cream-50 p-6 md:hidden"
           >
-            <div className="flex items-center justify-between">
-              <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-                <MarkIcon />
-                <span className="font-display text-lg font-semibold text-forest-900">MariePrime</span>
-              </Link>
-              <button aria-label="Close menu" onClick={() => setOpen(false)} className="text-forest-900">
-                <X size={22} />
-              </button>
-            </div>
-
-            <div className="mt-6 flex flex-col gap-2">
-              {navLinks.map((link) => (
-                <Link
+            <div className="flex flex-col gap-1 px-6 py-4">
+              {navLinks.map((link, i) => (
+                <motion.div
                   key={link.href}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className="rounded-md px-3 py-3 font-body text-base font-medium text-ink-700 hover:bg-forest-700/5"
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.25, delay: i * 0.05, ease: "easeOut" }}
                 >
-                  {link.label}
-                </Link>
+                  <Link
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="block rounded-md px-2 py-2.5 font-body text-sm font-medium text-ink-700 hover:bg-forest-700/5"
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
               ))}
-            </div>
-
-            <div className="mt-6 border-t border-forest-900/8 pt-4">
-              <a
+              <motion.a
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.25, delay: navLinks.length * 0.05, ease: "easeOut" }}
                 href={`https://wa.me/${whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -120,27 +124,12 @@ export function Header({ whatsapp }: { whatsapp: string }) {
               >
                 <MessageCircle size={16} />
                 WhatsApp Us
-              </a>
+              </motion.a>
             </div>
           </motion.nav>
         )}
       </AnimatePresence>
     </header>
-  );
-}
-
-function NavLink({ href, label }: { href: string; label: string }) {
-  return (
-    <Link href={href} className="relative inline-flex items-center px-1 py-1 font-body text-sm font-medium text-ink-700">
-      <span className="relative z-10">{label}</span>
-      <motion.span
-        layoutId={`underline-${label}`}
-        className="absolute left-0 right-0 bottom-0 z-0 h-0.5 bg-gold-400 opacity-0"
-        whileHover={{ opacity: 1, height: 3 }}
-        transition={{ duration: 0.18 }}
-        aria-hidden
-      />
-    </Link>
   );
 }
 
