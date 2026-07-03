@@ -24,7 +24,7 @@ export const services: ServiceItem[] = [
     summary:
       "Flights, itineraries and travel logistics handled end to end, for business and leisure.",
     description:
-      "We source, compare and book flights across major airlines and alliances, build multi-city itineraries, and handle changes or emergencies while you travel. Every booking comes with a dedicated MariePrime reference and a human being to call.",
+      "We source, compare and book flights across major airlines and alliances, build multi-city itineraries, and handle changes or emergencies while you travel. Every booking comes with a dedicat[...]",
   },
   {
     slug: "visa-immigration",
@@ -35,7 +35,7 @@ export const services: ServiceItem[] = [
     summary:
       "Guidance through visa applications and immigration processes, from documentation to interview.",
     description:
-      "From document checklists to interview preparation, we guide applicants through tourist, business, work and residency visa processes for major destinations, reducing the errors that cause avoidable refusals.",
+      "From document checklists to interview preparation, we guide applicants through tourist, business, work and residency visa processes for major destinations, reducing the errors that cause av[...]",
   },
   {
     slug: "travel-loan",
@@ -57,7 +57,7 @@ export const services: ServiceItem[] = [
     summary:
       "School selection, admissions guidance and travel planning for international students.",
     description:
-      "We support prospective international students from school and course selection through admissions paperwork, visa applications, and pre-departure travel planning — one point of contact for the whole journey.",
+      "We support prospective international students from school and course selection through admissions paperwork, visa applications, and pre-departure travel planning — one point of contact fo[...]",
   },
   {
     slug: "business-registration",
@@ -118,7 +118,7 @@ export const directorProfile = {
   name: "Maria Karinate Iyabi",
   position: "Director",
   biography:
-    "Maria founded MariePrime Global Services to bring structure and honesty to an industry known for neither. With a background spanning international travel logistics and cross-border business advisory, she built MariePrime around a simple standard: every client gets the same clear process, the same realistic timelines, and the same direct communication, regardless of how large or small the request.",
+    "Maria founded MariePrime Global Services to bring structure and honesty to an industry known for neither. With a background spanning international travel logistics and cross-border business [...]",
   photoUrl: null as string | null,
 };
 
@@ -133,6 +133,8 @@ export const siteContent = {
     heroHeadline: "From application to arrival, we handle the details.",
     heroSubtext:
       "MariePrime Global Services manages flights, visas, travel finance, study placements and business registration for clients who need it done right the first time.",
+    // Cloudinary public id for the hero background image — editable via admin later
+    heroImagePublicId: "marieprime/hero-travel-1",
     whyChoose: [
       {
         title: "One point of contact",
@@ -159,6 +161,50 @@ export const siteContent = {
       { value: "6", label: "Core service lines" },
       { value: "24/48hrs", label: "Typical first response" },
       { value: "1", label: "Dedicated contact per client" },
+    ],
+    featuredDestinations: [
+      {
+        slug: "canada",
+        title: "Canada",
+        country: "Canada",
+        blurb: "Study, work or relocate to Canada with step-by-step support.",
+        imagePublicId: "marieprime/dest-canada",
+      },
+      {
+        slug: "united-kingdom",
+        title: "United Kingdom",
+        country: "United Kingdom",
+        blurb: "Admissions and visa support for UK study and business.",
+        imagePublicId: "marieprime/dest-uk",
+      },
+      {
+        slug: "united-states",
+        title: "United States",
+        country: "United States",
+        blurb: "Comprehensive travel and study solutions for US destinations.",
+        imagePublicId: "marieprime/dest-usa",
+      },
+      {
+        slug: "australia",
+        title: "Australia",
+        country: "Australia",
+        blurb: "Permanent and temporary migration pathways supported end-to-end.",
+        imagePublicId: "marieprime/dest-aus",
+      },
+      {
+        slug: "germany",
+        title: "Germany",
+        country: "Germany",
+        blurb: "Study and work routes with local partner guidance.",
+        imagePublicId: "marieprime/dest-germany",
+      },
+      {
+        slug: "ireland",
+        title: "Ireland",
+        country: "Ireland",
+        blurb: "Study and immigration guidance for Ireland's universities and employers.",
+        imagePublicId: "marieprime/dest-ireland",
+      },
     ],
   },
   about: {
