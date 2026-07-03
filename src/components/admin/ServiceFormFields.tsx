@@ -65,22 +65,6 @@ export function ServiceFormFields({ service }: { service?: Service }) {
           Published (visible on the live site)
         </label>
       </div>
-
-      <style jsx global>{`
-        .input {
-          width: 100%;
-          border-radius: 4px;
-          border: 1px solid rgba(15, 42, 32, 0.15);
-          background: #fbf9f5;
-          padding: 0.7rem 0.9rem;
-          font-size: 0.875rem;
-          color: #16211c;
-        }
-        .input:focus {
-          outline: none;
-          border-color: #c9a876;
-        }
-      `}</style>
     </div>
   );
 }

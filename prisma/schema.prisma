@@ -52,6 +52,8 @@ model Service {
   slug        String   @unique
   title       String
   routeCode   String // short boarding-pass-style code, e.g. "MPG-VISA"
+  routeFrom   String // boarding-pass "from" label, e.g. "LOS"
+  routeTo     String // boarding-pass "to" label, e.g. "ANY"
   summary     String
   description String   @db.Text
   icon        String? // icon key rendered on the frontend
