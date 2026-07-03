@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PlaneTakeoff, ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 import { prisma } from "@/lib/prisma";
 import { getSeoSetting } from "@/lib/content";
-import { servicePages } from "@/lib/servicePages";
 import { JsonLd } from "@/components/seo/JsonLd";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -106,41 +104,6 @@ export default async function ServicesPage() {
                     </div>
                   </div>
                 </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-cream-50 py-20 lg:py-28">
-        <div className="mx-auto max-w-6xl px-6 lg:px-10">
-          <Reveal>
-            <Eyebrow>In Detail</Eyebrow>
-            <h2 className="mt-4 max-w-xl font-display text-3xl font-medium leading-tight text-forest-900 sm:text-4xl">
-              Every service, its own page.
-            </h2>
-          </Reveal>
-
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {servicePages.map((service, i) => (
-              <Reveal key={service.slug} delay={i * 0.05}>
-                <Link
-                  href={`/services/${service.slug}`}
-                  className="group flex items-center justify-between gap-3 rounded-stub border border-forest-900/10 bg-cream-100 px-5 py-4 transition-colors duration-300 hover:border-gold-400/50 hover:bg-cream-50"
-                >
-                  <div>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-forest-700">
-                      {service.routeCode}
-                    </span>
-                    <div className="mt-0.5 font-display text-sm font-semibold text-forest-900">
-                      {service.title}
-                    </div>
-                  </div>
-                  <ArrowRight
-                    size={16}
-                    className="shrink-0 text-forest-700 transition-transform duration-300 group-hover:translate-x-1"
-                  />
-                </Link>
               </Reveal>
             ))}
           </div>

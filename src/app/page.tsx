@@ -2,15 +2,10 @@ import type { Metadata } from "next";
 import { Hero } from "@/components/home/Hero";
 import { Trust } from "@/components/home/Trust";
 import { ServicesOverview } from "@/components/home/ServicesOverview";
-import { FeaturedDestinations } from "@/components/home/FeaturedDestinations";
-import { Stats } from "@/components/home/Stats";
 import { WhyChoose } from "@/components/home/WhyChoose";
-import { ProcessTimeline } from "@/components/home/ProcessTimeline";
 import { Testimonials } from "@/components/home/Testimonials";
-import { FAQPreview } from "@/components/home/FAQPreview";
-import { BlogPreview } from "@/components/home/BlogPreview";
 import { ContactCTA } from "@/components/home/ContactCTA";
-import { getHomeHero, getSeoSetting } from "@/lib/content";
+import { getContactInfo, getHomeHero, getSeoSetting } from "@/lib/content";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSeoSetting("home");
@@ -26,19 +21,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const hero = await getHomeHero();
+  const contact = await getContactInfo();
 
   return (
     <>
-      <Hero {...hero} />
+      <Hero {...hero} whatsapp={contact.whatsapp} />
       <Trust />
       <ServicesOverview />
-      <FeaturedDestinations />
-      <Stats />
       <WhyChoose />
-      <ProcessTimeline />
       <Testimonials />
-      <FAQPreview />
-      <BlogPreview />
       <ContactCTA />
     </>
   );

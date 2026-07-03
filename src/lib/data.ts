@@ -122,163 +122,6 @@ export const directorProfile = {
   photoUrl: null as string | null,
 };
 
-export type DestinationItem = {
-  code: string; // airport-style code — keeps the boarding-pass motif consistent
-  country: string;
-  highlight: string;
-  services: string[];
-};
-
-export const destinations: DestinationItem[] = [
-  {
-    code: "YYZ",
-    country: "Canada",
-    highlight: "Study permits, PR pathways & fast-growing tech hubs",
-    services: ["Study Abroad", "Immigration"],
-  },
-  {
-    code: "LHR",
-    country: "United Kingdom",
-    highlight: "Top-ranked universities & skilled worker routes",
-    services: ["Study Abroad", "Visa Assistance"],
-  },
-  {
-    code: "JFK",
-    country: "United States",
-    highlight: "Ivy League admissions & business travel corridors",
-    services: ["Study Abroad", "Travel"],
-  },
-  {
-    code: "SYD",
-    country: "Australia",
-    highlight: "Post-study work visas & regional migration incentives",
-    services: ["Study Abroad", "Immigration"],
-  },
-  {
-    code: "FRA",
-    country: "Germany",
-    highlight: "Tuition-free public universities & EU work access",
-    services: ["Study Abroad", "Visa Assistance"],
-  },
-  {
-    code: "DUB",
-    country: "Ireland",
-    highlight: "English-taught degrees & a direct route into the EU",
-    services: ["Study Abroad", "Immigration"],
-  },
-];
-
-export type ProcessStep = {
-  step: string;
-  title: string;
-  description: string;
-};
-
-export const processSteps: ProcessStep[] = [
-  {
-    step: "01",
-    title: "Enquiry",
-    description:
-      "Tell us what you're trying to get done. A representative reviews your request within 24–48 hours.",
-  },
-  {
-    step: "02",
-    title: "Consultation",
-    description:
-      "We assess your situation, lay out realistic timelines and costs, and agree the plan in writing.",
-  },
-  {
-    step: "03",
-    title: "Documentation",
-    description:
-      "Your dedicated contact prepares and checks every document against current requirements.",
-  },
-  {
-    step: "04",
-    title: "Processing",
-    description:
-      "We submit, track and follow up with airlines, institutions or immigration bodies on your behalf.",
-  },
-  {
-    step: "05",
-    title: "Delivery",
-    description:
-      "Confirmed booking, approved visa, or completed registration — handed to you, done properly.",
-  },
-];
-
-export type StatItem = {
-  value: number;
-  suffix?: string;
-  label: string;
-};
-
-export const companyStats: StatItem[] = [
-  { value: 500, suffix: "+", label: "Clients served" },
-  { value: 98, suffix: "%", label: "Visa success rate" },
-  { value: 6, suffix: "", label: "Countries covered" },
-  { value: 24, suffix: "hrs", label: "Average first response" },
-];
-
-export type FaqItem = {
-  question: string;
-  answer: string;
-};
-
-export const homeFaqs: FaqItem[] = [
-  {
-    question: "How long does a typical visa application take?",
-    answer:
-      "It depends on the destination and visa type, but most applications move from documentation to decision within 4–8 weeks. We give you a realistic estimate for your specific case before you commit.",
-  },
-  {
-    question: "Do you guarantee visa approval?",
-    answer:
-      "No agency honestly can. What we guarantee is that your application is built correctly, complete, and submitted on time — the factors actually within our control.",
-  },
-  {
-    question: "Can you help if my visa was refused before?",
-    answer:
-      "Yes. We review the previous refusal, identify what likely caused it, and rebuild the application to address those gaps directly.",
-  },
-  {
-    question: "What does MariePrime charge for its services?",
-    answer:
-      "Fees are agreed upfront in writing before any work begins, so there are no surprise costs partway through your process.",
-  },
-];
-
-export type BlogPreviewItem = {
-  category: string;
-  title: string;
-  excerpt: string;
-  readTime: string;
-};
-
-export const homeBlogPreview: BlogPreviewItem[] = [
-  {
-    category: "Study Abroad",
-    title: "Five documentation mistakes that delay UK study visas",
-    excerpt:
-      "The most common refusals trace back to a handful of avoidable errors in financial and academic documentation.",
-    readTime: "5 min read",
-  },
-  {
-    category: "Immigration",
-    title: "What changed in Canada's express entry system this year",
-    excerpt:
-      "A practical breakdown of recent changes and what they mean for applicants planning a move.",
-    readTime: "6 min read",
-  },
-  {
-    category: "Travel",
-    title: "How far in advance should you actually book flights?",
-    excerpt:
-      "The 'book early' advice isn't wrong, but it isn't the whole story either. Here's what the data shows.",
-    readTime: "4 min read",
-  },
-];
-
 export const siteContent = {
   brand: {
     name: "MariePrime Global Services Ltd",
@@ -286,10 +129,10 @@ export const siteContent = {
     tagline: "Your journey, handled with precision.",
   },
   home: {
-    heroEyebrow: "Global Services, Precisely Delivered",
-    heroHeadline: "From application to arrival, we handle the details.",
+    heroEyebrow: "Global Mobility, Engineered With Precision",
+    heroHeadline: "Somewhere in the world, your next chapter is waiting.",
     heroSubtext:
-      "MariePrime Global Services manages flights, visas, travel finance, study placements and business registration for clients who need it done right the first time.",
+      "From visa approvals and funded flights to study placements and registered businesses, MariePrime Global Services turns global ambition into confirmed outcomes — one dedicated contact, transparent pricing, and documentation built to withstand scrutiny, every step from application to arrival.",
     // Cloudinary public id for the hero background image — editable via admin later
     heroImagePublicId: "marieprime/hero-travel-1",
     whyChoose: [

@@ -10,7 +10,6 @@ import {
   FileCheck2,
   MessageCircle,
   Star,
-  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -64,32 +63,20 @@ export function Hero({ heroEyebrow, heroHeadline, heroSubtext, heroImageUrl, wha
             "repeating-linear-gradient(0deg, transparent, transparent 39px, #E3D2B0 39px, #E3D2B0 40px)",
         }}
       />
-
-      {/* Floating decorative elements — subtle, performant, reduced-motion aware */}
-      <motion.div
+      {/* Ambient texture: soft world dot-grid */}
+      <div
         aria-hidden
-        className="pointer-events-none absolute right-[8%] top-24 hidden text-gold-400/25 lg:block"
-        animate={{ y: [0, -14, 0], rotate: [0, 4, 0] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <PlaneTakeoff size={64} strokeWidth={1} />
-      </motion.div>
-      <motion.div
+        className="pointer-events-none absolute inset-0 opacity-[0.12]"
+        style={{
+          backgroundImage: "radial-gradient(#E3D2B0 1px, transparent 1px)",
+          backgroundSize: "22px 22px",
+        }}
+      />
+      {/* Ambient glow */}
+      <div
         aria-hidden
-        className="pointer-events-none absolute right-[22%] top-[62%] hidden text-cream-50/10 lg:block"
-        animate={{ y: [0, 12, 0] }}
-        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-      >
-        <Globe2 size={40} strokeWidth={1} />
-      </motion.div>
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute right-[4%] top-[78%] hidden text-gold-400/20 lg:block"
-        animate={{ y: [0, -10, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-      >
-        <MapPin size={28} strokeWidth={1} />
-      </motion.div>
+        className="pointer-events-none absolute -right-40 -top-40 h-[36rem] w-[36rem] rounded-full bg-gold-500/10 blur-3xl"
+      />
 
       <div className="relative mx-auto grid max-w-7xl gap-16 px-6 pb-20 pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-10 lg:px-10 lg:pb-28 lg:pt-20">
         {/* Content column */}
@@ -310,21 +297,22 @@ function GlobeComposition({ reduceMotion }: { reduceMotion: boolean }) {
           strokeDasharray="5 7"
         />
         <motion.g
+          initial={{ x: 70, y: 260 }}
           animate={
             reduceMotion
-              ? {}
+              ? { x: 70, y: 260 }
               : {
-                  offsetDistance: ["0%", "100%"],
+                  x: [70, 135, 200, 265, 330, 70],
+                  y: [260, 203.75, 175, 173.75, 200, 260],
+                  rotate: [-2, -18, -22, -10, 8, -2],
                 }
           }
           transition={
             reduceMotion
               ? {}
-              : { duration: 6, repeat: Infinity, ease: "linear" }
+              : { duration: 7, repeat: Infinity, ease: "easeInOut" }
           }
-          style={{
-            offsetPath: "path('M 70 260 Q 200 120 330 200')",
-          }}
+          style={{ originX: "9px", originY: "9px" }}
         >
           <PlaneTakeoff x={-9} y={-9} size={18} color="#E3D2B0" />
         </motion.g>
