@@ -114,6 +114,142 @@ export const homeBlogPreview: BlogPreviewItem[] = [
   },
 ];
 
+export type ProcessStep = {
+  step: string;
+  title: string;
+  description: string;
+};
+
+export const processSteps: ProcessStep[] = [
+  {
+    step: "01",
+    title: "Discovery Call",
+    description:
+      "We learn exactly what you're trying to achieve — study, work, travel or business — and map out the realistic path to get there.",
+  },
+  {
+    step: "02",
+    title: "Documentation",
+    description:
+      "We build your application file to withstand scrutiny, flagging gaps before they become refusals or delays.",
+  },
+  {
+    step: "03",
+    title: "Submission",
+    description:
+      "Your application, booking or registration is filed correctly the first time, with every deadline tracked on your behalf.",
+  },
+  {
+    step: "04",
+    title: "Active Tracking",
+    description:
+      "Your dedicated contact monitors progress and sends updates before you have to ask for them.",
+  },
+  {
+    step: "05",
+    title: "Completion",
+    description:
+      "From visa stamp to boarding pass to certificate of incorporation — we stay on it until it's fully resolved.",
+  },
+];
+
+export type CompanyStat = {
+  value: number;
+  suffix?: string;
+  label: string;
+};
+
+export const companyStats: CompanyStat[] = [
+  { value: 6, suffix: "", label: "Core Service Lines" },
+  { value: 1, suffix: "", label: "Dedicated Contact Per Client" },
+  { value: 100, suffix: "%", label: "Costs Agreed In Writing" },
+  { value: 5, suffix: "★", label: "Average Client Rating" },
+];
+
+export type Destination = {
+  code: string;
+  country: string;
+  highlight: string;
+  services: string[];
+};
+
+export const destinations: Destination[] = [
+  {
+    code: "CAN",
+    country: "Canada",
+    highlight: "Study, work or relocate to Canada with step-by-step support.",
+    services: ["Study", "Visa", "Relocation"],
+  },
+  {
+    code: "UK",
+    country: "United Kingdom",
+    highlight: "Admissions and visa support for UK study and business.",
+    services: ["Study", "Visa", "Business"],
+  },
+  {
+    code: "USA",
+    country: "United States",
+    highlight: "Comprehensive travel and study solutions for US destinations.",
+    services: ["Travel", "Study", "Visa"],
+  },
+  {
+    code: "AUS",
+    country: "Australia",
+    highlight: "Permanent and temporary migration pathways supported end-to-end.",
+    services: ["Visa", "Relocation"],
+  },
+  {
+    code: "GER",
+    country: "Germany",
+    highlight: "Study and work routes with local partner guidance.",
+    services: ["Study", "Work Visa"],
+  },
+  {
+    code: "IRL",
+    country: "Ireland",
+    highlight: "Study and immigration guidance for Ireland's universities and employers.",
+    services: ["Study", "Visa"],
+  },
+];
+
+export type FaqItem = {
+  question: string;
+  answer: string;
+};
+
+export const homeFaqs: FaqItem[] = [
+  {
+    question: "Do you guarantee visa approval?",
+    answer:
+      "No agency can honestly guarantee approval — final decisions rest with the embassy or consulate. What we guarantee is that your application is documented and filed correctly, giving you the strongest realistic chance.",
+  },
+  {
+    question: "How long does a typical application take?",
+    answer:
+      "It depends on the service and destination. We'll give you a realistic timeline before you commit, and you'll typically hear back from us on next steps within 24–48 hours of your first enquiry.",
+  },
+  {
+    question: "What does business registration with MariePrime include?",
+    answer:
+      "Company name reservation, incorporation filing, and regulatory registration, handled end to end so you can focus on building the business rather than the paperwork.",
+  },
+  {
+    question: "Can you help if my visa was previously refused?",
+    answer:
+      "Yes. We review what went wrong the first time and rebuild the application properly, addressing the specific issues that caused the refusal.",
+  },
+  {
+    question: "Do I need to visit your office in person?",
+    answer:
+      "Most of the process can be handled remotely by phone, email or WhatsApp with your dedicated contact. In-person meetings are available in Lagos if you prefer them.",
+  },
+  {
+    question: "How much does it cost?",
+    answer:
+      "Costs vary by service and complexity. We agree fees with you upfront, in writing, before any work begins — what you're quoted is what you pay.",
+  },
+];
+
 export type TestimonialItem = {
   clientName: string;
   clientRole: string;
