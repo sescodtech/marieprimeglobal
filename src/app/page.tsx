@@ -3,6 +3,7 @@ import { Hero } from "@/components/home/Hero";
 import { Trust } from "@/components/home/Trust";
 import { ServicesOverview } from "@/components/home/ServicesOverview";
 import { Stats } from "@/components/home/Stats";
+import { FeaturedDestinations } from "@/components/home/FeaturedDestinations";
 import { WhyChoose } from "@/components/home/WhyChoose";
 import { ProcessTimeline } from "@/components/home/ProcessTimeline";
 import { Testimonials } from "@/components/home/Testimonials";
@@ -32,6 +33,7 @@ export default async function HomePage() {
       <Trust />
       <ServicesOverview />
       <Stats />
+      <FeaturedDestinations />
       <WhyChoose />
       <ProcessTimeline />
       <Testimonials />

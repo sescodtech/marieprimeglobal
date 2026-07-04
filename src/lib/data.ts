@@ -99,6 +99,52 @@ export const companyStats: StatItem[] = [
   { value: 24, suffix: "hrs", label: "Average first response" },
 ];
 
+export type Destination = {
+  code: string;
+  country: string;
+  highlight: string;
+  services: string[];
+};
+
+export const destinations: Destination[] = [
+  {
+    code: "CAN",
+    country: "Canada",
+    highlight: "Study, work or relocate to Canada with step-by-step support.",
+    services: ["Study", "Visa", "Relocation"],
+  },
+  {
+    code: "UK",
+    country: "United Kingdom",
+    highlight: "Admissions and visa support for UK study and business.",
+    services: ["Study", "Visa", "Business"],
+  },
+  {
+    code: "USA",
+    country: "United States",
+    highlight: "Comprehensive travel and study solutions for US destinations.",
+    services: ["Travel", "Study", "Visa"],
+  },
+  {
+    code: "AUS",
+    country: "Australia",
+    highlight: "Permanent and temporary migration pathways supported end-to-end.",
+    services: ["Visa", "Relocation"],
+  },
+  {
+    code: "GER",
+    country: "Germany",
+    highlight: "Study and work routes with local partner guidance.",
+    services: ["Study", "Work Visa"],
+  },
+  {
+    code: "IRL",
+    country: "Ireland",
+    highlight: "Study and immigration guidance for Ireland's universities and employers.",
+    services: ["Study", "Visa"],
+  },
+];
+
 export type FaqItem = {
   question: string;
   answer: string;
