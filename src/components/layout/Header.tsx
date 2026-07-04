@@ -42,7 +42,7 @@ export function Header({
         "sticky top-0 z-50 transition-all duration-500",
         scrolled
           ? "border-b border-forest-900/[0.06] bg-cream-50/75 shadow-[0_8px_30px_-12px_rgba(15,42,32,0.15)] backdrop-blur-2xl backdrop-saturate-150"
-          : "border-b border-transparent bg-transparent backdrop-blur-0"
+          : "border-b border-cream-50/10 bg-forest-900/35 backdrop-blur-md"
       )}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10 lg:py-4">
