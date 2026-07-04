@@ -10,6 +10,9 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
+  { href: "/careers", label: "Careers" },
+  { href: "/blog", label: "Blog" },
+  { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -54,13 +57,13 @@ export function Header({ whatsapp }: { whatsapp: string }) {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-6 lg:flex">
           {navLinks.map((link) => (
             <NavLink key={link.href} href={link.href} label={link.label} scrolled={scrolled} />
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-3 lg:flex">
           <a
             href={`https://wa.me/${whatsapp}`}
             target="_blank"
@@ -74,7 +77,7 @@ export function Header({ whatsapp }: { whatsapp: string }) {
 
         <button
           aria-label="Toggle navigation menu"
-          className={cn("md:hidden transition-colors duration-300", scrolled ? "text-forest-900" : "text-cream-50")}
+          className={cn("lg:hidden transition-colors duration-300", scrolled ? "text-forest-900" : "text-cream-50")}
           onClick={() => setOpen((o) => !o)}
         >
           {open ? <X size={24} /> : <Menu size={24} />}
@@ -87,7 +90,7 @@ export function Header({ whatsapp }: { whatsapp: string }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/30 md:hidden"
+            className="fixed inset-0 z-40 bg-black/30 lg:hidden"
             onClick={() => setOpen(false)}
           />
         )}
@@ -100,7 +103,7 @@ export function Header({ whatsapp }: { whatsapp: string }) {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed right-0 top-0 z-50 h-full w-[85%] max-w-sm overflow-auto bg-cream-50 p-6 md:hidden"
+            className="fixed right-0 top-0 z-50 h-full w-[85%] max-w-sm overflow-auto bg-cream-50 p-6 lg:hidden"
           >
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>

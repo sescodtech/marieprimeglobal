@@ -13,7 +13,6 @@ const schema = z.object({
     "TRAVEL_LOAN",
     "STUDY_ABROAD",
     "BUSINESS_REGISTRATION",
-    "INVESTMENT_SUPPORT",
     "GENERAL_ENQUIRY",
   ]),
   message: z.string().min(10),

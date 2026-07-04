@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   PlaneTakeoff,
@@ -9,7 +7,6 @@ import {
   Globe2,
   UserCheck,
   FileCheck2,
-  MessageCircle,
   Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -19,8 +16,6 @@ type HeroProps = {
   heroEyebrow: string;
   heroHeadline: string;
   heroSubtext: string;
-  heroImageUrl?: string | null;
-  whatsapp?: string;
 };
 
 const trustIndicators = [
@@ -48,10 +43,8 @@ const trustIndicators = [
 
 const easing = [0.22, 1, 0.36, 1] as const;
 
-export function Hero({ heroEyebrow, heroHeadline, heroSubtext, heroImageUrl, whatsapp }: HeroProps) {
+export function Hero({ heroEyebrow, heroHeadline, heroSubtext }: HeroProps) {
   const reduceMotion = useReducedMotion();
-  const [imageFailed, setImageFailed] = useState(false);
-  const showImage = !!heroImageUrl && !imageFailed;
   const [headlineLead, ...headlineRestParts] = heroHeadline.split(", ");
   const headlineRest = headlineRestParts.join(", ");
 
@@ -127,28 +120,14 @@ export function Hero({ heroEyebrow, heroHeadline, heroSubtext, heroImageUrl, wha
             <Button href="/contact" variant="secondary">
               Start Your Journey
             </Button>
-            {whatsapp ? (
-              <a
-                href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(
-                  "Hi MariePrime, I'd like to book a free consultation."
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-center gap-2 rounded-stub border border-cream-50/25 px-6 py-3 font-body text-sm font-semibold tracking-wide text-cream-50 transition-all duration-300 hover:border-gold-400 hover:bg-cream-50/5"
-              >
-                <MessageCircle size={16} className="text-gold-400" />
-                Book Free Consultation
-              </a>
-            ) : (
-              <Button
-                href="/contact"
-                variant="ghost"
-                className="border-cream-50/25 text-cream-50 hover:border-gold-400 hover:bg-cream-50/5"
-                showArrow={false}
-              >
-                Book Free Consultation
-              </Button>
-            )}
+            <Button
+              href="/contact"
+              variant="ghost"
+              className="border-cream-50/25 text-cream-50 hover:border-gold-400 hover:bg-cream-50/5"
+              showArrow={false}
+            >
+              Book Free Consultation
+            </Button>
           </motion.div>
 
           {/* Rating line */}
@@ -199,22 +178,7 @@ export function Hero({ heroEyebrow, heroHeadline, heroSubtext, heroImageUrl, wha
             transition={{ duration: 0.9, delay: 0.15, ease: easing }}
             className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl ring-1 ring-cream-50/10"
           >
-            {showImage ? (
-              <>
-                <Image
-                  src={heroImageUrl as string}
-                  alt="MariePrime Global Services — international travel and mobility"
-                  fill
-                  priority
-                  sizes="(min-width: 1024px) 45vw, 90vw"
-                  className="object-cover"
-                  onError={() => setImageFailed(true)}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-forest-950/80 via-forest-950/10 to-transparent" />
-              </>
-            ) : (
-              <GlobeComposition reduceMotion={!!reduceMotion} />
-            )}
+            <PlaneCrossing reduceMotion={!!reduceMotion} />
           </motion.div>
 
           {/* Floating boarding-pass card */}
@@ -278,49 +242,68 @@ export function Hero({ heroEyebrow, heroHeadline, heroSubtext, heroImageUrl, wha
   );
 }
 
-/** Decorative globe + flight-path composition used when no hero image is configured. */
-function GlobeComposition({ reduceMotion }: { reduceMotion: boolean }) {
+/** Primary hero visual: a plane flying across the frame, entering one side and exiting the other, looping. */
+function PlaneCrossing({ reduceMotion }: { reduceMotion: boolean }) {
   return (
-    <div className="relative flex h-full w-full items-center justify-center bg-gradient-to-br from-forest-800 via-forest-900 to-forest-950">
-      <svg
-        viewBox="0 0 400 400"
-        className="h-[85%] w-[85%] opacity-90"
+    <div className="relative flex h-full w-full items-center overflow-hidden bg-gradient-to-br from-forest-800 via-forest-900 to-forest-950">
+      {/* Soft star/dot texture */}
+      <div
         aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.14]"
+        style={{
+          backgroundImage: "radial-gradient(#E3D2B0 1px, transparent 1px)",
+          backgroundSize: "26px 26px",
+        }}
+      />
+      {/* Soft cloud glows */}
+      <div aria-hidden className="pointer-events-none absolute left-[8%] top-[26%] h-16 w-28 rounded-full bg-cream-50/5 blur-xl" />
+      <div aria-hidden className="pointer-events-none absolute right-[12%] top-[62%] h-20 w-32 rounded-full bg-cream-50/5 blur-xl" />
+      <div aria-hidden className="pointer-events-none absolute left-[30%] top-[72%] h-14 w-24 rounded-full bg-cream-50/5 blur-xl" />
+
+      {/* Flight path */}
+      <div aria-hidden className="pointer-events-none absolute left-0 right-0 top-1/2 h-px route-dashes opacity-30" />
+
+      {/* Flying plane */}
+      <motion.div
+        initial={{ left: "-18%" }}
+        animate={reduceMotion ? { left: "42%" } : { left: ["-18%", "118%"] }}
+        transition={reduceMotion ? {} : { duration: 8, repeat: Infinity, ease: "linear" }}
+        className="absolute top-1/2 -translate-y-1/2"
       >
-        <circle cx="200" cy="200" r="150" fill="none" stroke="#D3BB86" strokeOpacity="0.28" strokeWidth="1.5" />
-        <ellipse cx="200" cy="200" rx="150" ry="60" fill="none" stroke="#D3BB86" strokeOpacity="0.2" strokeWidth="1" />
-        <ellipse cx="200" cy="200" rx="150" ry="110" fill="none" stroke="#D3BB86" strokeOpacity="0.2" strokeWidth="1" />
-        <line x1="50" y1="200" x2="350" y2="200" stroke="#D3BB86" strokeOpacity="0.2" strokeWidth="1" />
-        <line x1="200" y1="50" x2="200" y2="350" stroke="#D3BB86" strokeOpacity="0.15" strokeWidth="1" />
-        <path
-          d="M 70 260 Q 200 120 330 200"
-          fill="none"
-          stroke="#D3BB86"
-          strokeOpacity="0.55"
-          strokeWidth="1.5"
-          strokeDasharray="5 7"
-        />
-        <motion.g
-          initial={{ x: 70, y: 260 }}
+        <motion.div
           animate={
             reduceMotion
-              ? { x: 70, y: 260 }
-              : {
-                  x: [70, 135, 200, 265, 330, 70],
-                  y: [260, 203.75, 175, 173.75, 200, 260],
-                  rotate: [-2, -18, -22, -10, 8, -2],
-                }
+              ? {}
+              : { y: [0, -9, 0, 7, 0], rotate: [-3, 2, -1, 3, -3] }
           }
           transition={
-            reduceMotion
-              ? {}
-              : { duration: 7, repeat: Infinity, ease: "easeInOut" }
+            reduceMotion ? {} : { duration: 4, repeat: Infinity, ease: "easeInOut" }
           }
-          style={{ originX: "9px", originY: "9px" }}
         >
-          <PlaneTakeoff x={-9} y={-9} size={18} color="#E3D2B0" />
-        </motion.g>
-      </svg>
+          <svg
+            viewBox="0 0 160 60"
+            className="h-9 w-24 drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)] sm:h-11 sm:w-28"
+            aria-hidden
+          >
+            {/* tail fin */}
+            <path d="M18,25 L18,6 L36,25 Z" fill="#D3BB86" />
+            {/* horizontal stabilizer */}
+            <path d="M20,36 L6,46 L30,36 Z" fill="#D3BB86" />
+            {/* main wing */}
+            <path d="M58,31 L26,54 L82,33 Z" fill="#D3BB86" />
+            {/* engine pod */}
+            <ellipse cx="60" cy="42" rx="8" ry="4" fill="#1B4332" />
+            {/* fuselage */}
+            <rect x="18" y="25" width="95" height="11" rx="5.5" fill="#F1E7D2" />
+            {/* nose cone */}
+            <path d="M113,25 L138,30.5 L113,36 Z" fill="#F1E7D2" />
+            {/* windows */}
+            {[45, 55, 65, 75, 85, 95].map((cx) => (
+              <circle key={cx} cx={cx} cy="28.5" r="1.2" fill="#0F2A20" />
+            ))}
+          </svg>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

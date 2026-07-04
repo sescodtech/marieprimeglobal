@@ -3,6 +3,7 @@ import { Sora, Plus_Jakarta_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { FloatingWhatsApp } from "@/components/ui/FloatingWhatsApp";
 import { siteContent } from "@/lib/data";
 import { getContactInfo } from "@/lib/content";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -99,6 +100,7 @@ export default async function RootLayout({
         <Header whatsapp={contact.whatsapp} />
         <main>{children}</main>
         <Footer />
+        <FloatingWhatsApp whatsapp={contact.whatsapp} />
       </body>
     </html>
   );

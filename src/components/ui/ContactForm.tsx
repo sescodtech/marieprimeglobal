@@ -12,7 +12,6 @@ const serviceOptions = [
   { value: "TRAVEL_LOAN", label: "Travel Loan Assistance" },
   { value: "STUDY_ABROAD", label: "Study Abroad Support" },
   { value: "BUSINESS_REGISTRATION", label: "Business Registration Services" },
-  { value: "INVESTMENT_SUPPORT", label: "Investment & Business Support" },
   { value: "GENERAL_ENQUIRY", label: "General Enquiry" },
 ];
 

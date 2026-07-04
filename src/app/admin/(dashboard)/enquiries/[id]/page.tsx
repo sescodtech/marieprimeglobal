@@ -12,7 +12,6 @@ const serviceLabels: Record<string, string> = {
   TRAVEL_LOAN: "Travel Loan Assistance",
   STUDY_ABROAD: "Study Abroad Support",
   BUSINESS_REGISTRATION: "Business Registration Services",
-  INVESTMENT_SUPPORT: "Investment & Business Support",
   GENERAL_ENQUIRY: "General Enquiry",
 };
 
