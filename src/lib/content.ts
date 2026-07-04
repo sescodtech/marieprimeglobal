@@ -1,5 +1,45 @@
 import { prisma } from "@/lib/prisma";
-import { siteContent as staticContent } from "@/lib/data";
+import { siteContent as staticContent, defaultHomeServices } from "@/lib/data";
+
+export type HomeServiceCard = {
+  slug: string;
+  title: string;
+  summary: string;
+  icon: string | null;
+  href: string;
+};
+
+/**
+ * Services shown in the homepage "What We Offer" section.
+ * If the Admin has published Service records, those are used and take
+ * priority automatically. Only when none exist yet do we fall back to the
+ * default service catalogue — this fallback disappears the moment an admin
+ * adds and publishes services in /admin/services.
+ */
+export async function getHomeServices(): Promise<HomeServiceCard[]> {
+  const services = await prisma.service.findMany({
+    where: { isPublished: true },
+    orderBy: { order: "asc" },
+  });
+
+  if (services.length > 0) {
+    return services.map((s) => ({
+      slug: s.slug,
+      title: s.title,
+      summary: s.summary,
+      icon: s.icon,
+      href: `/services/${s.slug}`,
+    }));
+  }
+
+  return defaultHomeServices.map((s) => ({
+    slug: s.slug,
+    title: s.title,
+    summary: s.summary,
+    icon: s.icon,
+    href: "/services",
+  }));
+}
 
 export async function getSiteSettingsMap() {
   const rows = await prisma.siteSetting.findMany();

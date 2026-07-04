@@ -90,14 +90,218 @@ export type StatItem = {
   value: number;
   suffix?: string;
   label: string;
+  icon: "users" | "shield" | "headset" | "globe";
+  /** Rendered instead of the animated counter for non-numeric stats. */
+  staticDisplay?: string;
 };
 
 export const companyStats: StatItem[] = [
-  { value: 500, suffix: "+", label: "Clients served" },
-  { value: 98, suffix: "%", label: "Visa success rate" },
-  { value: 6, suffix: "", label: "Countries covered" },
-  { value: 24, suffix: "hrs", label: "Average first response" },
+  { value: 500, suffix: "+", label: "Happy Clients", icon: "users" },
+  { value: 98, suffix: "%", label: "Visa Success Rate", icon: "shield" },
+  {
+    value: 24,
+    suffix: "/7",
+    label: "Customer Support",
+    icon: "headset",
+    staticDisplay: "24/7",
+  },
+  {
+    value: 0,
+    label: "Global Travel Assistance",
+    icon: "globe",
+    staticDisplay: "Global",
+  },
 ];
+
+// ---------------------------------------------------------------------------
+// Homepage "Services" section — default catalogue shown whenever the Admin
+// hasn't published any Service rows yet. The moment an admin adds services in
+// /admin/services, ServicesOverview swaps these out automatically for the
+// live database records — see getHomeServices() in ./content.ts.
+// ---------------------------------------------------------------------------
+export type HomeServiceItem = {
+  slug: string;
+  title: string;
+  summary: string;
+  icon:
+    | "visa"
+    | "flight"
+    | "hotel"
+    | "insurance"
+    | "event"
+    | "beauty"
+    | "procurement"
+    | "logistics";
+};
+
+export const defaultHomeServices: HomeServiceItem[] = [
+  {
+    slug: "visa-travel-assistance",
+    title: "Visa Application & Travel Assistance",
+    summary:
+      "Professional visa processing and complete travel documentation support for individuals, families and businesses.",
+    icon: "visa",
+  },
+  {
+    slug: "flight-booking",
+    title: "Flight Booking",
+    summary:
+      "Domestic and international flight reservations with competitive pricing and flexible travel solutions.",
+    icon: "flight",
+  },
+  {
+    slug: "hotel-reservations",
+    title: "Hotel Reservations",
+    summary:
+      "Comfortable accommodation booking across local and international destinations.",
+    icon: "hotel",
+  },
+  {
+    slug: "travel-insurance",
+    title: "Travel Insurance",
+    summary:
+      "Reliable travel insurance plans that protect clients before and during every journey.",
+    icon: "insurance",
+  },
+  {
+    slug: "event-coordination",
+    title: "Event Coordination",
+    summary:
+      "Professional planning and coordination for business trips, conferences, destination events and special occasions.",
+    icon: "event",
+  },
+  {
+    slug: "beauty-services",
+    title: "Beauty Services",
+    summary: "Professional beauty and personal care services delivered with excellence.",
+    icon: "beauty",
+  },
+  {
+    slug: "procurement-merchandise",
+    title: "Procurement & General Merchandise",
+    summary: "Reliable sourcing and procurement solutions for organizations and individuals.",
+    icon: "procurement",
+  },
+  {
+    slug: "logistics",
+    title: "Logistics",
+    summary: "Efficient cargo, delivery and logistics solutions locally and internationally.",
+    icon: "logistics",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// "Why Choose Marie Prime Global" — six brand-level differentiators shown on
+// the homepage in place of the old destinations grid.
+// ---------------------------------------------------------------------------
+export type BrandPillar = {
+  title: string;
+  description: string;
+  icon: "globe" | "award" | "users" | "clock" | "shield" | "handshake";
+};
+
+export const whyChooseGlobal: BrandPillar[] = [
+  {
+    title: "Global Reach, Local Expertise",
+    description:
+      "We operate across multiple countries while staying grounded in local realities, giving clients guidance that actually applies to their specific route and destination.",
+    icon: "globe",
+  },
+  {
+    title: "Proven Track Record",
+    description:
+      "Hundreds of clients served across visa, travel, and business services, with outcomes that consistently meet or exceed the timelines we quote upfront.",
+    icon: "award",
+  },
+  {
+    title: "Dedicated Client Care",
+    description:
+      "Every client is assigned a dedicated contact who owns their file from first enquiry to final delivery — no call centres, no repeated explanations.",
+    icon: "users",
+  },
+  {
+    title: "Round-the-Clock Support",
+    description:
+      "Our team remains reachable for urgent travel changes, emergencies, and time-sensitive documentation, wherever in the world our clients happen to be.",
+    icon: "clock",
+  },
+  {
+    title: "Verified & Secure Process",
+    description:
+      "Every document, payment, and booking passes through a verified process built to withstand scrutiny from airlines, embassies and institutions alike.",
+    icon: "shield",
+  },
+  {
+    title: "Transparent Partnership",
+    description:
+      "Costs, timelines, and next steps are agreed in writing before work begins, so clients always know exactly where their process stands.",
+    icon: "handshake",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// "Client Journey" — the six-stage premium timeline shown on the homepage.
+// ---------------------------------------------------------------------------
+export type JourneyStage = {
+  title: string;
+  description: string;
+  icon: "consultation" | "document" | "processing" | "approval" | "preparation" | "journey";
+};
+
+export const clientJourney: JourneyStage[] = [
+  {
+    title: "Consultation",
+    description:
+      "We start with a detailed conversation to understand your goals, assess your situation and outline a realistic path forward.",
+    icon: "consultation",
+  },
+  {
+    title: "Document Review",
+    description:
+      "Every document is reviewed against current requirements, with gaps flagged and corrected before anything is submitted.",
+    icon: "document",
+  },
+  {
+    title: "Application Processing",
+    description:
+      "Your application is submitted and actively tracked, with our team following up on your behalf at every stage.",
+    icon: "processing",
+  },
+  {
+    title: "Approval",
+    description:
+      "We monitor decisions closely and keep you informed the moment a status update or approval comes through.",
+    icon: "approval",
+  },
+  {
+    title: "Travel Preparation",
+    description:
+      "Bookings, itineraries and pre-departure guidance are finalised so you arrive fully prepared for every step ahead.",
+    icon: "preparation",
+  },
+  {
+    title: "Successful Journey",
+    description:
+      "You travel, study, relocate or launch your business with confidence — backed by a process built to get it right the first time.",
+    icon: "journey",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Homepage "About" preview — short teaser linking through to the full /about
+// page. Mirrors siteContent.about but scoped for a compact homepage section.
+// ---------------------------------------------------------------------------
+export const aboutPreview = {
+  eyebrow: "About MariePrime",
+  headline: "A global services partner built on one standard: get it right the first time.",
+  body:
+    "MariePrime Global Services Ltd supports individuals, families and businesses through visa processing, travel arrangements, event coordination, procurement, logistics and beauty services — all delivered under one dedicated point of contact, with the same discipline global organisations expect.",
+  highlights: [
+    "One accountable team from enquiry to delivery",
+    "Transparent pricing agreed in writing upfront",
+    "Services trusted across individuals and organisations",
+  ],
+};
 
 export type Destination = {
   code: string;
@@ -340,30 +544,30 @@ export const siteContent = {
     tagline: "Your journey, handled with precision.",
   },
   home: {
-    heroEyebrow: "Global Mobility & Business Advisory",
-    heroHeadline: "Precision-led travel, immigration and business services.",
+    heroEyebrow: "GLOBAL TRAVEL · IMMIGRATION · BUSINESS SOLUTIONS",
+    heroHeadline: "Your Trusted Partner for\nGlobal Travel,\nImmigration &\nBusiness Solutions",
     heroSubtext:
-      "MariePrime Global Services delivers flight bookings, visa approvals, study placements and business registration with the discipline global organisations expect — one dedicated contact, from first enquiry to final approval.",
+      "From visa processing and international flight bookings to hotel reservations, logistics, procurement, travel insurance, and business support, Marie Prime Global delivers seamless solutions that connect people and businesses to opportunities around the world.",
     whyChoose: [
       {
-        title: "One point of contact",
+        title: "One Point of Contact",
         description:
-          "A single dedicated contact follows your request from first enquiry to completion — no handoffs, no repeating yourself.",
+          "A single dedicated representative manages your request from first enquiry to completion — no handoffs, no repeating your case to a new person.",
       },
       {
-        title: "Realistic timelines",
+        title: "Realistic Timelines",
         description:
-          "We tell you what a process actually takes, including where delays are likely, before you commit.",
+          "We communicate exactly what a process requires, including where delays are likely, before any commitment is made.",
       },
       {
-        title: "Documentation done properly",
+        title: "Documentation Handled Properly",
         description:
-          "Most refusals and delays trace back to paperwork. We build every application to withstand scrutiny.",
+          "Most refusals and delays originate from paperwork errors. We prepare every application to withstand scrutiny from the first submission.",
       },
       {
-        title: "Transparent costs",
+        title: "Transparent, Written Pricing",
         description:
-          "Fees are agreed upfront in writing. What you're quoted is what you pay.",
+          "Every fee is agreed in writing before work begins. What you are quoted is what you pay — no revisions, no hidden charges.",
       },
     ],
     trustStats: [

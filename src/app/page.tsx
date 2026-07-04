@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/home/Hero";
-import { Trust } from "@/components/home/Trust";
 import { ServicesOverview } from "@/components/home/ServicesOverview";
 import { Stats } from "@/components/home/Stats";
-import { FeaturedDestinations } from "@/components/home/FeaturedDestinations";
+import { WhyChooseGlobal } from "@/components/home/WhyChooseGlobal";
+import { AboutPreview } from "@/components/home/AboutPreview";
 import { WhyChoose } from "@/components/home/WhyChoose";
 import { ProcessTimeline } from "@/components/home/ProcessTimeline";
 import { Testimonials } from "@/components/home/Testimonials";
@@ -30,10 +30,10 @@ export default async function HomePage() {
   return (
     <>
       <Hero {...hero} />
-      <Trust />
-      <ServicesOverview />
       <Stats />
-      <FeaturedDestinations />
+      <ServicesOverview />
+      <WhyChooseGlobal />
+      <AboutPreview />
       <WhyChoose />
       <ProcessTimeline />
       <Testimonials />

@@ -9,6 +9,7 @@ type ButtonProps = {
   className?: string;
   external?: boolean;
   showArrow?: boolean;
+  onClick?: () => void;
 };
 
 export function Button({
@@ -18,6 +19,7 @@ export function Button({
   className,
   external = false,
   showArrow = true,
+  onClick,
 }: ButtonProps) {
   const base =
     "group inline-flex items-center gap-2 rounded-full px-7 py-3.5 font-body text-sm font-semibold tracking-wide transition-all duration-300 hover:-translate-y-0.5";
@@ -36,7 +38,7 @@ export function Button({
     : {};
 
   return (
-    <Link href={href} className={cn(base, variants[variant], className)} {...props}>
+    <Link href={href} className={cn(base, variants[variant], className)} onClick={onClick} {...props}>
       {children}
       {showArrow && (
         <ArrowUpRight

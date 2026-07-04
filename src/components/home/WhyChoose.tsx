@@ -9,21 +9,23 @@ export function WhyChoose() {
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="grid gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
           <Reveal>
-            <Eyebrow light>Why MariePrime</Eyebrow>
+            <Eyebrow light>Our Commitment</Eyebrow>
             <h2 className="mt-4 font-display text-3xl font-medium leading-tight sm:text-4xl">
               The details other agencies skip are the ones we build our process around.
             </h2>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-cream-200/70">
               Global services fail on small things: a missing document, an unclear timeline,
-              a contact who goes quiet. We built MariePrime to close those gaps.
+              a contact who goes quiet. We built our process to close those gaps, every time.
             </p>
           </Reveal>
 
           <div className="grid gap-6 sm:grid-cols-2">
             {siteContent.home.whyChoose.map((item, i) => (
-              <Reveal key={item.title} delay={i * 0.08}>
-                <div className="rounded-stub border border-cream-50/10 bg-cream-50/[0.03] p-6">
-                  <CheckCircle2 size={22} className="text-gold-400" />
+              <Reveal key={item.title} delay={i * 0.08} className="h-full">
+                <div className="flex h-full flex-col rounded-xl2 border border-cream-50/10 bg-cream-50/[0.03] p-6 transition-colors duration-300 hover:bg-cream-50/[0.06]">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gold-400/15 text-gold-400">
+                    <CheckCircle2 size={20} />
+                  </span>
                   <h3 className="mt-4 font-display text-lg font-semibold">
                     {item.title}
                   </h3>
