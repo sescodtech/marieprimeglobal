@@ -12,6 +12,10 @@ import {
   Search,
   Settings,
   KeyRound,
+  Newspaper,
+  UsersRound,
+  HelpCircle,
+  Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@/components/admin/SignOutButton";
@@ -19,6 +23,10 @@ import { SignOutButton } from "@/components/admin/SignOutButton";
 const navItems = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/services", label: "Services", icon: Briefcase },
+  { href: "/admin/blog", label: "Blog", icon: Newspaper },
+  { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
+  { href: "/admin/careers", label: "Careers", icon: UsersRound },
+  { href: "/admin/faq", label: "FAQs", icon: HelpCircle },
   { href: "/admin/testimonials", label: "Testimonials", icon: Quote },
   { href: "/admin/director", label: "Director Profile", icon: UserCircle },
   { href: "/admin/media", label: "Media Library", icon: ImageIcon },

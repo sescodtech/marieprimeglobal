@@ -55,13 +55,89 @@ model Service {
   routeFrom   String // boarding-pass "from" label, e.g. "LOS"
   routeTo     String // boarding-pass "to" label, e.g. "ANY"
   summary     String
-  description String   @db.Text
+  description String   @db.Text // used as the detail-page "Overview" section
+  tagline     String? // short line shown under the H1 on the detail page
+  benefits    Json? // ServiceBenefit[] — { title, description }[]
+  process     Json? // ServiceProcessStep[] — { step, title, description }[]
+  faqs        Json? // ServiceFaq[] — { question, answer }[]
   icon        String? // icon key rendered on the frontend
   imageUrl    String?
   order       Int      @default(0)
   isPublished Boolean  @default(true)
   metaTitle       String?
   metaDescription String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BlogPost {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  category        String
+  title           String
+  excerpt         String   @db.Text
+  content         String?  @db.Text // reserved for Phase 5 rich-text body
+  readTime        String
+  publishedLabel  String // display-only date label, e.g. "June 2026"
+  isPublished     Boolean  @default(true)
+  order           Int      @default(0)
+  metaTitle       String?
+  metaDescription String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+enum ApplicationStatus {
+  NEW
+  REVIEWED
+  SHORTLISTED
+  REJECTED
+}
+
+model JobApplication {
+  id             String            @id @default(cuid())
+  jobListing     JobListing?       @relation(fields: [jobListingId], references: [id], onDelete: SetNull)
+  jobListingId   String?
+  jobTitle       String // snapshot — kept even if the job listing is later edited or removed
+  fullName       String
+  email          String
+  phone          String
+  message        String?           @db.Text
+  cvUrl          String
+  coverLetterUrl String?
+  status         ApplicationStatus @default(NEW)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model JobListing {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  department  String
+  location    String
+  type        String // e.g. "Full-time", "Contract"
+  summary     String   @db.Text
+  isPublished Boolean  @default(true)
+  order       Int      @default(0)
+  applications JobApplication[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Faq {
+  id          String   @id @default(cuid())
+  category    String // e.g. "General", "Visa & Immigration"
+  question    String
+  answer      String   @db.Text
+  isPublished Boolean  @default(true)
+  order       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -122,7 +198,6 @@ enum ServiceInterest {
   TRAVEL_LOAN
   STUDY_ABROAD
   BUSINESS_REGISTRATION
-  INVESTMENT_SUPPORT
   GENERAL_ENQUIRY
 }
 
@@ -145,7 +220,7 @@ model Enquiry {
 
 model SeoSetting {
   id              String   @id @default(cuid())
-  page            String   @unique // "home" | "about" | "services" | "contact"
+  page            String   @unique // "home" | "about" | "services" | "contact" | "blog" | "careers" | "faq"
   metaTitle       String
   metaDescription String
   keywords        String? // comma-separated

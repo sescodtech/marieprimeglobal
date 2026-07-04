@@ -1,8 +1,7 @@
-// Phase 3 static content for dedicated service pages.
-// Independent of the Prisma `Service` model (which drives the homepage
-// boarding-pass grid and the /services overview) so this phase doesn't
-// require a schema change. `serviceSlugMap` links the two where the
-// same real-world service exists in both places.
+// Seed content for the Prisma `Service` table (single canonical service
+// list — 11 services in total, covering the master spec's 10 plus Business
+// Registration, which the business also actually offers). After the initial
+// seed, edit services via /admin/services rather than here.
 
 export type ServiceBenefit = {
   title: string;
@@ -27,6 +26,7 @@ export type ServicePageContent = {
   routeFrom: string;
   routeTo: string;
   tagline: string;
+  summary: string;
   overview: string;
   benefits: ServiceBenefit[];
   process: ServiceProcessStep[];
@@ -41,6 +41,8 @@ export const servicePages: ServicePageContent[] = [
     routeFrom: "HOME",
     routeTo: "CAMPUS",
     tagline: "From shortlist to student visa, without the guesswork.",
+    summary:
+      "School selection, admissions guidance and travel planning for international students.",
     overview:
       "We support prospective international students from school and course selection through admissions paperwork, funding proof, visa applications, and pre-departure planning — one point of contact for the entire journey, not a different office for each step.",
     benefits: [
@@ -68,6 +70,8 @@ export const servicePages: ServicePageContent[] = [
     routeFrom: "APPLY",
     routeTo: "APPROVED",
     tagline: "Applications built to survive scrutiny, not just get submitted.",
+    summary:
+      "Guided visa applications for tourist, business, work and study routes.",
     overview:
       "From document checklists to interview preparation, we guide applicants through tourist, business, work and study visa processes for major destinations, reducing the errors that cause avoidable refusals.",
     benefits: [
@@ -95,6 +99,8 @@ export const servicePages: ServicePageContent[] = [
     routeFrom: "PLAN",
     routeTo: "PACKAGED",
     tagline: "Flights, stays and logistics, planned as one trip — not three bookings.",
+    summary:
+      "Flights, stays and logistics assembled into one coordinated itinerary.",
     overview:
       "We assemble flights, accommodation and on-the-ground logistics into a single coordinated itinerary for leisure, family or group travel, so nothing is booked in isolation and nothing gets missed.",
     benefits: [
@@ -122,6 +128,8 @@ export const servicePages: ServicePageContent[] = [
     routeFrom: "LOS",
     routeTo: "ANY",
     tagline: "Flights sourced, compared and booked, with someone to call mid-trip.",
+    summary:
+      "Flights sourced, compared and booked across major airlines, with in-transit support.",
     overview:
       "We source, compare and book flights across major airlines and alliances, build multi-city itineraries, and handle changes or emergencies while you travel. Every booking comes with a dedicated reference and a human being to call.",
     benefits: [
@@ -149,6 +157,8 @@ export const servicePages: ServicePageContent[] = [
     routeFrom: "ARRIVE",
     routeTo: "SETTLED",
     tagline: "Stays matched to your trip, not just the highest star rating.",
+    summary:
+      "Accommodation sourced and confirmed to match your itinerary and budget.",
     overview:
       "We source and book accommodation matched to your itinerary, budget and purpose of travel — business, study or leisure — confirming details directly with properties so there are no surprises at check-in.",
     benefits: [
@@ -176,6 +186,8 @@ export const servicePages: ServicePageContent[] = [
     routeFrom: "RISK",
     routeTo: "COVERED",
     tagline: "Cover matched to your actual trip, explained in plain language.",
+    summary:
+      "Cover matched to your destination, trip length and visa requirements.",
     overview:
       "We help you select travel insurance matched to your destination, trip length and visa requirements — many study and visa applications require proof of cover, and we make sure yours meets the specific standard requested.",
     benefits: [
@@ -203,6 +215,8 @@ export const servicePages: ServicePageContent[] = [
     routeFrom: "APPLY",
     routeTo: "AWARDED",
     tagline: "Real opportunities you qualify for, not a generic list.",
+    summary:
+      "Funding opportunities matched to your profile, with hands-on application support.",
     overview:
       "We help identify scholarship and funding opportunities matched to your academic profile and destination, and support the documentation and essay preparation that applications require — while being direct about where the odds genuinely stand.",
     benefits: [
@@ -230,6 +244,8 @@ export const servicePages: ServicePageContent[] = [
     routeFrom: "NEED",
     routeTo: "FUNDED",
     tagline: "Structured financing so timing doesn't derail your trip.",
+    summary:
+      "Structured financing for flights, visas and relocation costs.",
     overview:
       "We connect qualified clients with structured travel financing options and help prepare the documentation lenders require, so travel plans aren't held up by cash flow timing.",
     benefits: [
@@ -257,6 +273,8 @@ export const servicePages: ServicePageContent[] = [
     routeFrom: "TUITION",
     routeTo: "FUNDED",
     tagline: "Funding structured around tuition and visa financial proof, together.",
+    summary:
+      "Tuition financing coordinated with your visa's financial proof requirements.",
     overview:
       "We help prospective international students explore education financing options and prepare the documentation required both by lenders and by the visa application itself, so funding proof and loan approval move on the same timeline.",
     benefits: [
@@ -284,6 +302,8 @@ export const servicePages: ServicePageContent[] = [
     routeFrom: "TEAM",
     routeTo: "DEPLOYED",
     tagline: "Multi-traveller logistics managed by one dedicated contact, not a portal.",
+    summary:
+      "Managed flights, stays and logistics for business travellers and teams.",
     overview:
       "We manage flights, accommodation and itinerary logistics for business travel and teams, consolidating bookings under one point of contact so travel coordinators aren't juggling multiple platforms and vendors.",
     benefits: [
@@ -304,15 +324,33 @@ export const servicePages: ServicePageContent[] = [
       { question: "Can you manage travel for a recurring schedule, not just one trip?", answer: "Yes — many corporate clients use us as an ongoing travel coordination point rather than a one-off booking service." },
     ],
   },
+  {
+    slug: "business-registration",
+    title: "Business Registration Services",
+    routeCode: "MPG-BRG",
+    routeFrom: "IDEA",
+    routeTo: "REGISTERED",
+    tagline: "Company incorporation and regulatory registration, done correctly the first time.",
+    summary:
+      "Company name reservation, incorporation and regulatory registration for new businesses.",
+    overview:
+      "We manage company name reservation, incorporation, and regulatory registration for new businesses, keeping founders focused on building rather than paperwork.",
+    benefits: [
+      { title: "Name reservation handled first", description: "We confirm and reserve your business name before any other paperwork begins." },
+      { title: "Complete incorporation filing", description: "Registration documents prepared and filed against current regulatory requirements." },
+      { title: "Compliance documentation", description: "The certificates and filings your business needs to operate and open accounts." },
+      { title: "Ongoing regulatory guidance", description: "Support understanding what filings and renewals come next after registration." },
+    ],
+    process: [
+      { step: "01", title: "Name check & reservation", description: "We confirm availability and reserve your preferred business name." },
+      { step: "02", title: "Documentation", description: "Incorporation paperwork prepared and reviewed with you before filing." },
+      { step: "03", title: "Filing & registration", description: "Application submitted to the relevant regulatory body." },
+      { step: "04", title: "Certificate & next steps", description: "Registration certificate delivered, with guidance on immediate compliance needs." },
+    ],
+    faqs: [
+      { question: "How long does business registration take?", answer: "It varies by business structure, but we give you a realistic timeline once your documentation is confirmed." },
+      { question: "Can you register a business if I'm not resident locally?", answer: "In many cases yes — tell us your situation and we'll confirm what's possible before you commit to anything." },
+      { question: "Do you handle post-registration compliance too?", answer: "We can guide you on what's required next, though ongoing compliance filing is agreed as a separate scope." },
+    ],
+  },
 ];
-
-// Maps the Prisma-backed Service.slug values (used on the homepage grid and
-// /services overview) to the matching Phase 3 dedicated page, where the same
-// real-world service exists in both. Slugs with no entry here have no
-// dedicated page yet and keep linking to the /services page anchor.
-export const serviceSlugMap: Record<string, string> = {
-  "study-abroad": "study-abroad",
-  "visa-immigration": "visa-assistance",
-  "travel-loan": "travel-loans",
-  "flight-booking": "flight-reservations",
-};

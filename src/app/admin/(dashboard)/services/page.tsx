@@ -12,7 +12,8 @@ export default async function AdminServicesPage() {
         <div>
           <h1 className="font-display text-2xl font-semibold text-forest-900">Services</h1>
           <p className="mt-1 text-sm text-ink-500">
-            Manage the six services shown on the Home and Services pages.
+            Manage the services shown on the Home and Services pages, including each one's
+            dedicated detail page content.
           </p>
         </div>
         <Link

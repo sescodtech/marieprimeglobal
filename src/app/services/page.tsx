@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: seo?.metaTitle ?? "Services",
     description:
       seo?.metaDescription ??
-      "Flight booking, visa and immigration assistance, travel loans, study abroad support, business registration and investment advisory from MariePrime Global Services.",
+      "Flight booking, visa and immigration assistance, travel loans, study abroad support and business registration from MariePrime Global Services.",
     alternates: { canonical: "/services" },
     openGraph: seo?.ogImageUrl ? { images: [seo.ogImageUrl] } : undefined,
   };
@@ -40,7 +40,7 @@ export default async function ServicesPage() {
           "@type": "TravelAgency",
           name: "MariePrime Global Services",
         },
-        url: `${siteUrl}/services#${service.slug}`,
+        url: `${siteUrl}/services/${service.slug}`,
       },
     })),
   };
@@ -55,10 +55,11 @@ export default async function ServicesPage() {
               Our Services
             </Eyebrow>
             <h1 className="mt-5 font-display text-4xl font-medium leading-tight sm:text-5xl">
-              Six services, each run to the same standard.
+              {services.length} services, each run to the same standard.
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-cream-200/75">
               Every engagement starts with a clear scope and timeline before any work begins.
+              Tap into any service below for the full breakdown.
             </p>
           </Reveal>
         </div>
@@ -92,15 +93,23 @@ export default async function ServicesPage() {
                         {service.title}
                       </h2>
                       <p className="mt-3 text-sm leading-relaxed text-ink-700">
-                        {service.description}
+                        {service.summary}
                       </p>
-                      <a
-                        href="/contact"
-                        className="mt-5 inline-flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-forest-700 transition-transform hover:translate-x-1"
-                      >
-                        Enquire about this service
-                        <ArrowRight size={14} />
-                      </a>
+                      <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2">
+                        <a
+                          href={`/services/${service.slug}`}
+                          className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-forest-700 transition-transform hover:translate-x-1"
+                        >
+                          View full details
+                          <ArrowRight size={14} />
+                        </a>
+                        <a
+                          href="/contact"
+                          className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-ink-500 transition-colors hover:text-forest-700"
+                        >
+                          Enquire about this service
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
-import { services, testimonials, directorProfile, siteContent } from "./data";
+import { testimonials, directorProfile, siteContent, blogPosts, jobListings, faqCategories } from "./data";
+import { servicePages } from "./servicePages";
 
 export async function seedDatabase() {
   const log: string[] = [];
@@ -25,8 +26,9 @@ export async function seedDatabase() {
     log.push(`Admin user ${adminEmail} already exists, skipped.`);
   }
 
-  // --- Services -----------------------------------------------------------
-  for (const [index, service] of services.entries()) {
+  // --- Services (11 total: the master spec's 10 plus Business Registration,
+  // which the business also actually offers) -------------------------------
+  for (const [index, service] of servicePages.entries()) {
     await prisma.service.upsert({
       where: { slug: service.slug },
       update: {},
@@ -37,13 +39,77 @@ export async function seedDatabase() {
         routeFrom: service.routeFrom,
         routeTo: service.routeTo,
         summary: service.summary,
-        description: service.description,
+        description: service.overview,
+        tagline: service.tagline,
+        benefits: service.benefits,
+        process: service.process,
+        faqs: service.faqs,
         order: index,
         isPublished: true,
       },
     });
   }
-  log.push(`Seeded ${services.length} services.`);
+  log.push(`Seeded ${servicePages.length} services.`);
+
+  // --- Blog posts -----------------------------------------------------
+  for (const [index, post] of blogPosts.entries()) {
+    await prisma.blogPost.upsert({
+      where: { slug: post.slug },
+      update: {},
+      create: {
+        slug: post.slug,
+        category: post.category,
+        title: post.title,
+        excerpt: post.excerpt,
+        readTime: post.readTime,
+        publishedLabel: post.publishedLabel,
+        order: index,
+        isPublished: true,
+      },
+    });
+  }
+  log.push(`Seeded ${blogPosts.length} blog posts.`);
+
+  // --- Job listings -----------------------------------------------------
+  for (const [index, job] of jobListings.entries()) {
+    await prisma.jobListing.upsert({
+      where: { slug: job.slug },
+      update: {},
+      create: {
+        slug: job.slug,
+        title: job.title,
+        department: job.department,
+        location: job.location,
+        type: job.type,
+        summary: job.summary,
+        order: index,
+        isPublished: true,
+      },
+    });
+  }
+  log.push(`Seeded ${jobListings.length} job listings.`);
+
+  // --- FAQs -----------------------------------------------------------
+  const existingFaqs = await prisma.faq.count();
+  if (existingFaqs === 0) {
+    let order = 0;
+    for (const category of faqCategories) {
+      for (const item of category.items) {
+        await prisma.faq.create({
+          data: {
+            category: category.category,
+            question: item.question,
+            answer: item.answer,
+            order: order++,
+            isPublished: true,
+          },
+        });
+      }
+    }
+    log.push(`Seeded FAQs across ${faqCategories.length} categories.`);
+  } else {
+    log.push("FAQs already exist, skipped.");
+  }
 
   // --- Testimonials -------------------------------------------------------
   const existingTestimonials = await prisma.testimonial.count();
@@ -110,7 +176,7 @@ export async function seedDatabase() {
       page: "home",
       metaTitle: "MariePrime Global Services | Flights, Visas, Study Abroad & Business Registration",
       metaDescription:
-        "MariePrime Global Services manages flight booking, visa and immigration assistance, travel loans, study abroad support, business registration and investment advisory.",
+        "MariePrime Global Services manages flight booking, visa and immigration assistance, travel loans, study abroad support and business registration.",
       keywords: "visa assistance Nigeria, flight booking agency, study abroad consultant, business registration Nigeria",
     },
     {
@@ -124,15 +190,36 @@ export async function seedDatabase() {
       page: "services",
       metaTitle: "Services | MariePrime Global Services",
       metaDescription:
-        "Flight booking, visa and immigration assistance, travel loans, study abroad support, business registration and investment advisory from MariePrime Global Services.",
+        "Flight booking, visa and immigration assistance, travel loans, study abroad support and business registration from MariePrime Global Services.",
       keywords: "visa services, flight booking, study abroad, business registration Nigeria",
     },
     {
       page: "contact",
       metaTitle: "Contact Us | MariePrime Global Services",
       metaDescription:
-        "Reach MariePrime Global Services by form, email, phone or WhatsApp for flight booking, visa, study abroad, business registration and investment enquiries.",
+        "Reach MariePrime Global Services by form, email, phone or WhatsApp for flight booking, visa, study abroad and business registration enquiries.",
       keywords: "contact MariePrime, travel agency Lagos contact",
+    },
+    {
+      page: "blog",
+      metaTitle: "Blog | MariePrime Global Services",
+      metaDescription:
+        "Notes on visas, immigration, study abroad and travel from the MariePrime Global Services team.",
+      keywords: "visa blog, study abroad tips, travel advice Nigeria",
+    },
+    {
+      page: "careers",
+      metaTitle: "Careers | MariePrime Global Services",
+      metaDescription:
+        "Open roles at MariePrime Global Services across client services and operations, based in Lagos, Nigeria.",
+      keywords: "MariePrime careers, travel agency jobs Lagos",
+    },
+    {
+      page: "faq",
+      metaTitle: "Frequently Asked Questions | MariePrime Global Services",
+      metaDescription:
+        "Answers to common questions about visas, study abroad, travel bookings, business registration and working with MariePrime Global Services.",
+      keywords: "visa FAQ, study abroad FAQ, MariePrime questions",
     },
   ] as const;
 

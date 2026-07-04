@@ -3,24 +3,31 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export type FaqAccordionItem = {
+type QuestionAnswer = {
   question: string;
   answer: string;
 };
 
-type FaqAccordionGroupProps = {
-  items: FaqAccordionItem[];
+export function FaqAccordionGroup({
+  items,
+  className,
+  defaultOpenIndex = null,
+}: {
+  items: QuestionAnswer[];
+  className?: string;
   defaultOpenIndex?: number | null;
-};
-
-export function FaqAccordionGroup({ items, defaultOpenIndex = null }: FaqAccordionGroupProps) {
+}) {
   const [openIndex, setOpenIndex] = useState<number | null>(defaultOpenIndex);
 
-  if (!items?.length) return null;
-
   return (
-    <div className="divide-y divide-forest-900/10 rounded-stub bg-cream-50 shadow-card ring-1 ring-forest-900/5">
+    <div
+      className={cn(
+        "divide-y divide-forest-900/10 rounded-stub bg-cream-50 shadow-card ring-1 ring-forest-900/5",
+        className
+      )}
+    >
       {items.map((faq, i) => {
         const isOpen = openIndex === i;
         return (

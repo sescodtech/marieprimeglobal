@@ -5,59 +5,35 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
-
-  /* Font tokens mapped to variables set in layout.tsx */
-  .font-display { font-family: var(--font-sora), var(--font-fraunces), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
-  .font-body { font-family: var(--font-plusjakarta), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
-
-  html { font-size: 16px; }
 
   body {
-    @apply bg-cream-100 text-ink-900 font-body leading-relaxed;
+    @apply bg-cream-100 text-ink-900 antialiased;
   }
 
-  h1, h2, h3, h4, h5 {
-    @apply font-display; /* headings use display font */
-  }
-
-  /* Selection */
   ::selection {
     @apply bg-gold-400 text-forest-900;
   }
 
-  /* Focus styles */
   :focus-visible {
-    outline: 3px solid theme("colors.gold.500");
+    outline: 2px solid theme("colors.gold.500");
     outline-offset: 3px;
   }
 
-  /* Inputs */
   .input {
     width: 100%;
-    border-radius: 0.5rem;
-    border: 1px solid rgba(15, 42, 32, 0.08);
+    border-radius: 4px;
+    border: 1px solid rgba(15, 42, 32, 0.15);
     background: #fbf9f5;
-    padding: 0.75rem 0.9rem;
-    font-size: 0.9375rem;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.875rem;
     color: #16211c;
   }
 
   .input:focus {
     outline: none;
     border-color: #c9a876;
-    box-shadow: 0 4px 14px rgba(201,168,118,0.08);
   }
-
-  /* Utility tokens for premium visuals */
-  .shadow-card { box-shadow: 0 6px 20px rgba(8,15,12,0.06); }
-  .shadow-stub { box-shadow: 0 8px 30px rgba(8,15,12,0.06); }
-  .rounded-stub { border-radius: 14px; }
-
-  /* Slightly larger container rhythm */
-  .container-lg { max-width: 1120px; margin-left: auto; margin-right: auto; padding-left: 1.5rem; padding-right: 1.5rem; }
 }
 
 @layer utilities {
@@ -83,13 +59,68 @@
     height: 2px;
   }
 
-  /* Utilities for improved spacing */
-  .section-padding { padding-top: 4.5rem; padding-bottom: 4.5rem; }
-  @screen lg { .section-padding { padding-top: 6.5rem; padding-bottom: 6.5rem; } }
+  .prose-mp {
+    color: theme("colors.ink.700");
+    font-size: 1.0625rem;
+    line-height: 1.75;
+  }
+  .prose-mp > * + * {
+    margin-top: 1.25em;
+  }
+  .prose-mp h2 {
+    font-family: theme("fontFamily.display");
+    color: theme("colors.forest.900");
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 2em;
+  }
+  .prose-mp h3 {
+    font-family: theme("fontFamily.display");
+    color: theme("colors.forest.900");
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 1.75em;
+  }
+  .prose-mp a {
+    color: theme("colors.forest.700");
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .prose-mp ul,
+  .prose-mp ol {
+    padding-left: 1.375em;
+  }
+  .prose-mp ul {
+    list-style-type: disc;
+  }
+  .prose-mp ol {
+    list-style-type: decimal;
+  }
+  .prose-mp li + li {
+    margin-top: 0.5em;
+  }
+  .prose-mp blockquote {
+    border-left: 2px solid theme("colors.gold.500");
+    padding-left: 1em;
+    font-style: italic;
+    color: theme("colors.ink.500");
+  }
+  .prose-mp code {
+    background: theme("colors.cream.100");
+    padding: 0.15em 0.4em;
+    border-radius: 0.25em;
+    font-size: 0.9em;
+  }
+  .prose-mp strong {
+    color: theme("colors.forest.900");
+    font-weight: 600;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

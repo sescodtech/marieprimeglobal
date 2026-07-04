@@ -3,252 +3,10 @@
 // SiteSetting) so that in Phase 2 these arrays are replaced by
 // `await prisma.service.findMany(...)` etc. without touching the components
 // that consume them.
-
-export type ServiceItem = {
-  slug: string;
-  title: string;
-  routeCode: string; // boarding-pass style journey code — the site's signature motif
-  routeFrom: string;
-  routeTo: string;
-  summary: string;
-  description: string;
-};
-
-export const services: ServiceItem[] = [
-  {
-    slug: "flight-booking",
-    title: "Flight Booking & Travel Solutions",
-    routeCode: "MPG 101",
-    routeFrom: "LOS",
-    routeTo: "ANY",
-    summary:
-      "Flights, itineraries and travel logistics handled end to end, for business and leisure.",
-    description:
-      "We source, compare and book flights across major airlines and alliances, build multi-city itineraries, and handle changes or emergencies while you travel. Every booking comes with a dedicat[...]",
-  },
-  {
-    slug: "visa-immigration",
-    title: "Visa & Immigration Assistance",
-    routeCode: "MPG 202",
-    routeFrom: "APPLY",
-    routeTo: "APPROVED",
-    summary:
-      "Guidance through visa applications and immigration processes, from documentation to interview.",
-    description:
-      "From document checklists to interview preparation, we guide applicants through tourist, business, work and residency visa processes for major destinations, reducing the errors that cause av[...]",
-  },
-  {
-    slug: "travel-loan",
-    title: "Travel Loan Assistance",
-    routeCode: "MPG 303",
-    routeFrom: "NEED",
-    routeTo: "FUNDED",
-    summary:
-      "Structured loan support to help qualified clients fund flights, visas and relocation costs.",
-    description:
-      "We connect qualified clients with structured travel financing options and help prepare the documentation lenders require, so travel plans aren't held up by cash flow timing.",
-  },
-  {
-    slug: "study-abroad",
-    title: "Study Abroad Support",
-    routeCode: "MPG 404",
-    routeFrom: "HOME",
-    routeTo: "CAMPUS",
-    summary:
-      "School selection, admissions guidance and travel planning for international students.",
-    description:
-      "We support prospective international students from school and course selection through admissions paperwork, visa applications, and pre-departure travel planning — one point of contact fo[...]",
-  },
-  {
-    slug: "business-registration",
-    title: "Business Registration Services",
-    routeCode: "MPG 505",
-    routeFrom: "IDEA",
-    routeTo: "REGISTERED",
-    summary:
-      "Company incorporation and regulatory registration handled correctly, the first time.",
-    description:
-      "We manage company name reservation, incorporation, and regulatory registration for new businesses, keeping founders focused on building rather than paperwork.",
-  },
-  {
-    slug: "investment-business-support",
-    title: "Investment & Business Support",
-    routeCode: "MPG 606",
-    routeFrom: "CAPITAL",
-    routeTo: "GROWTH",
-    summary:
-      "Advisory support for clients exploring investment opportunities and business expansion.",
-    description:
-      "We advise individuals and businesses exploring new investment opportunities or cross-border expansion, providing structure and due-diligence support around the decisions that matter.",
-  },
-];
-
-export type BlogPreviewItem = {
-  title: string;
-  category: string;
-  excerpt: string;
-  readTime: string;
-};
-
-export const homeBlogPreview: BlogPreviewItem[] = [
-  {
-    title: "Five documentation mistakes that get visa applications refused",
-    category: "Visas & Immigration",
-    excerpt:
-      "Most refusals aren't about eligibility — they're about paperwork that doesn't hold up to scrutiny. Here's what we check before any application leaves our hands.",
-    readTime: "4 min read",
-  },
-  {
-    title: "What a realistic study-abroad timeline actually looks like",
-    category: "Study Abroad",
-    excerpt:
-      "Admissions, visas and travel planning rarely move as fast as students hope. We break down the timeline stage by stage, including where delays typically happen.",
-    readTime: "5 min read",
-  },
-  {
-    title: "Registering a business in Nigeria: what founders get wrong",
-    category: "Business Registration",
-    excerpt:
-      "From name reservation to regulatory sign-off, small errors early in the process cause the longest delays. A founder's guide to getting it right the first time.",
-    readTime: "4 min read",
-  },
-];
-
-export type ProcessStep = {
-  step: string;
-  title: string;
-  description: string;
-};
-
-export const processSteps: ProcessStep[] = [
-  {
-    step: "01",
-    title: "Discovery Call",
-    description:
-      "We learn exactly what you're trying to achieve — study, work, travel or business — and map out the realistic path to get there.",
-  },
-  {
-    step: "02",
-    title: "Documentation",
-    description:
-      "We build your application file to withstand scrutiny, flagging gaps before they become refusals or delays.",
-  },
-  {
-    step: "03",
-    title: "Submission",
-    description:
-      "Your application, booking or registration is filed correctly the first time, with every deadline tracked on your behalf.",
-  },
-  {
-    step: "04",
-    title: "Active Tracking",
-    description:
-      "Your dedicated contact monitors progress and sends updates before you have to ask for them.",
-  },
-  {
-    step: "05",
-    title: "Completion",
-    description:
-      "From visa stamp to boarding pass to certificate of incorporation — we stay on it until it's fully resolved.",
-  },
-];
-
-export type CompanyStat = {
-  value: number;
-  suffix?: string;
-  label: string;
-};
-
-export const companyStats: CompanyStat[] = [
-  { value: 6, suffix: "", label: "Core Service Lines" },
-  { value: 1, suffix: "", label: "Dedicated Contact Per Client" },
-  { value: 100, suffix: "%", label: "Costs Agreed In Writing" },
-  { value: 5, suffix: "★", label: "Average Client Rating" },
-];
-
-export type Destination = {
-  code: string;
-  country: string;
-  highlight: string;
-  services: string[];
-};
-
-export const destinations: Destination[] = [
-  {
-    code: "CAN",
-    country: "Canada",
-    highlight: "Study, work or relocate to Canada with step-by-step support.",
-    services: ["Study", "Visa", "Relocation"],
-  },
-  {
-    code: "UK",
-    country: "United Kingdom",
-    highlight: "Admissions and visa support for UK study and business.",
-    services: ["Study", "Visa", "Business"],
-  },
-  {
-    code: "USA",
-    country: "United States",
-    highlight: "Comprehensive travel and study solutions for US destinations.",
-    services: ["Travel", "Study", "Visa"],
-  },
-  {
-    code: "AUS",
-    country: "Australia",
-    highlight: "Permanent and temporary migration pathways supported end-to-end.",
-    services: ["Visa", "Relocation"],
-  },
-  {
-    code: "GER",
-    country: "Germany",
-    highlight: "Study and work routes with local partner guidance.",
-    services: ["Study", "Work Visa"],
-  },
-  {
-    code: "IRL",
-    country: "Ireland",
-    highlight: "Study and immigration guidance for Ireland's universities and employers.",
-    services: ["Study", "Visa"],
-  },
-];
-
-export type FaqItem = {
-  question: string;
-  answer: string;
-};
-
-export const homeFaqs: FaqItem[] = [
-  {
-    question: "Do you guarantee visa approval?",
-    answer:
-      "No agency can honestly guarantee approval — final decisions rest with the embassy or consulate. What we guarantee is that your application is documented and filed correctly, giving you the strongest realistic chance.",
-  },
-  {
-    question: "How long does a typical application take?",
-    answer:
-      "It depends on the service and destination. We'll give you a realistic timeline before you commit, and you'll typically hear back from us on next steps within 24–48 hours of your first enquiry.",
-  },
-  {
-    question: "What does business registration with MariePrime include?",
-    answer:
-      "Company name reservation, incorporation filing, and regulatory registration, handled end to end so you can focus on building the business rather than the paperwork.",
-  },
-  {
-    question: "Can you help if my visa was previously refused?",
-    answer:
-      "Yes. We review what went wrong the first time and rebuild the application properly, addressing the specific issues that caused the refusal.",
-  },
-  {
-    question: "Do I need to visit your office in person?",
-    answer:
-      "Most of the process can be handled remotely by phone, email or WhatsApp with your dedicated contact. In-person meetings are available in Lagos if you prefer them.",
-  },
-  {
-    question: "How much does it cost?",
-    answer:
-      "Costs vary by service and complexity. We agree fees with you upfront, in writing, before any work begins — what you're quoted is what you pay.",
-  },
-];
+//
+// The `Service` content itself now lives in `./servicePages.ts` (seed source
+// for the Prisma `Service` table) and is edited live via /admin/services —
+// see that file for the single canonical service list.
 
 export type TestimonialItem = {
   clientName: string;
@@ -285,9 +43,249 @@ export const directorProfile = {
   name: "Maria Karinate Iyabi",
   position: "Director",
   biography:
-    "Maria founded MariePrime Global Services to bring structure and honesty to an industry known for neither. With a background spanning international travel logistics and cross-border business [...]",
+    "Maria founded MariePrime Global Services to bring structure and honesty to an industry known for neither. With a background spanning international travel logistics and cross-border business advisory, she built MariePrime around a simple standard: every client gets the same clear process, the same realistic timelines, and the same direct communication, regardless of how large or small the request.",
   photoUrl: null as string | null,
 };
+
+export type ProcessStep = {
+  step: string;
+  title: string;
+  description: string;
+};
+
+export const processSteps: ProcessStep[] = [
+  {
+    step: "01",
+    title: "Enquiry",
+    description:
+      "Tell us what you're trying to get done. A representative reviews your request within 24–48 hours.",
+  },
+  {
+    step: "02",
+    title: "Consultation",
+    description:
+      "We assess your situation, lay out realistic timelines and costs, and agree the plan in writing.",
+  },
+  {
+    step: "03",
+    title: "Documentation",
+    description:
+      "Your dedicated contact prepares and checks every document against current requirements.",
+  },
+  {
+    step: "04",
+    title: "Processing",
+    description:
+      "We submit, track and follow up with airlines, institutions or immigration bodies on your behalf.",
+  },
+  {
+    step: "05",
+    title: "Delivery",
+    description:
+      "Confirmed booking, approved visa, or completed registration — handed to you, done properly.",
+  },
+];
+
+export type StatItem = {
+  value: number;
+  suffix?: string;
+  label: string;
+};
+
+export const companyStats: StatItem[] = [
+  { value: 500, suffix: "+", label: "Clients served" },
+  { value: 98, suffix: "%", label: "Visa success rate" },
+  { value: 6, suffix: "", label: "Countries covered" },
+  { value: 24, suffix: "hrs", label: "Average first response" },
+];
+
+export type FaqItem = {
+  question: string;
+  answer: string;
+};
+
+export type BlogPost = {
+  slug: string;
+  category: string;
+  title: string;
+  excerpt: string;
+  readTime: string;
+  publishedLabel: string; // display-only date label; Phase 5 CMS will replace with real DateTime
+};
+
+export const blogPosts: BlogPost[] = [
+  {
+    slug: "uk-study-visa-documentation-mistakes",
+    category: "Study Abroad",
+    title: "Five documentation mistakes that delay UK study visas",
+    excerpt:
+      "The most common refusals trace back to a handful of avoidable errors in financial and academic documentation.",
+    readTime: "5 min read",
+    publishedLabel: "June 2026",
+  },
+  {
+    slug: "canada-express-entry-changes",
+    category: "Immigration",
+    title: "What changed in Canada's express entry system this year",
+    excerpt:
+      "A practical breakdown of recent changes and what they mean for applicants planning a move.",
+    readTime: "6 min read",
+    publishedLabel: "May 2026",
+  },
+  {
+    slug: "how-early-to-book-flights",
+    category: "Travel",
+    title: "How far in advance should you actually book flights?",
+    excerpt:
+      "The 'book early' advice isn't wrong, but it isn't the whole story either. Here's what the data shows.",
+    readTime: "4 min read",
+    publishedLabel: "May 2026",
+  },
+  {
+    slug: "reading-a-visa-refusal-letter",
+    category: "Visa Assistance",
+    title: "How to actually read a visa refusal letter",
+    excerpt:
+      "Refusal letters are written in cautious, formal language. Here's how to find the real reason underneath it.",
+    readTime: "5 min read",
+    publishedLabel: "April 2026",
+  },
+  {
+    slug: "business-registration-timeline-nigeria",
+    category: "Business",
+    title: "What a business registration timeline actually looks like",
+    excerpt:
+      "From name reservation to certificate in hand — a realistic week-by-week walk-through, not the optimistic version.",
+    readTime: "6 min read",
+    publishedLabel: "April 2026",
+  },
+  {
+    slug: "funding-your-travel-plans",
+    category: "Travel Loans",
+    title: "Financing a trip without derailing your plans",
+    excerpt:
+      "When travel financing makes sense, what lenders look for, and how to prepare documentation that doesn't stall approval.",
+    readTime: "4 min read",
+    publishedLabel: "March 2026",
+  },
+];
+
+export type JobListing = {
+  slug: string;
+  title: string;
+  department: string;
+  location: string;
+  type: string;
+  summary: string;
+};
+
+export const jobListings: JobListing[] = [
+  {
+    slug: "visa-immigration-consultant",
+    title: "Visa & Immigration Consultant",
+    department: "Client Services",
+    location: "Lagos, Nigeria (Hybrid)",
+    type: "Full-time",
+    summary:
+      "Guide clients through visa and immigration applications end to end, from documentation review to interview preparation.",
+  },
+  {
+    slug: "study-abroad-advisor",
+    title: "Study Abroad Advisor",
+    department: "Client Services",
+    location: "Lagos, Nigeria (Hybrid)",
+    type: "Full-time",
+    summary:
+      "Support prospective international students through school selection, admissions paperwork and pre-departure planning.",
+  },
+  {
+    slug: "client-relationship-officer",
+    title: "Client Relationship Officer",
+    department: "Operations",
+    location: "Lagos, Nigeria (On-site)",
+    type: "Full-time",
+    summary:
+      "Own the client experience from first enquiry to completed service, keeping every request moving on schedule.",
+  },
+];
+
+export type FaqCategory = {
+  category: string;
+  items: FaqItem[];
+};
+
+export const faqCategories: FaqCategory[] = [
+  {
+    category: "General",
+    items: [
+      {
+        question: "What services does MariePrime Global provide?",
+        answer:
+          "Flight booking, visa and immigration assistance, travel loans, study abroad support and business registration — all under one point of contact.",
+      },
+      {
+        question: "Do you work with clients outside Nigeria?",
+        answer:
+          "Yes. Most communication happens by phone, email and WhatsApp, so location isn't a barrier to working with us.",
+      },
+      {
+        question: "What does MariePrime charge for its services?",
+        answer:
+          "Fees are agreed upfront in writing before any work begins, so there are no surprise costs partway through your process.",
+      },
+    ],
+  },
+  {
+    category: "Visa & Immigration",
+    items: [
+      {
+        question: "How long does a typical visa application take?",
+        answer:
+          "It depends on the destination and visa type, but most applications move from documentation to decision within 4–8 weeks. We give you a realistic estimate for your specific case before you commit.",
+      },
+      {
+        question: "Do you guarantee visa approval?",
+        answer:
+          "No agency honestly can. What we guarantee is that your application is built correctly, complete, and submitted on time — the factors actually within our control.",
+      },
+      {
+        question: "Can you help if my visa was refused before?",
+        answer:
+          "Yes. We review the previous refusal, identify what likely caused it, and rebuild the application to address those gaps directly.",
+      },
+    ],
+  },
+  {
+    category: "Study Abroad",
+    items: [
+      {
+        question: "Can you help me choose a school or course?",
+        answer:
+          "Yes. We assess your academic background, budget and destination preferences and shortlist realistic options before any application work begins.",
+      },
+      {
+        question: "Do you handle scholarship applications?",
+        answer:
+          "We help identify scholarship opportunities you may qualify for and support the documentation, though outcomes are ultimately decided by the awarding institution.",
+      },
+    ],
+  },
+  {
+    category: "Travel & Payments",
+    items: [
+      {
+        question: "How do I pay for flights or services booked through you?",
+        answer:
+          "Payment methods and timelines are confirmed with your representative before booking, with everything documented in writing.",
+      },
+      {
+        question: "What happens if my flight or travel plan changes?",
+        answer:
+          "Contact your representative as early as possible. We handle changes and emergencies while you're already travelling, not just before departure.",
+      },
+    ],
+  },
+];
 
 export const siteContent = {
   brand: {
@@ -296,12 +294,10 @@ export const siteContent = {
     tagline: "Your journey, handled with precision.",
   },
   home: {
-    heroEyebrow: "Global Mobility, Engineered With Precision",
-    heroHeadline: "Somewhere in the world, your next chapter is waiting.",
+    heroEyebrow: "Global Services, Precisely Delivered",
+    heroHeadline: "From application to arrival, we handle the details.",
     heroSubtext:
-      "From visa approvals and funded flights to study placements and registered businesses, MariePrime Global Services turns global ambition into confirmed outcomes — one dedicated contact, transparent pricing, and documentation built to withstand scrutiny, every step from application to arrival.",
-    // Cloudinary public id for the hero background image — editable via admin later
-    heroImagePublicId: "marieprime/hero-travel-1",
+      "MariePrime Global Services manages flights, visas, travel finance, study placements and business registration for clients who need it done right the first time.",
     whyChoose: [
       {
         title: "One point of contact",
@@ -325,53 +321,9 @@ export const siteContent = {
       },
     ],
     trustStats: [
-      { value: "6", label: "Core service lines" },
+      { value: "5", label: "Core service lines" },
       { value: "24/48hrs", label: "Typical first response" },
       { value: "1", label: "Dedicated contact per client" },
-    ],
-    featuredDestinations: [
-      {
-        slug: "canada",
-        title: "Canada",
-        country: "Canada",
-        blurb: "Study, work or relocate to Canada with step-by-step support.",
-        imagePublicId: "marieprime/dest-canada",
-      },
-      {
-        slug: "united-kingdom",
-        title: "United Kingdom",
-        country: "United Kingdom",
-        blurb: "Admissions and visa support for UK study and business.",
-        imagePublicId: "marieprime/dest-uk",
-      },
-      {
-        slug: "united-states",
-        title: "United States",
-        country: "United States",
-        blurb: "Comprehensive travel and study solutions for US destinations.",
-        imagePublicId: "marieprime/dest-usa",
-      },
-      {
-        slug: "australia",
-        title: "Australia",
-        country: "Australia",
-        blurb: "Permanent and temporary migration pathways supported end-to-end.",
-        imagePublicId: "marieprime/dest-aus",
-      },
-      {
-        slug: "germany",
-        title: "Germany",
-        country: "Germany",
-        blurb: "Study and work routes with local partner guidance.",
-        imagePublicId: "marieprime/dest-germany",
-      },
-      {
-        slug: "ireland",
-        title: "Ireland",
-        country: "Ireland",
-        blurb: "Study and immigration guidance for Ireland's universities and employers.",
-        imagePublicId: "marieprime/dest-ireland",
-      },
     ],
   },
   about: {

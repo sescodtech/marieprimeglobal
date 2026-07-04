@@ -15,7 +15,7 @@ export async function ServicesOverview() {
         <Reveal>
           <Eyebrow>What We Handle</Eyebrow>
           <h2 className="mt-4 max-w-2xl font-display text-3xl font-medium leading-tight text-forest-900 sm:text-4xl">
-            Six services. One standard of execution.
+            {services.length} services. One standard of execution.
           </h2>
         </Reveal>
 

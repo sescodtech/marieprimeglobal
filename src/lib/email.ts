@@ -8,7 +8,6 @@ const serviceLabels: Record<string, string> = {
   TRAVEL_LOAN: "Travel Loan Assistance",
   STUDY_ABROAD: "Study Abroad Support",
   BUSINESS_REGISTRATION: "Business Registration Services",
-  INVESTMENT_SUPPORT: "Investment & Business Support",
   GENERAL_ENQUIRY: "General Enquiry",
 };
 
@@ -62,4 +61,51 @@ function escapeHtml(value: string) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
+}
+
+export async function sendJobApplicationNotification(application: {
+  id: string;
+  jobTitle: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  message: string | null;
+  cvUrl: string;
+  coverLetterUrl: string | null;
+}) {
+  if (!resend) {
+    console.warn("[email] RESEND_API_KEY not set — skipping job application notification email.");
+    return;
+  }
+
+  const notifyTo = process.env.NOTIFY_EMAIL_TO || "mariaiyabi@gmail.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://marieprimeglobal.com";
+
+  try {
+    await resend.emails.send({
+      from: "MariePrime Website <notifications@marieprimeglobal.com>",
+      to: notifyTo,
+      replyTo: application.email,
+      subject: `New job application: ${application.fullName} — ${application.jobTitle}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px;">
+          <h2 style="color:#1B4332;">New job application</h2>
+          <p><strong>Role:</strong> ${escapeHtml(application.jobTitle)}</p>
+          <p><strong>Name:</strong> ${escapeHtml(application.fullName)}</p>
+          <p><strong>Email:</strong> ${escapeHtml(application.email)}</p>
+          <p><strong>Phone:</strong> ${escapeHtml(application.phone)}</p>
+          ${application.message ? `<p><strong>Message:</strong><br/>${escapeHtml(application.message).replace(/\n/g, "<br/>")}</p>` : ""}
+          <p><strong>CV:</strong> <a href="${application.cvUrl}">${application.cvUrl}</a></p>
+          ${application.coverLetterUrl ? `<p><strong>Cover letter:</strong> <a href="${application.coverLetterUrl}">${application.coverLetterUrl}</a></p>` : ""}
+          <p style="margin-top:24px;">
+            <a href="${siteUrl}/admin/careers/applications" style="color:#C9A876;">
+              View in admin dashboard →
+            </a>
+          </p>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("[email] failed to send job application notification:", error);
+  }
 }

@@ -13,7 +13,7 @@ type BoardingPassService = {
 export function BoardingPassCard({ service }: { service: BoardingPassService }) {
   return (
     <Link
-      href={`/services#${service.slug}`}
+      href={`/services/${service.slug}`}
       className="group relative flex flex-col overflow-hidden rounded-stub bg-cream-50 shadow-card ring-1 ring-forest-900/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-stub"
     >
       {/* Stub header: route code */}
