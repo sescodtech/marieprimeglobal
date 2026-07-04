@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { motion, useAnimation, useReducedMotion } from "framer-motion";
 import { Stamp, PlaneTakeoff, Truck, Globe2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -33,12 +33,12 @@ export function Hero({ heroEyebrow, heroHeadline, heroSubtext }: HeroProps) {
   const { lines, accentStart } = splitHeadline(heroHeadline);
 
   return (
-    <section className="relative flex min-h-[75vh] items-center overflow-hidden bg-gradient-to-br from-forest-950 via-forest-900 to-forest-700">
+    <section className="relative flex min-h-[70vh] items-center overflow-hidden bg-gradient-to-br from-forest-950 via-forest-900 to-forest-700 py-16 lg:min-h-[72vh] lg:py-20">
       <SkyBackground />
+      <AircraftFlyover reduceMotion={!!reduceMotion} />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:gap-6 lg:px-10">
-        {/* Content — left aligned */}
-        <div className="relative z-20 max-w-xl">
+      <div className="relative z-20 mx-auto w-full max-w-7xl px-6 lg:px-10">
+        <div className="max-w-2xl">
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -51,7 +51,7 @@ export function Hero({ heroEyebrow, heroHeadline, heroSubtext }: HeroProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: easing }}
-            className="mt-6 font-display text-4xl font-medium leading-[1.15] text-cream-50 sm:text-5xl lg:text-[3.15rem]"
+            className="mt-5 font-display text-4xl font-medium leading-[1.12] text-cream-50 sm:text-5xl lg:text-[3.35rem]"
           >
             {lines.map((line, i) => (
               <span
@@ -71,7 +71,7 @@ export function Hero({ heroEyebrow, heroHeadline, heroSubtext }: HeroProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: easing }}
-            className="mt-6 max-w-[620px] text-base leading-relaxed text-cream-200/75 lg:text-lg"
+            className="mt-5 max-w-[560px] text-base leading-relaxed text-cream-200/75 lg:text-lg"
           >
             {heroSubtext}
           </motion.p>
@@ -80,15 +80,15 @@ export function Hero({ heroEyebrow, heroHeadline, heroSubtext }: HeroProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3, ease: easing }}
-            className="mt-9 flex flex-wrap items-center gap-4"
+            className="mt-8 flex flex-wrap items-center gap-4"
           >
-            <Button href="/contact" variant="secondary">
+            <Button href="/contact" variant="secondary" className="px-8 py-4">
               Request Consultation
             </Button>
             <Button
               href="/services"
               variant="ghost"
-              className="border-cream-50/25 text-cream-50 hover:border-gold-400 hover:bg-cream-50/5"
+              className="border-cream-50/25 px-8 py-4 text-cream-50 hover:border-gold-400 hover:bg-cream-50/5"
             >
               Explore Our Services
             </Button>
@@ -98,7 +98,7 @@ export function Hero({ heroEyebrow, heroHeadline, heroSubtext }: HeroProps) {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4, ease: easing }}
-            className="mt-10 flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-cream-50/10 pt-7"
+            className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-cream-50/10 pt-6"
           >
             {trustIndicators.map((item) => (
               <div key={item.label} className="flex items-center gap-2 text-cream-200/75">
@@ -108,49 +108,48 @@ export function Hero({ heroEyebrow, heroHeadline, heroSubtext }: HeroProps) {
             ))}
           </motion.div>
         </div>
-
-        {/* Aircraft — visual centerpiece, right side */}
-        <div className="relative hidden h-[320px] lg:block lg:h-[420px]">
-          <Aircraft reduceMotion={!!reduceMotion} />
-        </div>
-      </div>
-
-      {/* Compact aircraft for tablet/mobile — reduced size, never overlaps text */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-40 opacity-70 lg:hidden">
-        <Aircraft reduceMotion={!!reduceMotion} compact />
       </div>
     </section>
   );
 }
 
 /**
- * Real commercial-aircraft photograph, animated flying in from off-screen and
- * settling into its resting position. Replace the placeholder file below with
- * a high-resolution transparent-background PNG of a wide-body passenger jet
- * (Emirates/Qatar Airways/Boeing/Airbus style) — recommended size 1600x900+.
+ * Cinematic full-width flyover. The real aircraft photograph enters
+ * completely outside the left edge of the viewport, climbs gently while
+ * crossing the entire browser width, and exits completely outside the
+ * right edge. It plays once on load and only replays if the visitor
+ * scrolls away from the very top of the page and then returns to it —
+ * it never loops continuously.
  *
  *   public/images/hero-aircraft.png
  */
-function Aircraft({ reduceMotion, compact = false }: { reduceMotion: boolean; compact?: boolean }) {
+function AircraftFlyover({ reduceMotion }: { reduceMotion: boolean }) {
   const controls = useAnimation();
   const hasLeftTop = useRef(false);
-  const [mounted, setMounted] = useState(false);
 
-  const restingState = compact
-    ? { x: "0%", y: "0%", rotate: -2, opacity: 0.9 }
-    : { x: "0%", y: "0%", rotate: -3, opacity: 1 };
+  const flightStart = { x: "-60vw", y: "6vh", rotate: -1, opacity: 0 };
+
+  const runFlight = (duration: number) => {
+    controls.set(flightStart);
+    controls.start({
+      x: "160vw",
+      y: "-9vh",
+      rotate: -7,
+      opacity: [0, 1, 1, 1, 0],
+      transition: {
+        duration,
+        ease: easing,
+        opacity: { duration, times: [0, 0.08, 0.7, 0.9, 1], ease: "linear" },
+      },
+    });
+  };
 
   useEffect(() => {
-    setMounted(true);
     if (reduceMotion) {
-      controls.set(restingState);
+      controls.set({ x: "0vw", y: "0vh", rotate: -3, opacity: 1 });
       return;
     }
-    controls.set({ x: "-60%", y: "6%", rotate: -6, opacity: 0 });
-    controls.start({
-      ...restingState,
-      transition: { duration: 2.2, ease: easing },
-    });
+    runFlight(6.5);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -162,36 +161,37 @@ function Aircraft({ reduceMotion, compact = false }: { reduceMotion: boolean; co
       if (y > 400) {
         hasLeftTop.current = true;
       }
-      if (y < 40 && hasLeftTop.current && mounted) {
+      if (y < 40 && hasLeftTop.current) {
         hasLeftTop.current = false;
-        controls.set({ x: "-60%", y: "6%", rotate: -6, opacity: 0 });
-        controls.start({
-          ...restingState,
-          transition: { duration: 1.8, ease: easing },
-        });
+        runFlight(5.5);
       }
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted, reduceMotion]);
+  }, [reduceMotion]);
 
   return (
-    <motion.div animate={controls} className="absolute inset-0 flex items-center justify-center">
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-screen -translate-x-1/2 overflow-hidden"
+    >
       <motion.div
-        animate={reduceMotion ? {} : { y: [0, -10, 0] }}
-        transition={reduceMotion ? {} : { duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        className="relative h-full w-full"
+        animate={controls}
+        initial={false}
+        className="absolute left-0 top-[20%] h-[110px] w-[220px] sm:top-[16%] sm:h-[150px] sm:w-[300px] lg:top-[14%] lg:h-[220px] lg:w-[440px]"
       >
+        {/* Soft ground/air shadow trailing beneath the aircraft */}
+        <div className="absolute left-1/2 top-[62%] h-6 w-2/3 -translate-x-1/2 rounded-full bg-black/25 blur-2xl" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/images/hero-aircraft.png"
           alt="MariePrime Global Services — international commercial aircraft"
-          className="h-full w-full object-contain drop-shadow-[0_35px_45px_rgba(11,30,23,0.45)]"
+          className="relative h-full w-full object-contain drop-shadow-[0_35px_45px_rgba(11,30,23,0.5)]"
         />
       </motion.div>
-    </motion.div>
+    </div>
   );
 }
 

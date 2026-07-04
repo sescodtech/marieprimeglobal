@@ -1,58 +1,102 @@
 import Link from "next/link";
-import { Instagram, Linkedin, Facebook, Mail, Phone, MapPin } from "lucide-react";
-import { siteContent } from "@/lib/data";
+import { Instagram, Linkedin, Facebook, MessageCircle, Mail, Phone, MapPin, Clock } from "lucide-react";
+import { defaultHomeServices } from "@/lib/data";
 import { getContactInfo } from "@/lib/content";
+import { FooterNewsletterForm } from "@/components/layout/FooterNewsletterForm";
+
+const quickLinks = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/services", label: "Services" },
+  { href: "/careers", label: "Careers" },
+  { href: "/blog", label: "Blog" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/contact", label: "Contact" },
+];
 
 export async function Footer() {
   const contact = await getContactInfo();
+  const footerServices = defaultHomeServices.slice(0, 7);
 
   return (
     <footer className="bg-forest-900 text-cream-100">
-      <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
-        <div className="grid gap-12 md:grid-cols-4">
-          <div className="md:col-span-2">
+      <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10 lg:py-20">
+        <div className="grid gap-12 lg:grid-cols-6 lg:gap-8">
+          {/* Company description + socials */}
+          <div className="lg:col-span-2">
             <span className="font-display text-xl font-semibold text-cream-50">
               MariePrime Global Services
             </span>
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-cream-200/70">
-              {siteContent.home.heroSubtext}
+              Your trusted partner for global travel, immigration and business solutions —
+              from visa processing and flight bookings to logistics, procurement, and
+              dedicated event and business support, delivered to one consistent standard.
             </p>
-            <div className="mt-6 flex items-center gap-4">
+
+            <h4 className="mt-7 font-mono text-xs uppercase tracking-[0.2em] text-gold-400">
+              Follow Us
+            </h4>
+            <div className="mt-4 flex items-center gap-3">
               <SocialIcon href={contact.socials.instagram} label="Instagram">
-                <Instagram size={18} />
+                <Instagram size={17} />
               </SocialIcon>
               <SocialIcon href={contact.socials.linkedin} label="LinkedIn">
-                <Linkedin size={18} />
+                <Linkedin size={17} />
               </SocialIcon>
               <SocialIcon href={contact.socials.facebook} label="Facebook">
-                <Facebook size={18} />
+                <Facebook size={17} />
+              </SocialIcon>
+              <SocialIcon href={`https://wa.me/${contact.whatsapp}`} label="WhatsApp">
+                <MessageCircle size={17} />
               </SocialIcon>
             </div>
           </div>
 
+          {/* Quick Links */}
           <div>
             <h4 className="font-mono text-xs uppercase tracking-[0.2em] text-gold-400">
-              Navigate
+              Quick Links
             </h4>
             <ul className="mt-4 space-y-2.5 text-sm">
-              <li><Link href="/" className="text-cream-200/80 hover:text-gold-300">Home</Link></li>
-              <li><Link href="/about" className="text-cream-200/80 hover:text-gold-300">About</Link></li>
-              <li><Link href="/services" className="text-cream-200/80 hover:text-gold-300">Services</Link></li>
-              <li><Link href="/careers" className="text-cream-200/80 hover:text-gold-300">Careers</Link></li>
-              <li><Link href="/blog" className="text-cream-200/80 hover:text-gold-300">Blog</Link></li>
-              <li><Link href="/faq" className="text-cream-200/80 hover:text-gold-300">FAQ</Link></li>
-              <li><Link href="/contact" className="text-cream-200/80 hover:text-gold-300">Contact</Link></li>
+              {quickLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-cream-200/80 hover:text-gold-300">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
+          {/* Services */}
           <div>
             <h4 className="font-mono text-xs uppercase tracking-[0.2em] text-gold-400">
-              Get in touch
+              Services
+            </h4>
+            <ul className="mt-4 space-y-2.5 text-sm">
+              {footerServices.map((service) => (
+                <li key={service.slug}>
+                  <Link href="/services" className="text-cream-200/80 hover:text-gold-300">
+                    {service.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Get in touch + working hours */}
+          <div>
+            <h4 className="font-mono text-xs uppercase tracking-[0.2em] text-gold-400">
+              Get in Touch
             </h4>
             <ul className="mt-4 space-y-3 text-sm text-cream-200/80">
+              <li className="flex items-start gap-2.5">
+                <MapPin size={15} className="mt-0.5 shrink-0 text-gold-400" />
+                {contact.address}
+              </li>
               <li className="flex items-center gap-2.5">
                 <Mail size={15} className="shrink-0 text-gold-400" />
-                <a href={`mailto:${contact.email}`} className="hover:text-gold-300">
+                <a href={`mailto:${contact.email}`} className="break-all hover:text-gold-300">
                   {contact.email}
                 </a>
               </li>
@@ -62,11 +106,31 @@ export async function Footer() {
                   {contact.phone}
                 </a>
               </li>
-              <li className="flex items-start gap-2.5">
-                <MapPin size={15} className="mt-0.5 shrink-0 text-gold-400" />
-                {contact.address}
-              </li>
             </ul>
+
+            <h4 className="mt-6 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-gold-400">
+              <Clock size={13} />
+              Working Hours
+            </h4>
+            <ul className="mt-3 space-y-1.5 text-sm text-cream-200/80">
+              {contact.workingHours.map((row) => (
+                <li key={row.days} className="flex items-center justify-between gap-3">
+                  <span>{row.days}</span>
+                  <span className="text-cream-200/60">{row.hours}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <h4 className="font-mono text-xs uppercase tracking-[0.2em] text-gold-400">
+              Newsletter
+            </h4>
+            <p className="mt-4 text-sm leading-relaxed text-cream-200/70">
+              Occasional updates on travel, visas and business services. No spam.
+            </p>
+            <FooterNewsletterForm />
           </div>
         </div>
 
@@ -74,9 +138,17 @@ export async function Footer() {
           <span>
             © {new Date().getFullYear()} MariePrime Global Services Ltd. All rights reserved.
           </span>
-          <span className="font-mono uppercase tracking-widest">
-            Global Mobility &amp; Business Services
-          </span>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <Link href="/privacy-policy" className="hover:text-gold-300">
+              Privacy Policy
+            </Link>
+            <Link href="/terms-and-conditions" className="hover:text-gold-300">
+              Terms &amp; Conditions
+            </Link>
+            <span className="font-mono uppercase tracking-widest">
+              Global Mobility &amp; Business Services
+            </span>
+          </div>
         </div>
       </div>
     </footer>

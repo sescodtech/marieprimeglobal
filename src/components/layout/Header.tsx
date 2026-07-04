@@ -35,12 +35,12 @@ export function Header({ whatsapp: _whatsapp }: { whatsapp: string }) {
       className={cn(
         "sticky top-0 z-50 transition-all duration-500",
         scrolled
-          ? "border-b border-forest-900/[0.06] bg-cream-50/80 shadow-[0_8px_30px_-12px_rgba(15,42,32,0.15)] backdrop-blur-xl"
+          ? "border-b border-forest-900/[0.06] bg-cream-50/75 shadow-[0_8px_30px_-12px_rgba(15,42,32,0.15)] backdrop-blur-2xl backdrop-saturate-150"
           : "border-b border-transparent bg-transparent backdrop-blur-0"
       )}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10 lg:py-6">
-        <Link href="/" className="flex items-center gap-4">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10 lg:py-4">
+        <Link href="/" className="flex items-center gap-3">
           <MarkIcon />
           <div className="flex flex-col leading-none">
             <span
@@ -62,7 +62,7 @@ export function Header({ whatsapp: _whatsapp }: { whatsapp: string }) {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-10 xl:flex">
+        <nav className="hidden items-center gap-8 xl:flex">
           {navLinks.map((link) => (
             <NavLink
               key={link.href}
@@ -75,7 +75,7 @@ export function Header({ whatsapp: _whatsapp }: { whatsapp: string }) {
         </nav>
 
         <div className="hidden items-center xl:flex">
-          <Button href="/contact" variant="secondary" showArrow={false} className="px-6 py-3 text-xs">
+          <Button href="/contact" variant="secondary" showArrow={false} className="px-6 py-2.5 text-xs">
             Request Consultation
           </Button>
         </div>
@@ -174,7 +174,7 @@ function NavLink({
     <Link
       href={href}
       className={cn(
-        "group relative inline-flex items-center px-0.5 py-1 font-body text-[13px] font-medium tracking-wide transition-colors duration-500",
+        "group relative inline-flex items-center px-1 py-1.5 font-body text-[13px] font-medium tracking-wide transition-colors duration-500",
         active
           ? scrolled
             ? "text-forest-900"
@@ -188,7 +188,7 @@ function NavLink({
       <span
         aria-hidden
         className={cn(
-          "absolute -bottom-1 left-0 right-0 z-0 h-0.5 origin-left scale-x-0 bg-gold-400 transition-transform duration-300 group-hover:scale-x-100",
+          "absolute -bottom-1.5 left-0 right-0 z-0 h-0.5 origin-left scale-x-0 rounded-full bg-gold-400 transition-transform duration-300 ease-out group-hover:scale-x-100",
           active && "scale-x-100"
         )}
       />

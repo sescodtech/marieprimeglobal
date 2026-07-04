@@ -37,7 +37,7 @@ export async function getHomeServices(): Promise<HomeServiceCard[]> {
     title: s.title,
     summary: s.summary,
     icon: s.icon,
-    href: "/services",
+    href: `/contact?service=${s.slug}`,
   }));
 }
 
@@ -54,6 +54,7 @@ export async function getContactInfo() {
     phone: map.get("contact_phone") || staticContent.contact.phone,
     whatsapp: map.get("contact_whatsapp") || staticContent.contact.whatsapp,
     address: map.get("contact_address") || staticContent.contact.address,
+    workingHours: staticContent.contact.workingHours,
     socials: {
       instagram: map.get("social_instagram") || staticContent.contact.socials.instagram,
       linkedin: map.get("social_linkedin") || staticContent.contact.socials.linkedin,

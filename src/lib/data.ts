@@ -605,6 +605,11 @@ export const siteContent = {
     phone: "+2347069660521",
     whatsapp: "2347069660521",
     address: "House 12, 71 Road A Close, Festac Town, Lagos, Lagos State, Nigeria",
+    workingHours: [
+      { days: "Monday – Friday", hours: "8:00 AM – 6:00 PM" },
+      { days: "Saturday", hours: "10:00 AM – 3:00 PM" },
+      { days: "Sunday", hours: "Closed" },
+    ],
     socials: {
       instagram: "https://instagram.com/marieprimeglobal",
       linkedin: "https://linkedin.com/company/marieprimeglobal",
