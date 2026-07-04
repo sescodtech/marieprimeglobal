@@ -5,7 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingWhatsApp } from "@/components/ui/FloatingWhatsApp";
 import { siteContent } from "@/lib/data";
-import { getContactInfo } from "@/lib/content";
+import { getContactInfo, getSiteLogo } from "@/lib/content";
 import { JsonLd } from "@/components/seo/JsonLd";
 
 const fraunces = Fraunces({
@@ -71,6 +71,7 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const contact = await getContactInfo();
+  const logoUrl = await getSiteLogo();
 
   const organizationSchema = {
     "@context": "https://schema.org",
@@ -87,9 +88,12 @@ export default async function RootLayout({
       streetAddress: contact.address,
       addressCountry: "NG",
     },
-    sameAs: [contact.socials.instagram, contact.socials.linkedin, contact.socials.facebook].filter(
-      Boolean
-    ),
+    sameAs: [
+      contact.socials.instagram,
+      contact.socials.linkedin,
+      contact.socials.facebook,
+      contact.socials.tiktok,
+    ].filter(Boolean),
   };
 
   return (
@@ -98,7 +102,7 @@ export default async function RootLayout({
         <JsonLd data={organizationSchema} />
       </head>
       <body className="font-body">
-        <Header whatsapp={contact.whatsapp} />
+        <Header whatsapp={contact.whatsapp} logoUrl={logoUrl} />
         <main>{children}</main>
         <Footer />
         <FloatingWhatsApp whatsapp={contact.whatsapp} />

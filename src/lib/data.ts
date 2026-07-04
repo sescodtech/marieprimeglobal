@@ -533,6 +533,41 @@ export const faqCategories: FaqCategory[] = [
         answer:
           "Contact your representative as early as possible. We handle changes and emergencies while you're already travelling, not just before departure.",
       },
+      {
+        question: "Can you book flights and hotel reservations together?",
+        answer:
+          "Yes. We coordinate flights and hotel reservations as one itinerary so your dates, transfers and confirmations line up before you travel.",
+      },
+      {
+        question: "Do you offer travel insurance?",
+        answer:
+          "We can arrange travel insurance alongside your booking and explain what each policy covers, so you know exactly what's protected before you fly.",
+      },
+    ],
+  },
+  {
+    category: "Business & Corporate Services",
+    items: [
+      {
+        question: "Do you manage corporate travel for companies?",
+        answer:
+          "Yes. We handle corporate travel end-to-end — flights, hotels and itineraries for teams and executives — with a single point of contact and consolidated invoicing.",
+      },
+      {
+        question: "What logistics services do you provide?",
+        answer:
+          "We coordinate freight, courier and shipment logistics for individuals and businesses, keeping you updated at each stage from pickup to delivery.",
+      },
+      {
+        question: "Can MariePrime handle procurement for my business?",
+        answer:
+          "Yes. We source and procure goods and equipment on your behalf, negotiating with vetted suppliers and managing delivery so you don't have to.",
+      },
+      {
+        question: "What support can I expect after my booking or application is submitted?",
+        answer:
+          "Your dedicated representative stays with your case after submission — for updates, questions or urgent changes — rather than handing you off to a general support line.",
+      },
     ],
   },
 ];
@@ -614,6 +649,7 @@ export const siteContent = {
       instagram: "https://instagram.com/marieprimeglobal",
       linkedin: "https://linkedin.com/company/marieprimeglobal",
       facebook: "https://facebook.com/marieprimeglobal",
+      tiktok: "https://www.tiktok.com/@marieprime.global",
     },
   },
 };

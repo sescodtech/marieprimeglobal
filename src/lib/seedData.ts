@@ -90,23 +90,38 @@ export async function seedDatabase() {
   log.push(`Seeded ${jobListings.length} job listings.`);
 
   // --- FAQs -----------------------------------------------------------
-  const existingFaqs = await prisma.faq.count();
-  if (existingFaqs === 0) {
-    let order = 0;
-    for (const category of faqCategories) {
-      for (const item of category.items) {
-        await prisma.faq.create({
-          data: {
-            category: category.category,
-            question: item.question,
-            answer: item.answer,
-            order: order++,
-            isPublished: true,
-          },
-        });
-      }
+  // Idempotent by question text (not just "run once if empty") so that
+  // re-running the seed after adding new FAQ topics fills in only what's
+  // missing, without duplicating anything already published or edited
+  // through /admin/faq.
+  const existingFaqCount = await prisma.faq.count();
+  let highestOrder = await prisma.faq
+    .aggregate({ _max: { order: true } })
+    .then((r) => r._max.order ?? -1);
+  let newFaqCount = 0;
+
+  for (const category of faqCategories) {
+    for (const item of category.items) {
+      const exists = await prisma.faq.findFirst({ where: { question: item.question } });
+      if (exists) continue;
+      highestOrder += 1;
+      await prisma.faq.create({
+        data: {
+          category: category.category,
+          question: item.question,
+          answer: item.answer,
+          order: highestOrder,
+          isPublished: true,
+        },
+      });
+      newFaqCount += 1;
     }
+  }
+
+  if (existingFaqCount === 0) {
     log.push(`Seeded FAQs across ${faqCategories.length} categories.`);
+  } else if (newFaqCount > 0) {
+    log.push(`Added ${newFaqCount} new FAQ(s) not previously present.`);
   } else {
     log.push("FAQs already exist, skipped.");
   }
@@ -156,6 +171,7 @@ export async function seedDatabase() {
     { key: "social_instagram", value: siteContent.contact.socials.instagram, group: "social" },
     { key: "social_linkedin", value: siteContent.contact.socials.linkedin, group: "social" },
     { key: "social_facebook", value: siteContent.contact.socials.facebook, group: "social" },
+    { key: "social_tiktok", value: siteContent.contact.socials.tiktok, group: "social" },
     { key: "hero_eyebrow", value: siteContent.home.heroEyebrow, group: "home_hero" },
     { key: "hero_headline", value: siteContent.home.heroHeadline, group: "home_hero" },
     { key: "hero_subtext", value: siteContent.home.heroSubtext, group: "home_hero" },

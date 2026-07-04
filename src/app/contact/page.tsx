@@ -5,6 +5,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { ContactForm } from "@/components/ui/ContactForm";
 import { getContactInfo, getSeoSetting } from "@/lib/content";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { TikTokIcon } from "@/components/layout/Footer";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getSeoSetting("contact");
@@ -92,6 +93,9 @@ export default async function ContactPage() {
                 <SocialIcon href={contact.socials.facebook} label="Facebook">
                   <Facebook size={17} />
                 </SocialIcon>
+                <SocialIcon href={contact.socials.tiktok} label="TikTok">
+                  <TikTokIcon size={17} />
+                </SocialIcon>
               </div>
             </div>
           </Reveal>
@@ -131,7 +135,7 @@ function SocialIcon({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="flex h-9 w-9 items-center justify-center rounded-full border border-cream-50/15 text-cream-100 transition-colors hover:border-gold-400 hover:text-gold-400"
+      className="flex h-9 w-9 items-center justify-center rounded-full border border-cream-50/15 text-cream-100 transition-all duration-300 hover:-translate-y-0.5 hover:scale-110 hover:border-gold-400 hover:text-gold-400 active:scale-95"
     >
       {children}
     </a>

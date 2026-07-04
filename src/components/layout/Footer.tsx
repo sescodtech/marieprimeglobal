@@ -46,6 +46,9 @@ export async function Footer() {
               <SocialIcon href={contact.socials.facebook} label="Facebook">
                 <Facebook size={17} />
               </SocialIcon>
+              <SocialIcon href={contact.socials.tiktok} label="TikTok">
+                <TikTokIcon size={17} />
+              </SocialIcon>
               <SocialIcon href={`https://wa.me/${contact.whatsapp}`} label="WhatsApp">
                 <MessageCircle size={17} />
               </SocialIcon>
@@ -170,9 +173,28 @@ function SocialIcon({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="flex h-9 w-9 items-center justify-center rounded-full border border-cream-50/15 text-cream-100 transition-colors hover:border-gold-400 hover:text-gold-400"
+      className="flex h-9 w-9 items-center justify-center rounded-full border border-cream-50/15 text-cream-100 transition-all duration-300 hover:-translate-y-0.5 hover:scale-110 hover:border-gold-400 hover:text-gold-400 active:scale-95"
     >
       {children}
     </a>
+  );
+}
+
+/** Simple line-style TikTok mark, drawn to match the lucide icon stroke weight used elsewhere. */
+export function TikTokIcon({ size = 17 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M16 3.5c.5 2.4 2.1 4 4.5 4.3V11c-1.6.1-3.1-.4-4.5-1.3v6.4a5.6 5.6 0 1 1-4.8-5.5v3.1a2.5 2.5 0 1 0 1.8 2.4V3.5H16Z" />
+    </svg>
   );
 }

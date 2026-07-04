@@ -11,9 +11,11 @@ const SETTINGS_MAP: Record<string, string> = {
   social_instagram: "social",
   social_linkedin: "social",
   social_facebook: "social",
+  social_tiktok: "social",
   hero_eyebrow: "home_hero",
   hero_headline: "home_hero",
   hero_subtext: "home_hero",
+  site_logo_url: "brand",
 };
 
 export async function updateSiteSettings(formData: FormData) {
@@ -34,7 +36,7 @@ export async function updateSiteSettings(formData: FormData) {
   );
 
   revalidatePath("/admin/settings");
-  revalidatePath("/");
-  revalidatePath("/contact");
-  revalidatePath("/about");
+  // Header/Footer live in the root layout and render the logo + contact info
+  // on every route, so invalidate the whole layout rather than page-by-page.
+  revalidatePath("/", "layout");
 }

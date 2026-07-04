@@ -20,6 +20,10 @@ const trustIndicators = [
 ];
 
 const easing = [0.22, 1, 0.36, 1] as const;
+// True ease-in-out — the aircraft accelerates away from a standstill and
+// settles again before exit, rather than coasting at constant speed. This
+// reads as "heavy" rather than "floaty".
+const flightEasing = [0.45, 0.05, 0.15, 0.95] as const;
 
 // Lines from the last "&" onward are rendered with the gold gradient accent.
 function splitHeadline(headline: string) {
@@ -127,29 +131,32 @@ function AircraftFlyover({ reduceMotion }: { reduceMotion: boolean }) {
   const controls = useAnimation();
   const hasLeftTop = useRef(false);
 
-  const flightStart = { x: "-60vw", y: "6vh", rotate: -1, opacity: 0 };
+  const flightStart = { x: "-60vw", y: "5vh", rotate: -1, opacity: 0 };
 
   const runFlight = (duration: number) => {
     controls.set(flightStart);
     controls.start({
       x: "160vw",
-      y: "-9vh",
-      rotate: -7,
+      y: "-13vh",
+      rotate: -5,
       opacity: [0, 1, 1, 1, 0],
       transition: {
         duration,
-        ease: easing,
+        ease: flightEasing,
         opacity: { duration, times: [0, 0.08, 0.7, 0.9, 1], ease: "linear" },
       },
     });
   };
 
+  // Original pass was 6.5s / 5.5s. Slowed ~60% so the aircraft feels like a
+  // real, heavy commercial airliner drifting across the sky rather than a
+  // quick floating icon.
   useEffect(() => {
     if (reduceMotion) {
       controls.set({ x: "0vw", y: "0vh", rotate: -3, opacity: 1 });
       return;
     }
-    runFlight(6.5);
+    runFlight(16);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -163,7 +170,7 @@ function AircraftFlyover({ reduceMotion }: { reduceMotion: boolean }) {
       }
       if (y < 40 && hasLeftTop.current) {
         hasLeftTop.current = false;
-        runFlight(5.5);
+        runFlight(14);
       }
     };
 

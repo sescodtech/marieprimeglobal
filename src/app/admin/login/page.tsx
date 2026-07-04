@@ -2,18 +2,21 @@ import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 import { signIn } from "@/lib/auth";
 import { LockKeyhole } from "lucide-react";
+import { ForgotPasswordLink } from "@/components/admin/ForgotPasswordLink";
 
 async function loginAction(formData: FormData) {
   "use server";
 
   const email = String(formData.get("email") || "");
   const password = String(formData.get("password") || "");
+  const remember = formData.get("remember") === "on";
   const callbackUrl = String(formData.get("callbackUrl") || "/admin");
 
   try {
     await signIn("credentials", {
       email,
       password,
+      remember: remember ? "true" : "false",
       redirectTo: callbackUrl,
     });
   } catch (error) {
@@ -74,6 +77,18 @@ export default async function AdminLoginPage({
               Incorrect email or password. Please try again.
             </p>
           )}
+
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-2 text-sm text-ink-500">
+              <input
+                type="checkbox"
+                name="remember"
+                className="h-4 w-4 rounded border-forest-900/25 text-forest-700 focus:ring-gold-500"
+              />
+              Remember me
+            </label>
+            <ForgotPasswordLink />
+          </div>
 
           <button
             type="submit"

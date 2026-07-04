@@ -1,5 +1,34 @@
+import fs from "fs";
+import path from "path";
 import { prisma } from "@/lib/prisma";
 import { siteContent as staticContent, defaultHomeServices } from "@/lib/data";
+
+const MANUAL_LOGO_DIR = path.join(process.cwd(), "public", "images", "logo");
+const MANUAL_LOGO_EXTENSIONS = new Set(["png", "svg", "webp", "jpg", "jpeg"]);
+
+/**
+ * Fallback logo source: drop a file into public/images/logo/ and it's picked
+ * up automatically — no code changes or redeploy of Admin settings needed.
+ * If several files are present, the most recently modified one wins, so
+ * simply replacing the file "just works" as the new logo.
+ */
+function findManualLogo(): string | null {
+  try {
+    if (!fs.existsSync(MANUAL_LOGO_DIR)) return null;
+    const candidates = fs
+      .readdirSync(MANUAL_LOGO_DIR)
+      .filter((file) => MANUAL_LOGO_EXTENSIONS.has(file.split(".").pop()?.toLowerCase() ?? ""))
+      .map((file) => ({
+        file,
+        mtime: fs.statSync(path.join(MANUAL_LOGO_DIR, file)).mtimeMs,
+      }))
+      .sort((a, b) => b.mtime - a.mtime);
+
+    return candidates.length > 0 ? `/images/logo/${candidates[0].file}` : null;
+  } catch {
+    return null;
+  }
+}
 
 export type HomeServiceCard = {
   slug: string;
@@ -59,8 +88,28 @@ export async function getContactInfo() {
       instagram: map.get("social_instagram") || staticContent.contact.socials.instagram,
       linkedin: map.get("social_linkedin") || staticContent.contact.socials.linkedin,
       facebook: map.get("social_facebook") || staticContent.contact.socials.facebook,
+      tiktok: map.get("social_tiktok") || staticContent.contact.socials.tiktok,
     },
   };
+}
+
+/**
+ * Logo used across the site (Header, etc). Preference order:
+ * 1. Admin Dashboard upload (Settings → Branding), stored in SiteSetting.
+ * 2. A file manually dropped into public/images/logo/.
+ * 3. null — the site falls back to the default boarding-pass mark.
+ */
+export async function getSiteLogo() {
+  const map = await getSiteSettingsMap();
+  const uploaded = map.get("site_logo_url");
+  if (uploaded) return uploaded;
+  return findManualLogo();
+}
+
+/** Just the Admin-uploaded logo (no folder fallback) — used to populate the settings form. */
+export async function getSiteLogoSetting() {
+  const map = await getSiteSettingsMap();
+  return map.get("site_logo_url") || "";
 }
 
 export async function getSeoSetting(page: "home" | "about" | "services" | "contact" | "blog" | "careers" | "faq") {

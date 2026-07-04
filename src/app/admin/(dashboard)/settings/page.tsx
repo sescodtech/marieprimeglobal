@@ -1,9 +1,11 @@
-import { getContactInfo, getHomeHero } from "@/lib/content";
+import { getContactInfo, getHomeHero, getSiteLogoSetting } from "@/lib/content";
 import { updateSiteSettings } from "@/lib/actions/settings";
+import { LogoUploadField } from "@/components/admin/LogoUploadField";
 
 export default async function SiteSettingsPage() {
   const contact = await getContactInfo();
   const hero = await getHomeHero();
+  const logoUrl = await getSiteLogoSetting();
 
   return (
     <div>
@@ -13,6 +15,17 @@ export default async function SiteSettingsPage() {
       </p>
 
       <form action={updateSiteSettings} className="mt-8 max-w-2xl space-y-10">
+        <section className="rounded-stub bg-cream-50 p-8 shadow-card ring-1 ring-forest-900/5">
+          <h2 className="font-display text-lg font-semibold text-forest-900">Branding</h2>
+          <p className="mt-1 text-xs text-ink-500">
+            Upload the site logo here. It replaces the default mark in the header immediately
+            once saved.
+          </p>
+          <div className="mt-5">
+            <LogoUploadField initialUrl={logoUrl} />
+          </div>
+        </section>
+
         <section className="rounded-stub bg-cream-50 p-8 shadow-card ring-1 ring-forest-900/5">
           <h2 className="font-display text-lg font-semibold text-forest-900">Contact information</h2>
           <div className="mt-5 space-y-5">
@@ -43,6 +56,9 @@ export default async function SiteSettingsPage() {
             </Field>
             <Field label="Facebook">
               <input name="social_facebook" defaultValue={contact.socials.facebook} className="input" />
+            </Field>
+            <Field label="TikTok">
+              <input name="social_tiktok" defaultValue={contact.socials.tiktok} className="input" />
             </Field>
           </div>
         </section>

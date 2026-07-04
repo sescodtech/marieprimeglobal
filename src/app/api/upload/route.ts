@@ -37,9 +37,19 @@ export async function POST(request: Request) {
       stream.end(buffer);
     });
 
+    // Cloudinary automatically serves the best format/compression for the
+    // requesting browser (WebP/AVIF, adjusted quality) when f_auto,q_auto is
+    // present in the delivery URL. This is applied on-the-fly (non-destructive
+    // to the stored original) and skipped for SVGs, which are already vector
+    // and shouldn't be raster-transformed.
+    const isSvg = uploadResult.secure_url.toLowerCase().endsWith(".svg");
+    const optimizedUrl = isSvg
+      ? uploadResult.secure_url
+      : uploadResult.secure_url.replace("/upload/", "/upload/f_auto,q_auto/");
+
     const asset = await prisma.mediaAsset.create({
       data: {
-        url: uploadResult.secure_url,
+        url: optimizedUrl,
         cloudinaryId: uploadResult.public_id,
         altText: altText || file.name,
         fileName: file.name,

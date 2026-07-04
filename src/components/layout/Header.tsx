@@ -18,7 +18,13 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
-export function Header({ whatsapp: _whatsapp }: { whatsapp: string }) {
+export function Header({
+  whatsapp: _whatsapp,
+  logoUrl,
+}: {
+  whatsapp: string;
+  logoUrl?: string | null;
+}) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -41,7 +47,7 @@ export function Header({ whatsapp: _whatsapp }: { whatsapp: string }) {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10 lg:py-4">
         <Link href="/" className="flex items-center gap-3">
-          <MarkIcon />
+          <BrandMark logoUrl={logoUrl} />
           <div className="flex flex-col leading-none">
             <span
               className={cn(
@@ -115,7 +121,7 @@ export function Header({ whatsapp: _whatsapp }: { whatsapp: string }) {
           >
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
-                <MarkIcon />
+                <BrandMark logoUrl={logoUrl} />
                 <span className="font-display text-lg font-medium text-forest-900">MariePrime</span>
               </Link>
               <button aria-label="Close menu" onClick={() => setOpen(false)} className="text-forest-900">
@@ -194,6 +200,21 @@ function NavLink({
       />
     </Link>
   );
+}
+
+/** Renders the Admin-uploaded logo when one exists, otherwise the default boarding-pass mark. */
+function BrandMark({ logoUrl }: { logoUrl?: string | null }) {
+  if (logoUrl) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={logoUrl}
+        alt="MariePrime Global Services"
+        className="h-9 w-auto object-contain sm:h-10"
+      />
+    );
+  }
+  return <MarkIcon />;
 }
 
 function MarkIcon() {
