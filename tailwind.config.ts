@@ -49,11 +49,13 @@ const config: Config = {
           "repeating-linear-gradient(90deg, currentColor 0, currentColor 6px, transparent 6px, transparent 14px)",
       },
       borderRadius: {
-        stub: "4px",
+        stub: "4px", // sharp — reserved for boarding-pass / ticket-style elements
+        xl2: "1.25rem", // soft premium radius for general cards and panels
       },
       boxShadow: {
         stub: "0 12px 32px -12px rgba(15, 42, 32, 0.25)",
-        card: "0 8px 24px -10px rgba(15, 42, 32, 0.18)",
+        card: "0 4px 16px -6px rgba(15, 42, 32, 0.08), 0 16px 40px -16px rgba(15, 42, 32, 0.12)",
+        premium: "0 8px 30px -10px rgba(15, 42, 32, 0.15), 0 30px 60px -20px rgba(15, 42, 32, 0.12)",
       },
       keyframes: {
         stamp: {

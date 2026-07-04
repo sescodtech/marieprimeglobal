@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Sora, Plus_Jakarta_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Fraunces, Manrope, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -8,17 +8,18 @@ import { siteContent } from "@/lib/data";
 import { getContactInfo } from "@/lib/content";
 import { JsonLd } from "@/components/seo/JsonLd";
 
-const sora = Sora({
+const fraunces = Fraunces({
   subsets: ["latin"],
-  variable: "--font-sora",
-  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-fraunces",
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
-const plusJakarta = Plus_Jakarta_Sans({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-plusjakarta",
-  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-manrope",
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -92,7 +93,7 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang="en" className={`${sora.variable} ${plusJakarta.variable} ${plexMono.variable}`}>
+    <html lang="en" className={`${fraunces.variable} ${manrope.variable} ${plexMono.variable}`}>
       <head>
         <JsonLd data={organizationSchema} />
       </head>

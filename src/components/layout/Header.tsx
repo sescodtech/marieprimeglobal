@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Menu, X, MessageCircle, ChevronDown } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +16,7 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
-export function Header({ whatsapp }: { whatsapp: string }) {
+export function Header({ whatsapp: _whatsapp }: { whatsapp: string }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -30,17 +30,19 @@ export function Header({ whatsapp }: { whatsapp: string }) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 transition-all duration-300",
-        scrolled ? "bg-cream-50/95 shadow-card backdrop-blur" : "bg-forest-950/30 backdrop-blur-[2px]"
+        "sticky top-0 z-50 transition-all duration-500",
+        scrolled
+          ? "border-b border-forest-900/[0.06] bg-cream-50/75 shadow-[0_1px_0_rgba(15,42,32,0.04)] backdrop-blur-xl"
+          : "border-b border-transparent bg-transparent backdrop-blur-0"
       )}
     >
-      <div className="mx-auto container-lg flex items-center justify-between py-4">
-        <Link href="/" className="flex items-center gap-3">
+      <div className="mx-auto container-lg flex items-center justify-between py-5">
+        <Link href="/" className="flex items-center gap-3.5">
           <MarkIcon />
           <div className="flex flex-col leading-none">
             <span
               className={cn(
-                "font-display text-lg font-semibold transition-colors duration-300",
+                "font-display text-lg font-medium tracking-tight transition-colors duration-500",
                 scrolled ? "text-forest-900" : "text-cream-50"
               )}
             >
@@ -48,7 +50,7 @@ export function Header({ whatsapp }: { whatsapp: string }) {
             </span>
             <span
               className={cn(
-                "-mt-0.5 text-xs font-mono transition-colors duration-300",
+                "-mt-0.5 text-[11px] font-mono tracking-wide transition-colors duration-500",
                 scrolled ? "text-ink-500" : "text-cream-200/70"
               )}
             >
@@ -57,27 +59,15 @@ export function Header({ whatsapp }: { whatsapp: string }) {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-6 lg:flex">
+        <nav className="hidden items-center gap-7 lg:flex">
           {navLinks.map((link) => (
             <NavLink key={link.href} href={link.href} label={link.label} scrolled={scrolled} />
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 lg:flex">
-          <a
-            href={`https://wa.me/${whatsapp}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-stub bg-gold-500 px-5 py-2.5 text-sm font-semibold text-forest-900 shadow-stub transition-colors hover:bg-gold-400"
-          >
-            <MessageCircle size={16} />
-            WhatsApp Us
-          </a>
-        </div>
-
         <button
           aria-label="Toggle navigation menu"
-          className={cn("lg:hidden transition-colors duration-300", scrolled ? "text-forest-900" : "text-cream-50")}
+          className={cn("lg:hidden transition-colors duration-500", scrolled ? "text-forest-900" : "text-cream-50")}
           onClick={() => setOpen((o) => !o)}
         >
           {open ? <X size={24} /> : <Menu size={24} />}
@@ -108,7 +98,7 @@ export function Header({ whatsapp }: { whatsapp: string }) {
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
                 <MarkIcon />
-                <span className="font-display text-lg font-semibold text-forest-900">MariePrime</span>
+                <span className="font-display text-lg font-medium text-forest-900">MariePrime</span>
               </Link>
               <button aria-label="Close menu" onClick={() => setOpen(false)} className="text-forest-900">
                 <X size={22} />
@@ -127,18 +117,6 @@ export function Header({ whatsapp }: { whatsapp: string }) {
                 </Link>
               ))}
             </div>
-
-            <div className="mt-6 border-t border-forest-900/8 pt-4">
-              <a
-                href={`https://wa.me/${whatsapp}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-stub bg-forest-700 px-5 py-3 text-sm font-semibold text-cream-50"
-              >
-                <MessageCircle size={16} />
-                WhatsApp Us
-              </a>
-            </div>
           </motion.nav>
         )}
       </AnimatePresence>
@@ -151,7 +129,7 @@ function NavLink({ href, label, scrolled }: { href: string; label: string; scrol
     <Link
       href={href}
       className={cn(
-        "relative inline-flex items-center px-1 py-1 font-body text-sm font-medium transition-colors duration-300",
+        "relative inline-flex items-center px-1 py-1 font-body text-[13px] font-medium tracking-wide transition-colors duration-500",
         scrolled ? "text-ink-700" : "text-cream-100"
       )}
     >
@@ -169,7 +147,7 @@ function NavLink({ href, label, scrolled }: { href: string; label: string; scrol
 
 function MarkIcon() {
   return (
-    <svg width="36" height="36" viewBox="0 0 100 100" fill="none" aria-hidden>
+    <svg width="34" height="34" viewBox="0 0 100 100" fill="none" aria-hidden>
       <rect width="100" height="100" rx="18" fill="#EAF7F0" />
       <path d="M20 75 L40 25 L50 25 L30 75 Z" fill="#1B4332" />
       <path d="M45 75 L65 25 L75 25 L55 75 Z" fill="#14352A" />

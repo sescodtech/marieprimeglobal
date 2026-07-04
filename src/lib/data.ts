@@ -340,10 +340,10 @@ export const siteContent = {
     tagline: "Your journey, handled with precision.",
   },
   home: {
-    heroEyebrow: "Global Services, Precisely Delivered",
-    heroHeadline: "From application to arrival, we handle the details.",
+    heroEyebrow: "Global Mobility & Business Advisory",
+    heroHeadline: "Precision-led travel, immigration and business services.",
     heroSubtext:
-      "MariePrime Global Services manages flights, visas, travel finance, study placements and business registration for clients who need it done right the first time.",
+      "MariePrime Global Services delivers flight bookings, visa approvals, study placements and business registration with the discipline global organisations expect — one dedicated contact, from first enquiry to final approval.",
     whyChoose: [
       {
         title: "One point of contact",
