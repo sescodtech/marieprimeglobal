@@ -97,9 +97,11 @@ export function TestimonialsCarousel({ testimonials }: { testimonials: Testimoni
               <span className="block font-display text-base font-semibold text-forest-900">
                 {t.clientName}
               </span>
-              <span className="font-mono text-xs uppercase tracking-wider text-ink-500">
-                {t.clientRole}
-              </span>
+              {t.clientRole && (
+                <span className="font-mono text-xs uppercase tracking-wider text-ink-500">
+                  {t.clientRole}
+                </span>
+              )}
             </figcaption>
           </figure>
         ))}

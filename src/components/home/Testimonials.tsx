@@ -9,6 +9,14 @@ export async function Testimonials() {
     orderBy: { order: "asc" },
   });
 
+  const cards = testimonials.map((t) => ({
+    id: t.id,
+    rating: t.rating,
+    quote: t.quote,
+    clientName: t.clientName,
+    clientRole: t.clientRole ?? "",
+  }));
+
   return (
     <section className="bg-cream-100 pt-24 pb-10 lg:pt-32 lg:pb-14">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
@@ -20,7 +28,7 @@ export async function Testimonials() {
         </Reveal>
 
         <Reveal delay={0.1} className="mt-14">
-          <TestimonialsCarousel testimonials={testimonials} />
+          <TestimonialsCarousel testimonials={cards} />
         </Reveal>
       </div>
     </section>
