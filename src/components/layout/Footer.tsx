@@ -115,11 +115,11 @@ export async function Footer() {
               <Clock size={13} />
               Working Hours
             </h4>
-            <dl className="mt-4 space-y-2.5 text-sm leading-6">
+            <dl className="mt-4 space-y-3 text-sm leading-6">
               {contact.workingHours.map((row) => (
-                <div key={row.days} className="flex items-baseline justify-between gap-4">
+                <div key={row.days}>
                   <dt className="text-cream-200/80">{row.days}</dt>
-                  <dd className="whitespace-nowrap font-medium text-cream-100/90">{row.hours}</dd>
+                  <dd className="mt-0.5 font-medium text-cream-100/90">{row.hours}</dd>
                 </div>
               ))}
             </dl>

@@ -8,7 +8,7 @@ import { Reveal } from "@/components/ui/Reveal";
 
 export function WhyChooseGlobal() {
   return (
-    <section className="bg-cream-100 pt-10 pb-24 lg:pt-14 lg:pb-32">
+    <section className="bg-cream-100 pt-10 pb-10 lg:pt-14 lg:pb-14">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal className="mx-auto max-w-2xl text-center">
           <Eyebrow className="justify-center">Why Choose Us</Eyebrow>

@@ -11,7 +11,7 @@ export async function AboutPreview() {
     (await prisma.directorProfile.findFirst({ where: { isActive: true } })) ?? fallbackDirector;
 
   return (
-    <section className="bg-cream-50 py-24 lg:py-32">
+    <section className="bg-cream-50 pt-10 pb-24 lg:pt-14 lg:pb-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="grid gap-14 lg:grid-cols-[1fr_0.85fr] lg:items-center lg:gap-20">
           <Reveal>
