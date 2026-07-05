@@ -10,7 +10,7 @@ export default async function MediaLibraryPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl font-semibold text-forest-900">Media Library</h1>
           <p className="mt-1 text-sm text-ink-500">
@@ -22,7 +22,7 @@ export default async function MediaLibraryPage() {
       </div>
 
       {assets.length === 0 ? (
-        <p className="mt-10 rounded-stub bg-cream-50 p-10 text-center text-sm text-ink-500 shadow-card">
+        <p className="mt-10 rounded-stub bg-cream-50 p-6 sm:p-10 text-center text-sm text-ink-500 shadow-card">
           No media uploaded yet. Upload your first image above.
           <br />
           <span className="mt-1 block text-xs text-ink-300">

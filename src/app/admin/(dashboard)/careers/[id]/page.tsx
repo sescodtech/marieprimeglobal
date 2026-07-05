@@ -24,7 +24,7 @@ export default async function EditJobListingPage({
       </Link>
       <h1 className="mt-4 font-display text-2xl font-semibold text-forest-900">Edit role</h1>
 
-      <form action={updateWithId} className="mt-8 max-w-2xl rounded-stub bg-cream-50 p-8 shadow-card ring-1 ring-forest-900/5">
+      <form action={updateWithId} className="mt-8 max-w-2xl rounded-stub bg-cream-50 p-5 sm:p-8 shadow-card ring-1 ring-forest-900/5">
         <JobListingFormFields job={job} />
         <button
           type="submit"

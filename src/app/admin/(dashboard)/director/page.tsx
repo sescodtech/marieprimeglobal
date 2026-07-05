@@ -15,7 +15,7 @@ export default async function DirectorProfilePage() {
 
       <form
         action={updateDirectorProfile}
-        className="mt-8 grid max-w-3xl gap-8 rounded-stub bg-cream-50 p-8 shadow-card ring-1 ring-forest-900/5 sm:grid-cols-[220px_1fr]"
+        className="mt-8 grid max-w-3xl gap-8 rounded-stub bg-cream-50 p-5 sm:p-8 shadow-card ring-1 ring-forest-900/5 sm:grid-cols-[220px_1fr]"
       >
         <DirectorPhotoField initialUrl={director?.photoUrl ?? null} />
 

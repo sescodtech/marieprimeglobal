@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import { Instagram, Linkedin, Facebook, MessageCircle, Mail, Phone, MapPin, Clock } from "lucide-react";
 import { defaultHomeServices } from "@/lib/data";
@@ -111,18 +112,18 @@ export async function Footer() {
               </li>
             </ul>
 
-            <h4 className="mt-6 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-gold-400">
+            <h4 className="mt-10 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-gold-400">
               <Clock size={13} />
               Working Hours
             </h4>
-            <ul className="mt-3 space-y-1.5 text-sm text-cream-200/80">
+            <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2.5 text-sm leading-6">
               {contact.workingHours.map((row) => (
-                <li key={row.days} className="flex items-center justify-between gap-3">
-                  <span>{row.days}</span>
-                  <span className="text-cream-200/60">{row.hours}</span>
-                </li>
+                <Fragment key={row.days}>
+                  <dt className="text-cream-200/80">{row.days}</dt>
+                  <dd className="text-right font-medium text-cream-100/90">{row.hours}</dd>
+                </Fragment>
               ))}
-            </ul>
+            </dl>
           </div>
 
           {/* Newsletter */}

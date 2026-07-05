@@ -13,7 +13,7 @@ export default async function AdminFaqPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl font-semibold text-forest-900">FAQs</h1>
           <p className="mt-1 text-sm text-ink-500">
@@ -22,7 +22,7 @@ export default async function AdminFaqPage() {
         </div>
         <Link
           href="/admin/faq/new"
-          className="inline-flex items-center gap-2 rounded-stub bg-forest-700 px-5 py-2.5 text-sm font-semibold text-cream-50 hover:bg-forest-800"
+          className="inline-flex items-center justify-center gap-2 rounded-stub bg-forest-700 px-5 py-2.5 text-sm font-semibold text-cream-50 hover:bg-forest-800"
         >
           <Plus size={16} />
           Add FAQ
@@ -31,7 +31,7 @@ export default async function AdminFaqPage() {
 
       <div className="mt-8 space-y-8">
         {faqs.length === 0 && (
-          <div className="rounded-stub bg-cream-50 p-8 text-center text-ink-500 shadow-card ring-1 ring-forest-900/5">
+          <div className="rounded-stub bg-cream-50 p-5 sm:p-8 text-center text-ink-500 shadow-card ring-1 ring-forest-900/5">
             No FAQs yet. Add your first one, or run the seed script.
           </div>
         )}
@@ -42,7 +42,8 @@ export default async function AdminFaqPage() {
               {category}
             </h2>
             <div className="mt-3 overflow-hidden rounded-stub bg-cream-50 shadow-card ring-1 ring-forest-900/5">
-              <table className="w-full text-left text-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
                 <tbody>
                   {items.map((faq) => (
                     <tr key={faq.id} className="border-t border-forest-900/5 first:border-t-0">
@@ -81,6 +82,7 @@ export default async function AdminFaqPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           </div>
         ))}

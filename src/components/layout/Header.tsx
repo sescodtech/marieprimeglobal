@@ -37,67 +37,84 @@ export function Header({
   }, []);
 
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-50 transition-all duration-500",
-        scrolled
-          ? "border-b border-forest-900/[0.06] bg-cream-50/75 shadow-[0_8px_30px_-12px_rgba(15,42,32,0.15)] backdrop-blur-2xl backdrop-saturate-150"
-          : "border-b border-cream-50/10 bg-forest-900/35 backdrop-blur-md"
-      )}
-    >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10 lg:py-4">
-        <Link href="/" className="flex items-center gap-3">
-          <BrandMark logoUrl={logoUrl} />
-          <div className="flex flex-col leading-none">
-            <span
-              className={cn(
-                "font-display text-xl font-medium tracking-tight transition-colors duration-500",
-                scrolled ? "text-forest-900" : "text-cream-50"
-              )}
-            >
-              MariePrime
-            </span>
-            <span
-              className={cn(
-                "-mt-0.5 text-[11px] font-mono tracking-wide transition-colors duration-500",
-                scrolled ? "text-ink-500" : "text-cream-200/70"
-              )}
-            >
-              Global Services
-            </span>
+    <>
+      <header
+        className={cn(
+          "sticky top-0 z-50 transition-all duration-500",
+          scrolled
+            ? "border-b border-forest-900/[0.06] bg-cream-50/75 shadow-[0_8px_30px_-12px_rgba(15,42,32,0.15)] backdrop-blur-2xl backdrop-saturate-150"
+            : "border-b border-cream-50/10 bg-forest-900/35 backdrop-blur-md"
+        )}
+      >
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10 lg:py-4">
+          <Link href="/" className="flex items-center gap-3">
+            <BrandMark logoUrl={logoUrl} />
+            {/*
+              Only show the "MariePrime / Global Services" text lockup next
+              to the default mark. An uploaded logo is assumed to already
+              contain the brand name, so we don't double it up.
+            */}
+            {!logoUrl && (
+              <div className="flex flex-col leading-none">
+                <span
+                  className={cn(
+                    "font-display text-xl font-medium tracking-tight transition-colors duration-500",
+                    scrolled ? "text-forest-900" : "text-cream-50"
+                  )}
+                >
+                  MariePrime
+                </span>
+                <span
+                  className={cn(
+                    "-mt-0.5 text-[11px] font-mono tracking-wide transition-colors duration-500",
+                    scrolled ? "text-ink-500" : "text-cream-200/70"
+                  )}
+                >
+                  Global Services
+                </span>
+              </div>
+            )}
+          </Link>
+
+          <nav className="hidden items-center gap-8 xl:flex">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.href}
+                href={link.href}
+                label={link.label}
+                scrolled={scrolled}
+                active={pathname === link.href}
+              />
+            ))}
+          </nav>
+
+          <div className="hidden items-center xl:flex">
+            <Button href="/contact" variant="secondary" showArrow={false} className="px-6 py-2.5 text-xs">
+              Request Consultation
+            </Button>
           </div>
-        </Link>
 
-        <nav className="hidden items-center gap-8 xl:flex">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.href}
-              href={link.href}
-              label={link.label}
-              scrolled={scrolled}
-              active={pathname === link.href}
-            />
-          ))}
-        </nav>
-
-        <div className="hidden items-center xl:flex">
-          <Button href="/contact" variant="secondary" showArrow={false} className="px-6 py-2.5 text-xs">
-            Request Consultation
-          </Button>
+          <button
+            aria-label="Toggle navigation menu"
+            className={cn(
+              "transition-colors duration-500 xl:hidden",
+              scrolled ? "text-forest-900" : "text-cream-50"
+            )}
+            onClick={() => setOpen((o) => !o)}
+          >
+            {open ? <X size={26} /> : <Menu size={26} />}
+          </button>
         </div>
+      </header>
 
-        <button
-          aria-label="Toggle navigation menu"
-          className={cn(
-            "transition-colors duration-500 xl:hidden",
-            scrolled ? "text-forest-900" : "text-cream-50"
-          )}
-          onClick={() => setOpen((o) => !o)}
-        >
-          {open ? <X size={26} /> : <Menu size={26} />}
-        </button>
-      </div>
-
+      {/*
+        Rendered as siblings of <header>, not children of it. WebKit/Chrome
+        treat an ancestor with `backdrop-filter` (used above for the glassy
+        blur) as the containing block for `position: fixed` descendants —
+        if these stayed nested inside <header>, the panel below would be
+        sized against the header's own (short) height instead of the full
+        viewport, collapsing the mobile menu to a sliver at the top.
+      */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -122,7 +139,9 @@ export function Header({
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
                 <BrandMark logoUrl={logoUrl} />
-                <span className="font-display text-lg font-medium text-forest-900">MariePrime</span>
+                {!logoUrl && (
+                  <span className="font-display text-lg font-medium text-forest-900">MariePrime</span>
+                )}
               </Link>
               <button aria-label="Close menu" onClick={() => setOpen(false)} className="text-forest-900">
                 <X size={22} />
@@ -161,7 +180,7 @@ export function Header({
           </motion.nav>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }
 

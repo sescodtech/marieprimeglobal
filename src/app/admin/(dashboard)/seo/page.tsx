@@ -26,7 +26,7 @@ export default async function SeoSettingsPage() {
             <form
               key={page.key}
               action={updateSeoSetting}
-              className="rounded-stub bg-cream-50 p-8 shadow-card ring-1 ring-forest-900/5"
+              className="rounded-stub bg-cream-50 p-5 sm:p-8 shadow-card ring-1 ring-forest-900/5"
             >
               <input type="hidden" name="page" value={page.key} />
               <h2 className="font-display text-lg font-semibold text-forest-900">{page.label}</h2>

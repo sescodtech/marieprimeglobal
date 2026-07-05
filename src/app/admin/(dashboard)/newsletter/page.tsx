@@ -9,7 +9,7 @@ export default async function AdminNewsletterPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl font-semibold text-forest-900">Newsletter</h1>
           <p className="mt-1 text-sm text-ink-500">
@@ -20,7 +20,7 @@ export default async function AdminNewsletterPage() {
         {subscribers.length > 0 && (
           <a
             href={`mailto:?bcc=${subscribers.map((s) => s.email).join(",")}`}
-            className="inline-flex items-center gap-2 rounded-stub border border-forest-700/30 px-5 py-2.5 text-sm font-semibold text-forest-700 hover:border-forest-700 hover:bg-forest-700/5"
+            className="inline-flex items-center justify-center gap-2 rounded-stub border border-forest-700/30 px-5 py-2.5 text-sm font-semibold text-forest-700 hover:border-forest-700 hover:bg-forest-700/5"
           >
             <Mail size={16} />
             Email all
@@ -29,7 +29,8 @@ export default async function AdminNewsletterPage() {
       </div>
 
       <div className="mt-8 overflow-hidden rounded-stub bg-cream-50 shadow-card ring-1 ring-forest-900/5">
-        <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[520px] text-left text-sm">
           <thead className="bg-forest-900 text-cream-100">
             <tr>
               <th className="px-5 py-3 font-mono text-xs uppercase tracking-wider">Email</th>
@@ -63,7 +64,8 @@ export default async function AdminNewsletterPage() {
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
+        </div>
       </div>
     </div>
   );

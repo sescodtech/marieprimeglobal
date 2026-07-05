@@ -11,7 +11,7 @@ export function LogoUploadField({ initialUrl }: { initialUrl: string }) {
       {/* Submitted with the rest of the Settings form as `site_logo_url` */}
       <input type="hidden" name="site_logo_url" value={url} />
 
-      <div className="flex items-center gap-5">
+      <div className="flex flex-wrap items-center gap-5">
         <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-stub border border-forest-900/10 bg-cream-100">
           {url ? (
             // eslint-disable-next-line @next/next/no-img-element

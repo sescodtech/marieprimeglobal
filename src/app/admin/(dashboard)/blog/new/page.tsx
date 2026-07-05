@@ -12,7 +12,7 @@ export default function NewBlogPostPage() {
       </Link>
       <h1 className="mt-4 font-display text-2xl font-semibold text-forest-900">Add post</h1>
 
-      <form action={createBlogPost} className="mt-8 max-w-2xl rounded-stub bg-cream-50 p-8 shadow-card ring-1 ring-forest-900/5">
+      <form action={createBlogPost} className="mt-8 max-w-2xl rounded-stub bg-cream-50 p-5 sm:p-8 shadow-card ring-1 ring-forest-900/5">
         <BlogPostFormFields />
         <button
           type="submit"

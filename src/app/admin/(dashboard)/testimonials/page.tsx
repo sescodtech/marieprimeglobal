@@ -8,14 +8,14 @@ export default async function AdminTestimonialsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl font-semibold text-forest-900">Testimonials</h1>
           <p className="mt-1 text-sm text-ink-500">Manage client quotes shown on the Home page.</p>
         </div>
         <Link
           href="/admin/testimonials/new"
-          className="inline-flex items-center gap-2 rounded-stub bg-forest-700 px-5 py-2.5 text-sm font-semibold text-cream-50 hover:bg-forest-800"
+          className="inline-flex items-center justify-center gap-2 rounded-stub bg-forest-700 px-5 py-2.5 text-sm font-semibold text-cream-50 hover:bg-forest-800"
         >
           <Plus size={16} />
           Add testimonial
@@ -24,17 +24,17 @@ export default async function AdminTestimonialsPage() {
 
       <div className="mt-8 grid gap-4">
         {testimonials.length === 0 && (
-          <p className="rounded-stub bg-cream-50 p-8 text-center text-sm text-ink-500 shadow-card">
+          <p className="rounded-stub bg-cream-50 p-5 sm:p-8 text-center text-sm text-ink-500 shadow-card">
             No testimonials yet.
           </p>
         )}
         {testimonials.map((t) => (
           <div
             key={t.id}
-            className="flex items-start justify-between gap-4 rounded-stub bg-cream-50 p-6 shadow-card ring-1 ring-forest-900/5"
+            className="flex flex-col gap-4 rounded-stub bg-cream-50 p-6 shadow-card ring-1 ring-forest-900/5 sm:flex-row sm:items-start sm:justify-between"
           >
             <div className="flex-1">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="font-display text-base font-semibold text-forest-900">
                   {t.clientName}
                 </span>
@@ -49,7 +49,7 @@ export default async function AdminTestimonialsPage() {
               </div>
               <p className="mt-2 text-sm leading-relaxed text-ink-700">{t.quote}</p>
             </div>
-            <div className="flex shrink-0 flex-col items-end gap-3">
+            <div className="flex shrink-0 flex-row items-center justify-between gap-3 sm:flex-col sm:items-end">
               <form action={toggleTestimonialPublished.bind(null, t.id, !t.isPublished)}>
                 <button
                   type="submit"

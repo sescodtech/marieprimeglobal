@@ -34,8 +34,8 @@ export default async function EnquiryDetailPage({
         Back to enquiries
       </Link>
 
-      <div className="mt-6 rounded-stub bg-cream-50 p-8 shadow-card ring-1 ring-forest-900/5">
-        <div className="flex items-start justify-between">
+      <div className="mt-6 rounded-stub bg-cream-50 p-5 shadow-card ring-1 ring-forest-900/5 sm:p-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h1 className="font-display text-2xl font-semibold text-forest-900">{enquiry.fullName}</h1>
             <p className="mt-1 text-sm text-ink-500">

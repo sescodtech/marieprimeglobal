@@ -62,10 +62,10 @@ export default async function AdminOverviewPage() {
             <Link
               key={enquiry.id}
               href={`/admin/enquiries/${enquiry.id}`}
-              className="flex items-center justify-between py-3 text-sm hover:bg-forest-700/5"
+              className="flex items-center justify-between gap-3 py-3 text-sm hover:bg-forest-700/5"
             >
-              <span className="font-medium text-forest-900">{enquiry.fullName}</span>
-              <span className="text-xs text-ink-500">{enquiry.status}</span>
+              <span className="truncate font-medium text-forest-900">{enquiry.fullName}</span>
+              <span className="shrink-0 text-xs text-ink-500">{enquiry.status}</span>
             </Link>
           ))}
         </div>

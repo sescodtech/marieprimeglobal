@@ -15,7 +15,7 @@ export default async function SiteSettingsPage() {
       </p>
 
       <form action={updateSiteSettings} className="mt-8 max-w-2xl space-y-10">
-        <section className="rounded-stub bg-cream-50 p-8 shadow-card ring-1 ring-forest-900/5">
+        <section className="rounded-stub bg-cream-50 p-5 sm:p-8 shadow-card ring-1 ring-forest-900/5">
           <h2 className="font-display text-lg font-semibold text-forest-900">Branding</h2>
           <p className="mt-1 text-xs text-ink-500">
             Upload the site logo here. It replaces the default mark in the header immediately
@@ -26,7 +26,7 @@ export default async function SiteSettingsPage() {
           </div>
         </section>
 
-        <section className="rounded-stub bg-cream-50 p-8 shadow-card ring-1 ring-forest-900/5">
+        <section className="rounded-stub bg-cream-50 p-5 sm:p-8 shadow-card ring-1 ring-forest-900/5">
           <h2 className="font-display text-lg font-semibold text-forest-900">Contact information</h2>
           <div className="mt-5 space-y-5">
             <Field label="Email">
@@ -44,7 +44,7 @@ export default async function SiteSettingsPage() {
           </div>
         </section>
 
-        <section className="rounded-stub bg-cream-50 p-8 shadow-card ring-1 ring-forest-900/5">
+        <section className="rounded-stub bg-cream-50 p-5 sm:p-8 shadow-card ring-1 ring-forest-900/5">
           <h2 className="font-display text-lg font-semibold text-forest-900">Social links</h2>
           <p className="mt-1 text-xs text-ink-500">Placeholder links until real profiles are ready.</p>
           <div className="mt-5 space-y-5">
@@ -63,7 +63,7 @@ export default async function SiteSettingsPage() {
           </div>
         </section>
 
-        <section className="rounded-stub bg-cream-50 p-8 shadow-card ring-1 ring-forest-900/5">
+        <section className="rounded-stub bg-cream-50 p-5 sm:p-8 shadow-card ring-1 ring-forest-900/5">
           <h2 className="font-display text-lg font-semibold text-forest-900">Homepage hero</h2>
           <div className="mt-5 space-y-5">
             <Field label="Eyebrow label">

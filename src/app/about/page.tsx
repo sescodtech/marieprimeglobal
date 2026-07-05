@@ -106,35 +106,42 @@ export default async function AboutPage() {
           <Reveal>
             <Eyebrow>Leadership</Eyebrow>
           </Reveal>
-          <div className="mt-8 grid gap-10 rounded-stub bg-cream-50 p-8 shadow-card ring-1 ring-forest-900/5 sm:grid-cols-[220px_1fr] sm:p-10">
+          <div className="mt-8 grid gap-10 rounded-stub bg-cream-50 p-8 shadow-card ring-1 ring-forest-900/5 sm:grid-cols-[240px_1fr] sm:gap-12 sm:p-10">
             <Reveal>
-              {/* Director photo — managed via the CMS (DirectorProfile.photoUrl, served through Cloudinary) */}
-              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-stub bg-forest-800">
-                {director.photoUrl ? (
-                  <Image
-                    src={director.photoUrl}
-                    alt={director.name}
-                    fill
-                    className="object-cover"
-                    sizes="220px"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <UserCircle size={48} className="text-cream-50/30" />
-                  </div>
-                )}
+              {/*
+                Champagne-gold frame around the portrait — the client asked
+                for this specific area to feel premium/gold rather than the
+                plain white card background. Kept intentionally subtle: a
+                soft cream-to-gold gradient mat, not a bright/metallic gold.
+              */}
+              <div className="rounded-xl2 bg-gradient-to-br from-[#FAF7F2] via-[#F8F4E8] to-[#D4AF37]/25 p-3 shadow-premium ring-1 ring-[#C9A227]/20">
+                <div className="relative aspect-[3/4] w-full overflow-hidden rounded-stub bg-forest-800 shadow-inner">
+                  {/* Director photo — managed via the CMS (DirectorProfile.photoUrl, served through Cloudinary) */}
+                  {director.photoUrl ? (
+                    <Image
+                      src={director.photoUrl}
+                      alt={director.name}
+                      fill
+                      className="object-cover"
+                      sizes="240px"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center">
+                      <UserCircle size={48} className="text-cream-50/30" />
+                    </div>
+                  )}
+                </div>
               </div>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="font-display text-2xl font-semibold text-forest-900">
+              <h2 className="font-display text-2xl font-semibold text-forest-900 sm:text-3xl">
                 {director.name}
               </h2>
-              <span className="mt-1 block font-mono text-xs uppercase tracking-[0.2em] text-gold-600">
+              <span className="mt-2 block font-mono text-xs uppercase tracking-[0.2em] text-gold-600">
                 {director.position}
               </span>
-              <p className="mt-5 text-sm leading-relaxed text-ink-700">
-                {director.biography}
-              </p>
+              <div className="mt-4 h-px w-12 bg-gold-400/60" />
+              <p className="mt-5 text-sm leading-7 text-ink-700">{director.biography}</p>
             </Reveal>
           </div>
         </div>

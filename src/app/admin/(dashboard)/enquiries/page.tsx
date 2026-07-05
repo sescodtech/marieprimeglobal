@@ -75,7 +75,8 @@ export default async function AdminEnquiriesPage({
       </div>
 
       <div className="mt-6 overflow-hidden rounded-stub bg-cream-50 shadow-card ring-1 ring-forest-900/5">
-        <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="bg-forest-900 text-cream-100">
             <tr>
               <th className="px-5 py-3 font-mono text-xs uppercase tracking-wider">Name</th>
@@ -110,7 +111,8 @@ export default async function AdminEnquiriesPage({
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
+        </div>
       </div>
     </div>
   );

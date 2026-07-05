@@ -37,7 +37,7 @@ export default async function AdminApplicationsPage() {
 
       <div className="mt-8 flex flex-col gap-4">
         {applications.length === 0 && (
-          <div className="rounded-stub bg-cream-50 p-8 text-center text-ink-500 shadow-card ring-1 ring-forest-900/5">
+          <div className="rounded-stub bg-cream-50 p-5 sm:p-8 text-center text-ink-500 shadow-card ring-1 ring-forest-900/5">
             No applications yet.
           </div>
         )}

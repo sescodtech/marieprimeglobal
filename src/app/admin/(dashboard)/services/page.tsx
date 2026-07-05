@@ -8,7 +8,7 @@ export default async function AdminServicesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl font-semibold text-forest-900">Services</h1>
           <p className="mt-1 text-sm text-ink-500">
@@ -18,7 +18,7 @@ export default async function AdminServicesPage() {
         </div>
         <Link
           href="/admin/services/new"
-          className="inline-flex items-center gap-2 rounded-stub bg-forest-700 px-5 py-2.5 text-sm font-semibold text-cream-50 hover:bg-forest-800"
+          className="inline-flex items-center justify-center gap-2 rounded-stub bg-forest-700 px-5 py-2.5 text-sm font-semibold text-cream-50 hover:bg-forest-800"
         >
           <Plus size={16} />
           Add service
@@ -26,7 +26,8 @@ export default async function AdminServicesPage() {
       </div>
 
       <div className="mt-8 overflow-hidden rounded-stub bg-cream-50 shadow-card ring-1 ring-forest-900/5">
-        <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="bg-forest-900 text-cream-100">
             <tr>
               <th className="px-5 py-3 font-mono text-xs uppercase tracking-wider">Route</th>
@@ -82,7 +83,8 @@ export default async function AdminServicesPage() {
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
+        </div>
       </div>
     </div>
   );

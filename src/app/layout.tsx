@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Manrope, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { FloatingWhatsApp } from "@/components/ui/FloatingWhatsApp";
+import { SiteChrome } from "@/components/layout/SiteChrome";
 import { siteContent } from "@/lib/data";
 import { getContactInfo, getSiteLogo } from "@/lib/content";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -102,10 +100,9 @@ export default async function RootLayout({
         <JsonLd data={organizationSchema} />
       </head>
       <body className="font-body">
-        <Header whatsapp={contact.whatsapp} logoUrl={logoUrl} />
-        <main>{children}</main>
-        <Footer />
-        <FloatingWhatsApp whatsapp={contact.whatsapp} />
+        <SiteChrome whatsapp={contact.whatsapp} logoUrl={logoUrl}>
+          {children}
+        </SiteChrome>
       </body>
     </html>
   );
