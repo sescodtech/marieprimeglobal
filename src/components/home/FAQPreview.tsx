@@ -14,7 +14,7 @@ export async function FAQPreview() {
   if (faqs.length === 0) return null;
 
   return (
-    <section className="bg-cream-100 py-24 lg:py-32">
+    <section className="bg-cream-100 pt-10 pb-24 lg:pt-14 lg:pb-32">
       <div className="mx-auto max-w-4xl px-6 lg:px-10">
         <Reveal className="text-center">
           <Eyebrow className="justify-center">Common Questions</Eyebrow>

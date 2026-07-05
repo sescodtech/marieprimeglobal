@@ -18,7 +18,7 @@ export function ProcessTimeline() {
   const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
-    <section className="bg-forest-800 py-24 text-cream-50 lg:py-32">
+    <section className="bg-forest-800 pt-10 pb-24 text-cream-50 lg:pt-14 lg:pb-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal>
           <Eyebrow light>Client Journey</Eyebrow>

@@ -7,7 +7,7 @@ export async function ContactCTA() {
   const contact = await getContactInfo();
 
   return (
-    <section className="bg-forest-900 py-24 text-cream-50 lg:py-28">
+    <section className="bg-forest-900 pt-24 pb-10 text-cream-50 lg:pt-28 lg:pb-14">
       <div className="mx-auto max-w-4xl px-6 text-center lg:px-10">
         <Reveal>
           <h2 className="font-display text-3xl font-medium leading-tight sm:text-4xl">

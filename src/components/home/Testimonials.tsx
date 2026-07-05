@@ -10,7 +10,7 @@ export async function Testimonials() {
   });
 
   return (
-    <section className="bg-cream-100 py-24 lg:py-32">
+    <section className="bg-cream-100 pt-24 pb-10 lg:pt-32 lg:pb-14">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal className="mx-auto max-w-2xl text-center">
           <Eyebrow className="justify-center">Client Testimonials</Eyebrow>

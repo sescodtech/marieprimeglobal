@@ -5,7 +5,7 @@ import { Reveal } from "@/components/ui/Reveal";
 
 export function WhyChoose() {
   return (
-    <section className="bg-forest-800 py-24 text-cream-50 lg:py-32">
+    <section className="bg-forest-800 pt-24 pb-10 text-cream-50 lg:pt-32 lg:pb-14">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="grid gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
           <Reveal>
