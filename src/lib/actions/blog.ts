@@ -1,5 +1,6 @@
 "use server";
 
+import { requireAdmin } from "@/lib/actions/require-admin";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -36,6 +37,7 @@ function parseFormData(formData: FormData) {
 }
 
 export async function createBlogPost(formData: FormData) {
+  await requireAdmin();
   const data = parseFormData(formData);
   await prisma.blogPost.create({ data });
   revalidatePath("/admin/blog");
@@ -46,6 +48,7 @@ export async function createBlogPost(formData: FormData) {
 }
 
 export async function updateBlogPost(id: string, formData: FormData) {
+  await requireAdmin();
   const data = parseFormData(formData);
   await prisma.blogPost.update({ where: { id }, data });
   revalidatePath("/admin/blog");
@@ -57,6 +60,7 @@ export async function updateBlogPost(id: string, formData: FormData) {
 
 export async function deleteBlogPost(id: string) {
   "use server";
+  await requireAdmin();
   await prisma.blogPost.delete({ where: { id } });
   revalidatePath("/admin/blog");
   revalidatePath("/blog");
@@ -66,6 +70,7 @@ export async function deleteBlogPost(id: string) {
 
 export async function toggleBlogPostPublished(id: string, isPublished: boolean) {
   "use server";
+  await requireAdmin();
   await prisma.blogPost.update({ where: { id }, data: { isPublished } });
   revalidatePath("/admin/blog");
   revalidatePath("/blog");

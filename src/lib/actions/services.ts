@@ -1,5 +1,6 @@
 "use server";
 
+import { requireAdmin } from "@/lib/actions/require-admin";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -63,6 +64,7 @@ function parseFormData(formData: FormData) {
 }
 
 export async function createService(formData: FormData) {
+  await requireAdmin();
   const data = parseFormData(formData);
   await prisma.service.create({ data });
   revalidatePath("/admin/services");
@@ -73,6 +75,7 @@ export async function createService(formData: FormData) {
 }
 
 export async function updateService(id: string, formData: FormData) {
+  await requireAdmin();
   const data = parseFormData(formData);
   await prisma.service.update({ where: { id }, data });
   revalidatePath("/admin/services");
@@ -84,6 +87,7 @@ export async function updateService(id: string, formData: FormData) {
 
 export async function deleteService(id: string) {
   "use server";
+  await requireAdmin();
   await prisma.service.delete({ where: { id } });
   revalidatePath("/admin/services");
   revalidatePath("/services");
@@ -93,6 +97,7 @@ export async function deleteService(id: string) {
 
 export async function toggleServicePublished(id: string, isPublished: boolean) {
   "use server";
+  await requireAdmin();
   await prisma.service.update({ where: { id }, data: { isPublished } });
   revalidatePath("/admin/services");
   revalidatePath("/services");

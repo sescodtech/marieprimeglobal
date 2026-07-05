@@ -1,5 +1,6 @@
 "use server";
 
+import { requireAdmin } from "@/lib/actions/require-admin";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -12,6 +13,7 @@ const schema = z.object({
 });
 
 export async function updateDirectorProfile(formData: FormData) {
+  await requireAdmin();
   const data = schema.parse({
     name: formData.get("name"),
     position: formData.get("position"),

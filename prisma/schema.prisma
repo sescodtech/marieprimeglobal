@@ -21,14 +21,30 @@ enum AdminRole {
 }
 
 model Admin {
-  id           String    @id @default(cuid())
-  name         String
-  email        String    @unique
-  passwordHash String
-  role         AdminRole @default(EDITOR)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  lastLoginAt  DateTime?
+  id                 String              @id @default(cuid())
+  name               String
+  email              String              @unique
+  passwordHash       String
+  role               AdminRole           @default(EDITOR)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  lastLoginAt        DateTime?
+  passwordResetTokens PasswordResetToken[]
+}
+
+// Single-use, time-limited tokens for the "Forgot password" flow. A row is
+// created when a reset is requested and deleted/marked used once redeemed,
+// so a leaked or old email link can never be replayed.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  admin     Admin     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  adminId   String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([adminId])
 }
 
 // ---------------------------------------------------------------------------

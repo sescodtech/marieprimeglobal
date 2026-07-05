@@ -1,5 +1,6 @@
 "use server";
 
+import { requireAdmin } from "@/lib/actions/require-admin";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -32,6 +33,7 @@ export async function subscribeToNewsletter(
 }
 
 export async function deleteSubscriber(id: string) {
+  await requireAdmin();
   await prisma.newsletterSubscriber.delete({ where: { id } });
   revalidatePath("/admin/newsletter");
 }

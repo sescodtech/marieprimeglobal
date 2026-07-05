@@ -1,5 +1,6 @@
 "use server";
 
+import { requireAdmin } from "@/lib/actions/require-admin";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -19,6 +20,7 @@ const SETTINGS_MAP: Record<string, string> = {
 };
 
 export async function updateSiteSettings(formData: FormData) {
+  await requireAdmin();
   const entries = Object.keys(SETTINGS_MAP).map((key) => ({
     key,
     value: String(formData.get(key) ?? ""),

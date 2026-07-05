@@ -1,5 +1,6 @@
 "use server";
 
+import { requireAdmin } from "@/lib/actions/require-admin";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -13,6 +14,7 @@ const schema = z.object({
 });
 
 export async function updateSeoSetting(formData: FormData) {
+  await requireAdmin();
   const data = schema.parse({
     page: formData.get("page"),
     metaTitle: formData.get("metaTitle"),

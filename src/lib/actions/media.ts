@@ -1,10 +1,12 @@
 "use server";
 
+import { requireAdmin } from "@/lib/actions/require-admin";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { cloudinary } from "@/lib/cloudinary";
 
 export async function deleteMediaAsset(id: string) {
+  await requireAdmin();
   const asset = await prisma.mediaAsset.findUnique({ where: { id } });
   if (!asset) return;
 

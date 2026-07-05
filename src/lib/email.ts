@@ -56,6 +56,42 @@ export async function sendEnquiryNotification(enquiry: {
   }
 }
 
+export async function sendPasswordResetEmail(to: string, resetUrl: string) {
+  if (!resend) {
+    // RESEND_API_KEY isn't configured yet — fail safe by logging the link
+    // so the flow is still usable (and testable) in local/dev environments
+    // before email sending is wired up in production.
+    console.warn(
+      `[email] RESEND_API_KEY not set — password reset link for ${to}: ${resetUrl}`
+    );
+    return;
+  }
+
+  try {
+    await resend.emails.send({
+      from: "MariePrime Admin <notifications@marieprimeglobal.com>",
+      to,
+      subject: "Reset your MariePrime admin password",
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px;">
+          <h2 style="color:#1B4332;">Reset your password</h2>
+          <p>We received a request to reset the password for this admin account.</p>
+          <p>This link expires in 1 hour and can only be used once.</p>
+          <p style="margin-top:24px;">
+            <a href="${resetUrl}" style="color:#C9A876;">Reset password →</a>
+          </p>
+          <p style="margin-top:24px; font-size: 12px; color: #6b7280;">
+            If you didn't request this, you can safely ignore this email —
+            your password will not be changed.
+          </p>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("[email] failed to send password reset email:", error);
+  }
+}
+
 function escapeHtml(value: string) {
   return value
     .replace(/&/g, "&amp;")
