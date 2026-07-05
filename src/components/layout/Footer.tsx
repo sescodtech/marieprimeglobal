@@ -110,19 +110,6 @@ export async function Footer() {
                 </a>
               </li>
             </ul>
-
-            <h4 className="mt-10 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-gold-400">
-              <Clock size={13} />
-              Working Hours
-            </h4>
-            <dl className="mt-4 space-y-3 text-sm leading-6">
-              {contact.workingHours.map((row) => (
-                <div key={row.days}>
-                  <dt className="text-cream-200/80">{row.days}</dt>
-                  <dd className="mt-0.5 font-medium text-cream-100/90">{row.hours}</dd>
-                </div>
-              ))}
-            </dl>
           </div>
 
           {/* Newsletter */}
@@ -134,6 +121,24 @@ export async function Footer() {
               Occasional updates on travel, visas and business services. No spam.
             </p>
             <FooterNewsletterForm />
+          </div>
+        </div>
+
+        {/* Working Hours — given its own full-width row so day and time always
+            sit comfortably on one line, instead of being squeezed into a
+            narrow grid column. */}
+        <div className="mt-12 border-t border-cream-50/10 pt-8">
+          <h4 className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-gold-400">
+            <Clock size={13} />
+            Working Hours
+          </h4>
+          <div className="mt-4 flex flex-wrap gap-x-10 gap-y-2 text-sm">
+            {contact.workingHours.map((row) => (
+              <div key={row.days} className="flex items-baseline gap-2 whitespace-nowrap">
+                <span className="text-cream-200/80">{row.days}</span>
+                <span className="font-medium text-cream-100/90">{row.hours}</span>
+              </div>
+            ))}
           </div>
         </div>
 
