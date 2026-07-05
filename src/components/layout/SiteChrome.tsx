@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { FloatingWhatsApp } from "@/components/ui/FloatingWhatsApp";
 
 /**
@@ -12,13 +11,22 @@ import { FloatingWhatsApp } from "@/components/ui/FloatingWhatsApp";
  * its own sidebar, which is what made the admin dashboard feel so cramped
  * and confusing on mobile (two navs, two hamburgers, a giant footer under
  * every CMS page). /admin has its own header/sidebar, so it opts out here.
+ *
+ * NOTE: Footer is an async Server Component (it reads from Prisma/fs via
+ * lib/content.ts). It must NOT be imported directly into this "use client"
+ * file — that would force webpack to bundle it (and `fs`) for the browser
+ * and break the build. Instead, the server-side RootLayout renders <Footer />
+ * and passes the resulting element down here as a prop, exactly like
+ * `children`.
  */
 export function SiteChrome({
   children,
+  footer,
   whatsapp,
   logoUrl,
 }: {
   children: React.ReactNode;
+  footer: React.ReactNode;
   whatsapp: string;
   logoUrl: string | null;
 }) {
@@ -33,7 +41,7 @@ export function SiteChrome({
     <>
       <Header whatsapp={whatsapp} logoUrl={logoUrl} />
       <main>{children}</main>
-      <Footer />
+      {footer}
       <FloatingWhatsApp whatsapp={whatsapp} />
     </>
   );
