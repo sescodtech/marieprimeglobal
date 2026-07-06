@@ -11,6 +11,7 @@ const REMEMBER_ME_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 const DEFAULT_MAX_AGE = 8 * 60 * 60; // 8 hours
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
   session: { strategy: "jwt", maxAge: REMEMBER_ME_MAX_AGE },
   pages: {
     signIn: "/admin/login",
@@ -35,10 +36,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const valid = await bcrypt.compare(password, admin.passwordHash);
         if (!valid) return null;
 
-        await prisma.admin.update({
-          where: { id: admin.id },
-          data: { lastLoginAt: new Date() },
-        });
+        // Best-effort only — a failure here must never block a successful
+        // login. Before this fix, an unhandled error from this write would
+        // propagate out of authorize() and NextAuth would report it as a
+        // generic "server configuration" problem instead of letting a
+        // correct password actually sign the admin in.
+        try {
+          await prisma.admin.update({
+            where: { id: admin.id },
+            data: { lastLoginAt: new Date() },
+          });
+        } catch (error) {
+          console.error("[auth] Failed to update lastLoginAt (non-fatal):", error);
+        }
 
         return {
           id: admin.id,
