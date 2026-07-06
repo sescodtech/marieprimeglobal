@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { authConfig } from "@/lib/auth.config";
 
 // Session lifetime: 30 days if "Remember Me" was checked at login,
 // otherwise 8 hours. `session.maxAge` below is the outer ceiling (30 days);
@@ -10,12 +11,13 @@ import { prisma } from "@/lib/prisma";
 const REMEMBER_ME_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 const DEFAULT_MAX_AGE = 8 * 60 * 60; // 8 hours
 
+// This file is the full config — Credentials provider, bcrypt, Prisma — and
+// must only ever run in the Node.js runtime (Server Actions, Route
+// Handlers). It is never imported by middleware; see `auth.config.ts` for
+// the Edge-safe subset that middleware uses instead.
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  trustHost: true,
+  ...authConfig,
   session: { strategy: "jwt", maxAge: REMEMBER_ME_MAX_AGE },
-  pages: {
-    signIn: "/admin/login",
-  },
   providers: [
     Credentials({
       name: "credentials",
@@ -37,10 +39,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!valid) return null;
 
         // Best-effort only — a failure here must never block a successful
-        // login. Before this fix, an unhandled error from this write would
-        // propagate out of authorize() and NextAuth would report it as a
-        // generic "server configuration" problem instead of letting a
-        // correct password actually sign the admin in.
+        // login.
         try {
           await prisma.admin.update({
             where: { id: admin.id },
@@ -61,6 +60,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    ...authConfig.callbacks,
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role;
