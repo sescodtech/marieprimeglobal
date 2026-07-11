@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Mail, Phone, MapPin, MessageCircle, Instagram, Linkedin, Facebook } from "lucide-react";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Reveal } from "@/components/ui/Reveal";
@@ -110,7 +111,9 @@ export default async function ContactPage() {
                 We typically respond within 24–48 hours.
               </p>
               <div className="mt-7">
-                <ContactForm />
+                <Suspense fallback={null}>
+                  <ContactForm />
+                </Suspense>
               </div>
             </div>
           </Reveal>

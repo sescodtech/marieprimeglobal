@@ -51,6 +51,8 @@ model Admin {
   notifications       Notification[]
   assignedApplications ServiceApplication[]
   applicationNotes     ApplicationNote[]
+  assignedEnquiries    Enquiry[]
+  enquiryNotes         EnquiryNote[]
 }
 
 // Single-use, time-limited tokens for the "Forgot password" flow. A row is
@@ -84,27 +86,37 @@ model SiteSetting {
   updatedAt DateTime @updatedAt
 }
 
+enum ServiceApplicationMode {
+  ONLINE_APPLICATION
+  ENQUIRY_ONLY
+}
+
 model Service {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  title       String
-  routeCode   String // short boarding-pass-style code, e.g. "MPG-VISA"
-  routeFrom   String // boarding-pass "from" label, e.g. "LOS"
-  routeTo     String // boarding-pass "to" label, e.g. "ANY"
-  summary     String
-  description String   @db.Text // used as the detail-page "Overview" section
-  tagline     String? // short line shown under the H1 on the detail page
-  benefits    Json? // ServiceBenefit[] — { title, description }[]
-  process     Json? // ServiceProcessStep[] — { step, title, description }[]
-  faqs        Json? // ServiceFaq[] — { question, answer }[]
-  icon        String? // icon key rendered on the frontend
-  imageUrl    String?
-  order       Int      @default(0)
-  isPublished Boolean  @default(true)
+  id              String                 @id @default(cuid())
+  slug            String                 @unique
+  title           String
+  routeCode       String // short boarding-pass-style code, e.g. "MPG-VISA"
+  routeFrom       String // boarding-pass "from" label, e.g. "LOS"
+  routeTo         String // boarding-pass "to" label, e.g. "ANY"
+  summary         String
+  description     String                 @db.Text // used as the detail-page "Overview" section
+  tagline         String? // short line shown under the H1 on the detail page
+  benefits        Json? // ServiceBenefit[] — { title, description }[]
+  process         Json? // ServiceProcessStep[] — { step, title, description }[]
+  faqs            Json? // ServiceFaq[] — { question, answer }[]
+  requirements    Json? // string[] — plain-language list of what a client needs to apply
+  processingTime  String? // e.g. "3–5 business days"
+  applicationMode ServiceApplicationMode @default(ONLINE_APPLICATION)
+  icon            String? // icon key rendered on the frontend
+  imageUrl        String?
+  bannerUrl       String?
+  order           Int                    @default(0)
+  isPublished     Boolean                @default(true)
+  isArchived      Boolean                @default(false)
   metaTitle       String?
   metaDescription String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
 }
 
 model BlogPost {
@@ -224,8 +236,8 @@ model MediaAsset {
 
 enum EnquiryStatus {
   NEW
-  IN_PROGRESS
-  RESPONDED
+  CONTACTED
+  CONVERTED
   CLOSED
 }
 
@@ -244,11 +256,29 @@ model Enquiry {
   email           String
   phone           String
   serviceInterest ServiceInterest @default(GENERAL_ENQUIRY)
-  message         String          @db.Text
+  subject         String? // added Phase 3 — nullable so existing rows aren't broken; new submissions always set it
+  message          String          @db.Text
   status          EnquiryStatus   @default(NEW)
-  adminNote       String?         @db.Text
+  adminNote       String?         @db.Text // legacy single-note field, kept for old data — new notes use EnquiryNote below
+  assignedStaff   Admin?          @relation(fields: [assignedStaffId], references: [id], onDelete: SetNull)
+  assignedStaffId String?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+
+  notes EnquiryNote[]
+}
+
+model EnquiryNote {
+  id         String   @id @default(cuid())
+  enquiry    Enquiry  @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  enquiryId  String
+  author     Admin?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId   String?
+  authorName String
+  body       String   @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([enquiryId])
 }
 
 // ---------------------------------------------------------------------------
@@ -317,11 +347,15 @@ model Notification {
   status           NotificationStatus  @default(PENDING)
   title            String
   body             String              @db.Text
+  link             String? // e.g. /admin/applications/{id} — where clicking the notification goes
+  isRead           Boolean             @default(false)
+  readAt           DateTime?
   metadata         Json?
   createdAt        DateTime            @default(now())
   sentAt           DateTime?
 
   @@index([recipientAdminId])
+  @@index([recipientAdminId, isRead])
 }
 
 // ---------------------------------------------------------------------------

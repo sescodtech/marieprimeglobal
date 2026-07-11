@@ -4,6 +4,8 @@ import { getServiceApplicationConfig } from "@/lib/applicationForms/config";
 import { buildApplicationSchema } from "@/lib/applicationForms/schema";
 import { generateReferenceNumber } from "@/lib/applicationForms/referenceNumber";
 import { sendApplicationConfirmationEmail, sendApplicationAdminNotification } from "@/lib/email";
+import { notifyAdminsWithPermission } from "@/lib/notifications";
+import { PERMISSIONS } from "@/lib/permissions";
 
 type UploadedDocumentPayload = {
   url: string;
@@ -101,6 +103,11 @@ export async function POST(request: Request) {
       applicantName: application.applicantName,
       applicantEmail: application.applicantEmail,
       serviceTitle: application.serviceTitle,
+    });
+    void notifyAdminsWithPermission(PERMISSIONS.VIEW_APPLICATIONS, {
+      title: "New application submitted",
+      body: `${application.applicantName} applied for ${application.serviceTitle} (${application.referenceNumber}).`,
+      link: `/admin/applications/${application.id}`,
     });
 
     return NextResponse.json({ id: application.id, referenceNumber: application.referenceNumber }, { status: 201 });

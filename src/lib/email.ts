@@ -56,6 +56,45 @@ export async function sendEnquiryNotification(enquiry: {
   }
 }
 
+export async function sendEnquiryConfirmationEmail(enquiry: {
+  fullName: string;
+  email: string;
+  serviceInterest: string;
+  subject?: string | null;
+}) {
+  if (!resend) {
+    console.warn(`[email] RESEND_API_KEY not set — enquiry confirmation for ${enquiry.email}`);
+    return;
+  }
+
+  const contactEmail = process.env.NOTIFY_EMAIL_TO || "mariaiyabi@gmail.com";
+
+  try {
+    await resend.emails.send({
+      from: "MariePrime Global <notifications@marieprimeglobal.com>",
+      to: enquiry.email,
+      subject: "We've received your enquiry",
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px;">
+          <h2 style="color:#1B4332;">Thanks for reaching out</h2>
+          <p>Hi ${escapeHtml(enquiry.fullName)},</p>
+          <p>
+            We've received your enquiry${enquiry.subject ? ` about "${escapeHtml(enquiry.subject)}"` : ""}
+            regarding ${serviceLabels[enquiry.serviceInterest] ?? enquiry.serviceInterest}. A member of our team
+            will get back to you shortly.
+          </p>
+          <p style="margin-top:24px; font-size: 13px; color: #6b7280;">
+            In the meantime, you can reach us directly at
+            <a href="mailto:${contactEmail}" style="color:#C9A876;">${contactEmail}</a>.
+          </p>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("[email] failed to send enquiry confirmation email:", error);
+  }
+}
+
 export async function sendPasswordResetEmail(to: string, resetUrl: string) {
   if (!resend) {
     // RESEND_API_KEY isn't configured yet — fail safe by logging the link

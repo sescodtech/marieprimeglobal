@@ -1,6 +1,7 @@
 "use server";
 
-import { requireAdmin } from "@/lib/actions/require-admin";
+import { requirePermission } from "@/lib/actions/require-admin";
+import { PERMISSIONS } from "@/lib/permissions";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -25,7 +26,7 @@ function parseFormData(formData: FormData) {
 }
 
 export async function createFaq(formData: FormData) {
-  await requireAdmin();
+  await requirePermission(PERMISSIONS.MANAGE_FAQS);
   const data = parseFormData(formData);
   await prisma.faq.create({ data });
   revalidatePath("/admin/faq");
@@ -35,7 +36,7 @@ export async function createFaq(formData: FormData) {
 }
 
 export async function updateFaq(id: string, formData: FormData) {
-  await requireAdmin();
+  await requirePermission(PERMISSIONS.MANAGE_FAQS);
   const data = parseFormData(formData);
   await prisma.faq.update({ where: { id }, data });
   revalidatePath("/admin/faq");
@@ -46,7 +47,7 @@ export async function updateFaq(id: string, formData: FormData) {
 
 export async function deleteFaq(id: string) {
   "use server";
-  await requireAdmin();
+  await requirePermission(PERMISSIONS.MANAGE_FAQS);
   await prisma.faq.delete({ where: { id } });
   revalidatePath("/admin/faq");
   revalidatePath("/faq");
@@ -55,7 +56,7 @@ export async function deleteFaq(id: string) {
 
 export async function toggleFaqPublished(id: string, isPublished: boolean) {
   "use server";
-  await requireAdmin();
+  await requirePermission(PERMISSIONS.MANAGE_FAQS);
   await prisma.faq.update({ where: { id }, data: { isPublished } });
   revalidatePath("/admin/faq");
   revalidatePath("/faq");

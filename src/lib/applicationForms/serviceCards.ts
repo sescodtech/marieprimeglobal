@@ -34,11 +34,20 @@ export async function getApplyServiceCards(): Promise<ApplyServiceCard[]> {
   );
 
   const cmsServices = await prisma.service.findMany({
-    where: { slug: { in: cmsSlugs }, isPublished: true },
+    where: { slug: { in: cmsSlugs }, isPublished: true, isArchived: false },
   });
   const cmsBySlug = new Map(cmsServices.map((s) => [s.slug, s]));
 
-  return SERVICE_APPLICATION_TYPES.map((type) => {
+  return SERVICE_APPLICATION_TYPES.filter((type) => {
+    const config = SERVICE_APPLICATION_CONFIGS[type];
+    // Proof of Funds has no CMS record, so it's always available online.
+    if (!config.cmsSlug) return true;
+    const cms = cmsBySlug.get(config.cmsSlug);
+    // If the service hasn't been published/found yet, still show it using
+    // the built-in fallback copy rather than silently dropping it — but if
+    // it exists and is explicitly enquiry-only, respect that setting.
+    return cms ? cms.applicationMode !== "ENQUIRY_ONLY" : true;
+  }).map((type) => {
     const config = SERVICE_APPLICATION_CONFIGS[type];
     const cms = config.cmsSlug ? cmsBySlug.get(config.cmsSlug) : undefined;
     return {

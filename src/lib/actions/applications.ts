@@ -8,6 +8,7 @@ import { logAudit } from "@/lib/audit";
 import { PERMISSIONS } from "@/lib/permissions";
 import { STATUS_LABELS, TERMINAL_STATUSES } from "@/lib/applicationForms/status";
 import { sendApplicationStatusUpdateEmail } from "@/lib/email";
+import { createNotification } from "@/lib/notifications";
 
 const STATUS_VALUES = [
   "SUBMITTED",
@@ -93,6 +94,15 @@ export async function updateApplicationStatus(
     note: noteText,
   });
 
+  if (application.assignedStaffId && application.assignedStaffId !== actor.id) {
+    void createNotification({
+      recipientAdminId: application.assignedStaffId,
+      title: "Application status changed",
+      body: `${application.referenceNumber} is now "${STATUS_LABELS[parsedStatus.data]}".`,
+      link: applicationPath(id),
+    });
+  }
+
   revalidatePath(applicationPath(id));
   revalidatePath("/admin/applications");
   return { success: true };
@@ -145,7 +155,7 @@ export async function requestAdditionalDocuments(
 /** Admin/Super Admin only — assigns (or unassigns, with an empty value) the
  *  application to a Staff or Admin account. */
 export async function assignStaff(id: string, staffId: string) {
-  const actor = await requirePermission(PERMISSIONS.REVIEW_APPLICATIONS);
+  const actor = await requirePermission(PERMISSIONS.ASSIGN_STAFF);
   const application = await prisma.serviceApplication.findUnique({ where: { id } });
   if (!application) return;
 
@@ -157,7 +167,26 @@ export async function assignStaff(id: string, staffId: string) {
     staffName = staff.name;
   }
 
-  await prisma.serviceApplication.update({ where: { id }, data: { assignedStaffId: nextStaffId } });
+  await prisma.$transaction([
+    prisma.serviceApplication.update({ where: { id }, data: { assignedStaffId: nextStaffId } }),
+    prisma.applicationStatusEvent.create({
+      data: {
+        applicationId: id,
+        status: application.status,
+        note: `Assigned to ${staffName}.`,
+        actorName: actor.name,
+      },
+    }),
+  ]);
+
+  if (nextStaffId) {
+    void createNotification({
+      recipientAdminId: nextStaffId,
+      title: "Application assigned to you",
+      body: `${application.referenceNumber} (${application.serviceTitle}) was assigned to you by ${actor.name}.`,
+      link: applicationPath(id),
+    });
+  }
 
   await logAudit({
     actor,

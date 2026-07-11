@@ -86,6 +86,24 @@ export function ServiceFormFields({ service }: { service?: Service }) {
         <input name="imageUrl" defaultValue={service?.imageUrl ?? ""} className="input" />
       </Field>
 
+      <Field label="Banner URL (optional — wide hero image, pick from Media Library)">
+        <input name="bannerUrl" defaultValue={service?.bannerUrl ?? ""} className="input" />
+      </Field>
+
+      <Field label="Processing time (optional, e.g. '3–5 business days')">
+        <input name="processingTime" defaultValue={service?.processingTime ?? ""} className="input" />
+      </Field>
+
+      <Field label="Requirements (one per line, shown to clients before they apply)">
+        <textarea
+          name="requirements"
+          defaultValue={asStringList(service?.requirements).join("\n")}
+          rows={4}
+          className="input resize-none"
+          placeholder={"Valid means of ID\nProof of address\nPassport photograph"}
+        />
+      </Field>
+
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Meta title (SEO, optional)">
           <input name="metaTitle" defaultValue={service?.metaTitle ?? ""} className="input" />
@@ -95,7 +113,16 @@ export function ServiceFormFields({ service }: { service?: Service }) {
         </Field>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="rounded-stub bg-forest-700/5 p-4">
+        <Field label="Application mode — how clients start with this service">
+          <select name="applicationMode" defaultValue={service?.applicationMode ?? "ONLINE_APPLICATION"} className="input">
+            <option value="ONLINE_APPLICATION">Online application (shows "Apply Now" + "Make an Enquiry")</option>
+            <option value="ENQUIRY_ONLY">Enquiry only (hides "Apply Now", shows only "Make an Enquiry")</option>
+          </select>
+        </Field>
+      </div>
+
+      <div className="grid gap-5 sm:grid-cols-3">
         <Field label="Display order">
           <input name="order" type="number" defaultValue={service?.order ?? 0} className="input" />
         </Field>
@@ -108,9 +135,23 @@ export function ServiceFormFields({ service }: { service?: Service }) {
           />
           Published (visible on the live site)
         </label>
+        <label className="flex items-center gap-2 pt-6 text-sm text-ink-700">
+          <input
+            type="checkbox"
+            name="isArchived"
+            defaultChecked={service?.isArchived ?? false}
+            className="h-4 w-4 rounded border-forest-900/30 text-forest-700"
+          />
+          Archived (hidden everywhere, kept for records)
+        </label>
       </div>
     </div>
   );
+}
+
+function asStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((v): v is string => typeof v === "string");
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {

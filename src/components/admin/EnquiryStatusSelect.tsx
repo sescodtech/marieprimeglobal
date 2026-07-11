@@ -18,8 +18,8 @@ export function EnquiryStatusSelect({
         className="rounded-stub border border-forest-900/15 bg-cream-100 px-3 py-2 text-xs font-semibold uppercase tracking-wider"
       >
         <option value="NEW">New</option>
-        <option value="IN_PROGRESS">In Progress</option>
-        <option value="RESPONDED">Responded</option>
+        <option value="CONTACTED">Contacted</option>
+        <option value="CONVERTED">Converted</option>
         <option value="CLOSED">Closed</option>
       </select>
     </form>

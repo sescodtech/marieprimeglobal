@@ -30,6 +30,7 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
 
   const role = session.user.role;
   const canReviewAll = hasPermission(role, PERMISSIONS.REVIEW_APPLICATIONS);
+  const canAssignStaff = hasPermission(role, PERMISSIONS.ASSIGN_STAFF);
   const canViewAssignedOnly = hasPermission(role, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS);
   const isAssignedToMe = application.assignedStaffId === session.user.id;
 
@@ -40,7 +41,7 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
   const config = getServiceApplicationConfig(application.serviceType);
   const formValues = (application.formData ?? {}) as Record<string, string>;
 
-  const staffOptions = canReviewAll
+  const staffOptions = canAssignStaff
     ? (
         await prisma.admin.findMany({
           where: { role: { in: ["SUPER_ADMIN", "ADMIN", "STAFF"] }, status: "ACTIVE" },
@@ -163,7 +164,7 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
             </div>
           )}
 
-          {canReviewAll && (
+          {canAssignStaff && (
             <div className="rounded-stub bg-cream-50 p-6 shadow-card ring-1 ring-forest-900/5">
               <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-gold-600">Assigned Staff</h2>
               <div className="mt-3">

@@ -7,17 +7,31 @@
 export type AdminRole = "SUPER_ADMIN" | "ADMIN" | "STAFF";
 
 export const PERMISSIONS = {
-  // Day-to-day content management: Services, Blog, FAQ, Testimonials,
-  // Careers, Director profile, Media library, SEO settings.
-  MANAGE_WEBSITE: "MANAGE_WEBSITE",
-  // Site-wide settings: contact info, social links, working hours.
+  // Service configuration is Super Admin only as of Phase 3: create/edit/
+  // delete/archive services, application mode (online application vs
+  // enquiry-only), documents config, FAQs/requirements/processing time,
+  // display order.
+  MANAGE_SERVICES: "MANAGE_SERVICES",
+  // Day-to-day content Admins are still trusted with.
+  MANAGE_BLOG: "MANAGE_BLOG",
+  MANAGE_TESTIMONIALS: "MANAGE_TESTIMONIALS",
+  MANAGE_FAQS: "MANAGE_FAQS",
+  MANAGE_CAREERS: "MANAGE_CAREERS",
+  // Site-wide settings (contact info, social links, working hours, email
+  // templates) — Super Admin only as of Phase 3.
   MANAGE_SETTINGS: "MANAGE_SETTINGS",
   MANAGE_EMAIL_TEMPLATES: "MANAGE_EMAIL_TEMPLATES",
 
-  // Client enquiries / future service applications.
+  // Client enquiries.
+  MANAGE_ENQUIRIES: "MANAGE_ENQUIRIES",
+
+  // Client service applications.
   VIEW_APPLICATIONS: "VIEW_APPLICATIONS",
   REVIEW_APPLICATIONS: "REVIEW_APPLICATIONS",
   VIEW_ASSIGNED_APPLICATIONS: "VIEW_ASSIGNED_APPLICATIONS",
+  // Assigning an application/enquiry to a staff member — distinct from
+  // ASSIGN_ROLES, which governs changing a *user's* role.
+  ASSIGN_STAFF: "ASSIGN_STAFF",
 
   // Analytics / reporting.
   VIEW_ANALYTICS: "VIEW_ANALYTICS",
@@ -44,13 +58,17 @@ const ALL_PERMISSIONS = Object.values(PERMISSIONS) as Permission[];
 const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
   SUPER_ADMIN: ALL_PERMISSIONS,
   ADMIN: [
-    PERMISSIONS.MANAGE_WEBSITE,
-    PERMISSIONS.MANAGE_SETTINGS,
-    PERMISSIONS.MANAGE_EMAIL_TEMPLATES,
+    PERMISSIONS.MANAGE_BLOG,
+    PERMISSIONS.MANAGE_TESTIMONIALS,
+    PERMISSIONS.MANAGE_FAQS,
+    PERMISSIONS.MANAGE_CAREERS,
+    PERMISSIONS.MANAGE_ENQUIRIES,
     PERMISSIONS.VIEW_APPLICATIONS,
     PERMISSIONS.REVIEW_APPLICATIONS,
+    PERMISSIONS.ASSIGN_STAFF,
     PERMISSIONS.VIEW_ANALYTICS,
     PERMISSIONS.VIEW_REPORTS,
+    PERMISSIONS.EXPORT_REPORTS,
     PERMISSIONS.MANAGE_STAFF,
   ],
   STAFF: [PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS],

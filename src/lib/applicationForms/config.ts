@@ -61,7 +61,7 @@ export const SERVICE_APPLICATION_CONFIGS: Record<ServiceApplicationType, Service
 
   PROOF_OF_FUNDS: {
     type: "PROOF_OF_FUNDS",
-    cmsSlug: "travel-loans",
+    cmsSlug: null,
     title: "Proof of Funds (POF)",
     summary: "Verifiable proof-of-funds documentation to support your visa, travel or institutional requirements.",
     documents: [
@@ -71,6 +71,15 @@ export const SERVICE_APPLICATION_CONFIGS: Record<ServiceApplicationType, Service
       { id: "signature", label: "Signature", required: true, accept: "image/jpeg,image/png" },
     ],
     sections: [
+      {
+        id: "pofInfo",
+        title: "POF Information",
+        fields: [
+          { id: "narration", label: "Narration", type: "textarea", required: true, placeholder: "What is this proof of funds for?" },
+          { id: "tenor", label: "Tenor", type: "text", required: true, placeholder: "e.g. 3 months" },
+          { id: "amountNeeded", label: "Amount needed", type: "number", required: true },
+        ],
+      },
       {
         id: "applicantInfo",
         title: "Applicant Information",
@@ -98,15 +107,6 @@ export const SERVICE_APPLICATION_CONFIGS: Record<ServiceApplicationType, Service
           { id: "email", label: "Email address", type: "email", required: true },
           { id: "bankName", label: "Bank name", type: "text", required: true },
           { id: "accountNumber", label: "Account number", type: "text", required: true, minLength: 10 },
-        ],
-      },
-      {
-        id: "pofInfo",
-        title: "POF Information",
-        fields: [
-          { id: "narration", label: "Narration", type: "textarea", required: true, placeholder: "What is this proof of funds for?" },
-          { id: "tenor", label: "Tenor", type: "text", required: true, placeholder: "e.g. 3 months" },
-          { id: "amountNeeded", label: "Amount needed", type: "number", required: true },
         ],
       },
       {
@@ -311,8 +311,8 @@ export function getServiceApplicationConfig(type: string): ServiceApplicationCon
 
 export const SERVICE_APPLICATION_TYPES = Object.keys(SERVICE_APPLICATION_CONFIGS) as ServiceApplicationType[];
 
-/** URL-friendly path segment used for /apply/[pathSlug]. Falls back to a
- *  fixed slug for any application type without a matching CMS service. */
+/** URL-friendly path segment used for /apply/[pathSlug]. Falls back to the
+ *  lowercased type when there's no matching CMS service (Proof of Funds). */
 export function getApplicationPathSlug(type: ServiceApplicationType): string {
   const config = SERVICE_APPLICATION_CONFIGS[type];
   return config.cmsSlug ?? "proof-of-funds";

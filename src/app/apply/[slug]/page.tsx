@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Reveal } from "@/components/ui/Reveal";
 import { prisma } from "@/lib/prisma";
@@ -33,6 +33,13 @@ export default async function ApplyServicePage({ params }: { params: Promise<Par
 
   const config = SERVICE_APPLICATION_CONFIGS[type];
   const cmsService = config.cmsSlug ? await prisma.service.findUnique({ where: { slug: config.cmsSlug } }) : null;
+
+  // Super Admin can configure a service as "Enquiry Only" — Apply Now is
+  // hidden site-wide for it, and a direct visit here goes to the enquiry
+  // form instead. No "unavailable" message, just the right form.
+  if (cmsService?.applicationMode === "ENQUIRY_ONLY") {
+    redirect(`/contact?service=${config.cmsSlug}`);
+  }
 
   const title = cmsService?.title ?? config.title;
   const description = cmsService?.description ?? config.summary;

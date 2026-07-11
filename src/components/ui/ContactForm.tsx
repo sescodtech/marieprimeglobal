@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -15,11 +16,20 @@ const serviceOptions = [
   { value: "GENERAL_ENQUIRY", label: "General Enquiry" },
 ];
 
+// Maps a Service CMS slug (e.g. from ?service=visa-travel-assistance) to the
+// closest matching enquiry category, so arriving from a service page
+// auto-selects the right option instead of always defaulting to General.
+const SLUG_TO_SERVICE_INTEREST: Record<string, string> = {
+  "visa-travel-assistance": "VISA_IMMIGRATION",
+  "flight-booking": "FLIGHT_BOOKING",
+};
+
 const schema = z.object({
   fullName: z.string().min(2, "Enter your full name"),
   email: z.string().email("Enter a valid email address"),
   phone: z.string().min(7, "Enter a valid phone number"),
   serviceInterest: z.string(),
+  subject: z.string().min(2, "Give your enquiry a short subject"),
   message: z.string().min(10, "Tell us a little more about what you need"),
 });
 
@@ -27,6 +37,9 @@ type FormValues = z.infer<typeof schema>;
 
 export function ContactForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const searchParams = useSearchParams();
+  const serviceSlug = searchParams.get("service");
+  const defaultServiceInterest = (serviceSlug && SLUG_TO_SERVICE_INTEREST[serviceSlug]) || "GENERAL_ENQUIRY";
 
   const {
     register,
@@ -35,7 +48,7 @@ export function ContactForm() {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { serviceInterest: "GENERAL_ENQUIRY" },
+    defaultValues: { serviceInterest: defaultServiceInterest },
   });
 
   const onSubmit = async (data: FormValues) => {
@@ -99,6 +112,10 @@ export function ContactForm() {
           </select>
         </Field>
       </div>
+
+      <Field label="Subject" error={errors.subject?.message}>
+        <input {...register("subject")} className="input" placeholder="e.g. Visa documents for UK trip" />
+      </Field>
 
       <Field label="Your message" error={errors.message?.message}>
         <textarea

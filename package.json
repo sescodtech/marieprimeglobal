@@ -2,7 +2,7 @@
   "name": "marieprime-global-services",
   "version": "1.0.0",
   "private": true,
-  "description": "MariePrime Global Services — corporate website, CMS and admin platform",
+  "description": "MariePrime Global Services \u2014 corporate website, CMS and admin platform",
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && prisma migrate deploy && next build",
@@ -30,7 +30,9 @@
     "react-hook-form": "^7.54.2",
     "resend": "^4.0.1",
     "tailwind-merge": "^2.6.0",
-    "zod": "^3.24.1"
+    "zod": "^3.24.1",
+    "recharts": "^2.15.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

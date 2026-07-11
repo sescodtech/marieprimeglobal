@@ -18,28 +18,31 @@ import {
   Users,
   ScrollText,
   ClipboardList,
+  BarChart3,
+  FileBarChart,
+  Award,
   HelpCircle,
   Mail,
   Menu,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { hasPermission, PERMISSIONS } from "@/lib/permissions";
+import { hasPermission, PERMISSIONS, type Permission } from "@/lib/permissions";
 import { SignOutButton } from "@/components/admin/SignOutButton";
 
-const contentNavItems = [
-  { href: "/admin", label: "Overview", icon: LayoutDashboard },
-  { href: "/admin/services", label: "Services", icon: Briefcase },
-  { href: "/admin/blog", label: "Blog", icon: Newspaper },
-  { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
-  { href: "/admin/careers", label: "Careers", icon: UsersRound },
-  { href: "/admin/faq", label: "FAQs", icon: HelpCircle },
-  { href: "/admin/testimonials", label: "Testimonials", icon: Quote },
-  { href: "/admin/director", label: "Director Profile", icon: UserCircle },
-  { href: "/admin/media", label: "Media Library", icon: ImageIcon },
-  { href: "/admin/enquiries", label: "Enquiries", icon: Inbox },
-  { href: "/admin/seo", label: "SEO Settings", icon: Search },
-  { href: "/admin/settings", label: "Site Settings", icon: Settings },
+const contentNavItems: { href: string; label: string; icon: typeof LayoutDashboard; permission: Permission | null }[] = [
+  { href: "/admin", label: "Overview", icon: LayoutDashboard, permission: null },
+  { href: "/admin/services", label: "Services", icon: Briefcase, permission: PERMISSIONS.MANAGE_SERVICES },
+  { href: "/admin/blog", label: "Blog", icon: Newspaper, permission: PERMISSIONS.MANAGE_BLOG },
+  { href: "/admin/newsletter", label: "Newsletter", icon: Mail, permission: null },
+  { href: "/admin/careers", label: "Careers", icon: UsersRound, permission: PERMISSIONS.MANAGE_CAREERS },
+  { href: "/admin/faq", label: "FAQs", icon: HelpCircle, permission: PERMISSIONS.MANAGE_FAQS },
+  { href: "/admin/testimonials", label: "Testimonials", icon: Quote, permission: PERMISSIONS.MANAGE_TESTIMONIALS },
+  { href: "/admin/director", label: "Director Profile", icon: UserCircle, permission: null },
+  { href: "/admin/media", label: "Media Library", icon: ImageIcon, permission: null },
+  { href: "/admin/enquiries", label: "Enquiries", icon: Inbox, permission: PERMISSIONS.MANAGE_ENQUIRIES },
+  { href: "/admin/seo", label: "SEO Settings", icon: Search, permission: PERMISSIONS.MANAGE_SETTINGS },
+  { href: "/admin/settings", label: "Site Settings", icon: Settings, permission: PERMISSIONS.MANAGE_SETTINGS },
 ];
 
 const accountNavItem = { href: "/admin/account", label: "Account", icon: KeyRound };
@@ -49,9 +52,18 @@ export function AdminSidebar({ role }: { role?: string | null }) {
   const [open, setOpen] = useState(false);
 
   const navItems = [
-    ...contentNavItems,
+    ...contentNavItems.filter((item) => !item.permission || hasPermission(role, item.permission)),
     ...(hasPermission(role, PERMISSIONS.VIEW_APPLICATIONS) || hasPermission(role, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS)
       ? [{ href: "/admin/applications", label: "Applications", icon: ClipboardList }]
+      : []),
+    ...(hasPermission(role, PERMISSIONS.VIEW_APPLICATIONS) || hasPermission(role, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS)
+      ? [{ href: "/admin/staff-performance", label: "Staff Performance", icon: Award }]
+      : []),
+    ...(hasPermission(role, PERMISSIONS.VIEW_ANALYTICS)
+      ? [{ href: "/admin/analytics", label: "Analytics", icon: BarChart3 }]
+      : []),
+    ...(hasPermission(role, PERMISSIONS.VIEW_REPORTS)
+      ? [{ href: "/admin/reports", label: "Reports", icon: FileBarChart }]
       : []),
     ...(hasPermission(role, PERMISSIONS.MANAGE_STAFF)
       ? [{ href: "/admin/users", label: "Users", icon: Users }]

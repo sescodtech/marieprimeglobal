@@ -1,6 +1,7 @@
 "use server";
 
-import { requireAdmin } from "@/lib/actions/require-admin";
+import { requirePermission } from "@/lib/actions/require-admin";
+import { PERMISSIONS } from "@/lib/permissions";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -31,7 +32,7 @@ function parseFormData(formData: FormData) {
 }
 
 export async function createJobListing(formData: FormData) {
-  await requireAdmin();
+  await requirePermission(PERMISSIONS.MANAGE_CAREERS);
   const data = parseFormData(formData);
   await prisma.jobListing.create({ data });
   revalidatePath("/admin/careers");
@@ -40,7 +41,7 @@ export async function createJobListing(formData: FormData) {
 }
 
 export async function updateJobListing(id: string, formData: FormData) {
-  await requireAdmin();
+  await requirePermission(PERMISSIONS.MANAGE_CAREERS);
   const data = parseFormData(formData);
   await prisma.jobListing.update({ where: { id }, data });
   revalidatePath("/admin/careers");
@@ -50,7 +51,7 @@ export async function updateJobListing(id: string, formData: FormData) {
 
 export async function deleteJobListing(id: string) {
   "use server";
-  await requireAdmin();
+  await requirePermission(PERMISSIONS.MANAGE_CAREERS);
   await prisma.jobListing.delete({ where: { id } });
   revalidatePath("/admin/careers");
   revalidatePath("/careers");
@@ -58,7 +59,7 @@ export async function deleteJobListing(id: string) {
 
 export async function toggleJobListingPublished(id: string, isPublished: boolean) {
   "use server";
-  await requireAdmin();
+  await requirePermission(PERMISSIONS.MANAGE_CAREERS);
   await prisma.jobListing.update({ where: { id }, data: { isPublished } });
   revalidatePath("/admin/careers");
   revalidatePath("/careers");
