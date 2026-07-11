@@ -1,22 +1,38 @@
 -- NOTE: the AdminRole enum changes (EDITOR -> ADMIN rename, STAFF add) were
 -- moved to migration 20260709235959_add_rbac_enum_values so they commit in
 -- their own transaction before 'STAFF' is used below as a column default.
+--
+-- NOTE: this migration is written to be idempotent (safe to re-run) because
+-- a previous deploy attempt partially applied it before failing, leaving
+-- some objects (e.g. the AdminStatus enum) already present in the DB.
 
 -- CreateEnum
-CREATE TYPE "AdminStatus" AS ENUM ('ACTIVE', 'SUSPENDED');
+DO $$ BEGIN
+  CREATE TYPE "AdminStatus" AS ENUM ('ACTIVE', 'SUSPENDED');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "NotificationChannel" AS ENUM ('EMAIL', 'SYSTEM', 'SMS', 'WHATSAPP');
+DO $$ BEGIN
+  CREATE TYPE "NotificationChannel" AS ENUM ('EMAIL', 'SYSTEM', 'SMS', 'WHATSAPP');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "NotificationStatus" AS ENUM ('PENDING', 'SENT', 'FAILED');
+DO $$ BEGIN
+  CREATE TYPE "NotificationStatus" AS ENUM ('PENDING', 'SENT', 'FAILED');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- AlterTable
 ALTER TABLE "Admin"
-  ADD COLUMN "status" "AdminStatus" NOT NULL DEFAULT 'ACTIVE',
-  ADD COLUMN "canManageAdmins" BOOLEAN NOT NULL DEFAULT false,
-  ADD COLUMN "suspendedAt" TIMESTAMP(3),
-  ADD COLUMN "createdById" TEXT;
+  ADD COLUMN IF NOT EXISTS "status" "AdminStatus" NOT NULL DEFAULT 'ACTIVE',
+  ADD COLUMN IF NOT EXISTS "canManageAdmins" BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS "suspendedAt" TIMESTAMP(3),
+  ADD COLUMN IF NOT EXISTS "createdById" TEXT;
 
 -- AlterTable
 -- Existing rows keep whatever role they already had (SUPER_ADMIN, or the
@@ -24,10 +40,14 @@ ALTER TABLE "Admin"
 ALTER TABLE "Admin" ALTER COLUMN "role" SET DEFAULT 'STAFF';
 
 -- AddForeignKey
-ALTER TABLE "Admin" ADD CONSTRAINT "Admin_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "Admin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "Admin" ADD CONSTRAINT "Admin_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "Admin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateTable
-CREATE TABLE "AuditLog" (
+CREATE TABLE IF NOT EXISTS "AuditLog" (
     "id" TEXT NOT NULL,
     "actorId" TEXT,
     "actorName" TEXT NOT NULL,
@@ -45,16 +65,20 @@ CREATE TABLE "AuditLog" (
 );
 
 -- CreateIndex
-CREATE INDEX "AuditLog_actorId_idx" ON "AuditLog"("actorId");
+CREATE INDEX IF NOT EXISTS "AuditLog_actorId_idx" ON "AuditLog"("actorId");
 
 -- CreateIndex
-CREATE INDEX "AuditLog_createdAt_idx" ON "AuditLog"("createdAt");
+CREATE INDEX IF NOT EXISTS "AuditLog_createdAt_idx" ON "AuditLog"("createdAt");
 
 -- AddForeignKey
-ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_actorId_fkey" FOREIGN KEY ("actorId") REFERENCES "Admin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_actorId_fkey" FOREIGN KEY ("actorId") REFERENCES "Admin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateTable
-CREATE TABLE "Notification" (
+CREATE TABLE IF NOT EXISTS "Notification" (
     "id" TEXT NOT NULL,
     "recipientAdminId" TEXT,
     "channel" "NotificationChannel" NOT NULL DEFAULT 'SYSTEM',
@@ -69,7 +93,11 @@ CREATE TABLE "Notification" (
 );
 
 -- CreateIndex
-CREATE INDEX "Notification_recipientAdminId_idx" ON "Notification"("recipientAdminId");
+CREATE INDEX IF NOT EXISTS "Notification_recipientAdminId_idx" ON "Notification"("recipientAdminId");
 
 -- AddForeignKey
-ALTER TABLE "Notification" ADD CONSTRAINT "Notification_recipientAdminId_fkey" FOREIGN KEY ("recipientAdminId") REFERENCES "Admin"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "Notification" ADD CONSTRAINT "Notification_recipientAdminId_fkey" FOREIGN KEY ("recipientAdminId") REFERENCES "Admin"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
