@@ -1,8 +1,6 @@
--- AlterEnum
--- Renaming EDITOR -> ADMIN preserves the existing account's data (any admin
--- row currently stored as EDITOR becomes ADMIN with no manual backfill).
-ALTER TYPE "AdminRole" RENAME VALUE 'EDITOR' TO 'ADMIN';
-ALTER TYPE "AdminRole" ADD VALUE 'STAFF';
+-- NOTE: the AdminRole enum changes (EDITOR -> ADMIN rename, STAFF add) were
+-- moved to migration 20260709235959_add_rbac_enum_values so they commit in
+-- their own transaction before 'STAFF' is used below as a column default.
 
 -- CreateEnum
 CREATE TYPE "AdminStatus" AS ENUM ('ACTIVE', 'SUSPENDED');

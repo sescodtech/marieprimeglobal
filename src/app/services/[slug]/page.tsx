@@ -78,7 +78,7 @@ export default async function ServiceDetailPage({
               "repeating-linear-gradient(0deg, transparent, transparent 39px, #E3D2B0 39px, #E3D2B0 40px)",
           }}
         />
-        <div className="relative mx-auto max-w-5xl px-6 py-20 text-center lg:px-10 lg:py-28">
+        <div className="relative mx-auto max-w-5xl px-6 py-16 text-center lg:px-10 lg:py-20">
           <Reveal>
             <Eyebrow light className="justify-center">
               {service.routeCode}
@@ -93,23 +93,39 @@ export default async function ServiceDetailPage({
             )}
           </Reveal>
 
-          <Reveal delay={0.1} className="mt-10 flex justify-center">
-            <div className="inline-flex items-center gap-4 rounded-stub border border-gold-500/30 bg-cream-50/[0.04] px-5 py-4 backdrop-blur-sm">
-              <span className="font-mono text-2xl font-semibold text-cream-50">
-                {service.routeFrom}
-              </span>
-              <span className="mx-1 flex items-center gap-2 text-gold-400">
-                <span className="h-px w-10 route-dashes" />
-                <PlaneTakeoff size={16} />
-                <span className="h-px w-10 route-dashes" />
-              </span>
-              <span className="font-mono text-2xl font-semibold text-cream-50">
-                {service.routeTo}
-              </span>
+          <Reveal delay={0.1} className="mt-8 flex justify-center">
+            <div className="relative overflow-hidden rounded-stub bg-cream-50 shadow-stub ring-1 ring-cream-50/10">
+              {/* Stub header, matches BoardingPassCard */}
+              <div className="flex items-center justify-between gap-8 bg-forest-700 px-6 py-2.5">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold-300">
+                  Boarding Pass
+                </span>
+                <span className="font-mono text-[10px] font-semibold text-cream-50">
+                  {service.routeCode}
+                </span>
+              </div>
+
+              {/* Route line */}
+              <div className="flex items-center gap-4 px-6 py-4">
+                <span className="font-mono text-2xl font-semibold text-forest-900">
+                  {service.routeFrom}
+                </span>
+                <span className="flex items-center gap-2 text-gold-500">
+                  <span className="h-px w-10 route-dashes" />
+                  <PlaneTakeoff size={16} />
+                  <span className="h-px w-10 route-dashes" />
+                </span>
+                <span className="font-mono text-2xl font-semibold text-forest-900">
+                  {service.routeTo}
+                </span>
+              </div>
+
+              {/* Perforated edge, matches BoardingPassCard */}
+              <div className="perforated-edge h-2.5 w-full" />
             </div>
           </Reveal>
 
-          <Reveal delay={0.18} className="mt-9 flex flex-wrap justify-center gap-4">
+          <Reveal delay={0.18} className="mt-8 flex flex-wrap justify-center gap-4">
             {applicationType && (
               <Button href={`/apply/${slug}`} variant="primary">
                 Apply now
