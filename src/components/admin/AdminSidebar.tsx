@@ -15,15 +15,19 @@ import {
   KeyRound,
   Newspaper,
   UsersRound,
+  Users,
+  ScrollText,
+  ClipboardList,
   HelpCircle,
   Mail,
   Menu,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { hasPermission, PERMISSIONS } from "@/lib/permissions";
 import { SignOutButton } from "@/components/admin/SignOutButton";
 
-const navItems = [
+const contentNavItems = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/services", label: "Services", icon: Briefcase },
   { href: "/admin/blog", label: "Blog", icon: Newspaper },
@@ -36,12 +40,27 @@ const navItems = [
   { href: "/admin/enquiries", label: "Enquiries", icon: Inbox },
   { href: "/admin/seo", label: "SEO Settings", icon: Search },
   { href: "/admin/settings", label: "Site Settings", icon: Settings },
-  { href: "/admin/account", label: "Account", icon: KeyRound },
 ];
 
-export function AdminSidebar() {
+const accountNavItem = { href: "/admin/account", label: "Account", icon: KeyRound };
+
+export function AdminSidebar({ role }: { role?: string | null }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  const navItems = [
+    ...contentNavItems,
+    ...(hasPermission(role, PERMISSIONS.VIEW_APPLICATIONS) || hasPermission(role, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS)
+      ? [{ href: "/admin/applications", label: "Applications", icon: ClipboardList }]
+      : []),
+    ...(hasPermission(role, PERMISSIONS.MANAGE_STAFF)
+      ? [{ href: "/admin/users", label: "Users", icon: Users }]
+      : []),
+    ...(hasPermission(role, PERMISSIONS.VIEW_AUDIT_LOGS)
+      ? [{ href: "/admin/audit-log", label: "Audit Log", icon: ScrollText }]
+      : []),
+    accountNavItem,
+  ];
 
   // Close the drawer whenever the route changes (menu item selected).
   useEffect(() => {

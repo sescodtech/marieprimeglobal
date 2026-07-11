@@ -8,6 +8,7 @@ import { FaqAccordionGroup } from "@/components/faq/FaqAccordionGroup";
 import { prisma } from "@/lib/prisma";
 import { JsonLd } from "@/components/seo/JsonLd";
 import type { ServiceBenefit, ServiceProcessStep, ServiceFaq } from "@/lib/servicePages";
+import { getServiceTypeFromPathSlug } from "@/lib/applicationForms/config";
 
 type Params = { slug: string };
 
@@ -47,6 +48,7 @@ export default async function ServiceDetailPage({
 
   const benefits = asArray<ServiceBenefit>(service.benefits);
   const processSteps = asArray<ServiceProcessStep>(service.process);
+  const applicationType = getServiceTypeFromPathSlug(slug);
   const faqs = asArray<ServiceFaq>(service.faqs);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://marieprimeglobal.com";
@@ -107,7 +109,12 @@ export default async function ServiceDetailPage({
             </div>
           </Reveal>
 
-          <Reveal delay={0.18} className="mt-9">
+          <Reveal delay={0.18} className="mt-9 flex flex-wrap justify-center gap-4">
+            {applicationType && (
+              <Button href={`/apply/${slug}`} variant="primary">
+                Apply now
+              </Button>
+            )}
             <Button href="/contact" variant="secondary">
               Enquire about this service
             </Button>
@@ -209,7 +216,12 @@ export default async function ServiceDetailPage({
           <h2 className="font-display text-2xl font-medium sm:text-3xl">
             Ready to start with {service.title.toLowerCase()}?
           </h2>
-          <div className="mt-7">
+          <div className="mt-7 flex flex-wrap justify-center gap-4">
+            {applicationType && (
+              <Button href={`/apply/${slug}`} variant="secondary">
+                Apply now
+              </Button>
+            )}
             <Button href="/contact" variant="secondary">
               Submit an enquiry
             </Button>

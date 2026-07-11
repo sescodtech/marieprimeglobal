@@ -145,3 +145,138 @@ export async function sendJobApplicationNotification(application: {
     console.error("[email] failed to send job application notification:", error);
   }
 }
+
+export async function sendApplicationConfirmationEmail(application: {
+  referenceNumber: string;
+  applicantName: string;
+  applicantEmail: string;
+  serviceTitle: string;
+}) {
+  if (!resend) {
+    console.warn(
+      `[email] RESEND_API_KEY not set — application confirmation for ${application.applicantEmail}: ${application.referenceNumber}`
+    );
+    return;
+  }
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://marieprimeglobal.com";
+  const contactEmail = process.env.NOTIFY_EMAIL_TO || "mariaiyabi@gmail.com";
+  const trackUrl = `${siteUrl}/track?ref=${encodeURIComponent(application.referenceNumber)}`;
+
+  try {
+    await resend.emails.send({
+      from: "MariePrime Global <notifications@marieprimeglobal.com>",
+      to: application.applicantEmail,
+      subject: `Application received — ${application.referenceNumber}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px;">
+          <h2 style="color:#1B4332;">We've received your application</h2>
+          <p>Hi ${escapeHtml(application.applicantName)},</p>
+          <p>Thank you for applying for <strong>${escapeHtml(application.serviceTitle)}</strong>. Our team will review it shortly.</p>
+          <p style="margin-top:20px;">Your reference number:</p>
+          <p style="font-family: monospace; font-size: 20px; font-weight: 600; color:#1B4332;">
+            ${escapeHtml(application.referenceNumber)}
+          </p>
+          <p>Keep this number safe — you'll need it, along with the email address you applied with, to track your application.</p>
+          <p style="margin-top:24px;">
+            <a href="${trackUrl}" style="color:#C9A876;">Track your application →</a>
+          </p>
+          <p style="margin-top:24px; font-size: 13px; color: #6b7280;">
+            Questions in the meantime? Reach us at
+            <a href="mailto:${contactEmail}" style="color:#C9A876;">${contactEmail}</a>.
+          </p>
+        </div>
+      `,
+    });
+  } catch (error) {
+    // Never let a failed confirmation email block the application from
+    // being saved — it's already in the database at this point.
+    console.error("[email] failed to send application confirmation email:", error);
+  }
+}
+
+export async function sendApplicationAdminNotification(application: {
+  id: string;
+  referenceNumber: string;
+  applicantName: string;
+  applicantEmail: string;
+  serviceTitle: string;
+}) {
+  if (!resend) {
+    console.warn("[email] RESEND_API_KEY not set — skipping application admin notification email.");
+    return;
+  }
+
+  const notifyTo = process.env.NOTIFY_EMAIL_TO || "mariaiyabi@gmail.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://marieprimeglobal.com";
+
+  try {
+    await resend.emails.send({
+      from: "MariePrime Website <notifications@marieprimeglobal.com>",
+      to: notifyTo,
+      replyTo: application.applicantEmail,
+      subject: `New application: ${application.applicantName} — ${application.serviceTitle} (${application.referenceNumber})`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px;">
+          <h2 style="color:#1B4332;">New service application</h2>
+          <p><strong>Applicant:</strong> ${escapeHtml(application.applicantName)}</p>
+          <p><strong>Email:</strong> ${escapeHtml(application.applicantEmail)}</p>
+          <p><strong>Service:</strong> ${escapeHtml(application.serviceTitle)}</p>
+          <p><strong>Reference:</strong> ${escapeHtml(application.referenceNumber)}</p>
+          <p style="margin-top:24px;">
+            <a href="${siteUrl}/admin/applications/${application.id}" style="color:#C9A876;">
+              View application →
+            </a>
+          </p>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("[email] failed to send application admin notification:", error);
+  }
+}
+
+/** Sent whenever staff change an application's status, so the client hears
+ *  about progress without needing to check the tracking page themselves. */
+export async function sendApplicationStatusUpdateEmail(application: {
+  referenceNumber: string;
+  applicantName: string;
+  applicantEmail: string;
+  serviceTitle: string;
+  statusLabel: string;
+  note?: string | null;
+}) {
+  if (!resend) {
+    console.warn(
+      `[email] RESEND_API_KEY not set — status update for ${application.applicantEmail}: ${application.statusLabel}`
+    );
+    return;
+  }
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://marieprimeglobal.com";
+  const trackUrl = `${siteUrl}/track?ref=${encodeURIComponent(application.referenceNumber)}`;
+
+  try {
+    await resend.emails.send({
+      from: "MariePrime Global <notifications@marieprimeglobal.com>",
+      to: application.applicantEmail,
+      subject: `Application update — ${application.referenceNumber}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px;">
+          <h2 style="color:#1B4332;">Your application status has changed</h2>
+          <p>Hi ${escapeHtml(application.applicantName)},</p>
+          <p>Your application for <strong>${escapeHtml(application.serviceTitle)}</strong> (${escapeHtml(
+            application.referenceNumber
+          )}) is now:</p>
+          <p style="font-size: 18px; font-weight: 600; color:#1B4332;">${escapeHtml(application.statusLabel)}</p>
+          ${application.note ? `<p>${escapeHtml(application.note).replace(/\n/g, "<br/>")}</p>` : ""}
+          <p style="margin-top:24px;">
+            <a href="${trackUrl}" style="color:#C9A876;">View full status →</a>
+          </p>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("[email] failed to send application status update email:", error);
+  }
+}

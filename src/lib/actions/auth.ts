@@ -5,9 +5,10 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { AuthError } from "next-auth";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
-import { signIn, signOut } from "@/lib/auth";
+import { auth, signIn, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { logAudit } from "@/lib/audit";
 
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
 
@@ -50,6 +51,21 @@ export async function loginAction(
 
 export async function signOutAction() {
   try {
+    const session = await auth();
+    if (session?.user?.id) {
+      await logAudit({
+        actor: {
+          id: session.user.id,
+          name: session.user.name ?? "Unknown",
+          email: session.user.email ?? "unknown",
+          role: session.user.role,
+        },
+        action: "LOGOUT",
+        entityType: "Admin",
+        entityId: session.user.id,
+        description: `${session.user.name ?? "A user"} signed out.`,
+      });
+    }
     await signOut({ redirectTo: "/admin/login" });
   } catch (error) {
     // signOut() intentionally throws a special "redirect" error to hand

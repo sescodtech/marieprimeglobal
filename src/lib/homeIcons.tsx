@@ -32,6 +32,7 @@ export const serviceIconMap: Record<string, LucideIcon> = {
   beauty: Sparkles,
   procurement: PackageSearch,
   logistics: Truck,
+  pof: FileSearch,
 };
 
 /** Fallback icon for admin-added services that don't set an icon key. */

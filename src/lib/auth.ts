@@ -26,7 +26,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
         remember: { label: "Remember me", type: "text" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         const email = credentials?.email as string | undefined;
         const password = credentials?.password as string | undefined;
         const remember = credentials?.remember === "true";
@@ -34,6 +34,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const admin = await prisma.admin.findUnique({ where: { email } });
         if (!admin) return null;
+
+        // A suspended account must never be able to sign in again, even with
+        // the correct password — this is what makes suspension immediate.
+        if (admin.status === "SUSPENDED") return null;
 
         const valid = await bcrypt.compare(password, admin.passwordHash);
         if (!valid) return null;
@@ -47,6 +51,35 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           });
         } catch (error) {
           console.error("[auth] Failed to update lastLoginAt (non-fatal):", error);
+        }
+
+        // Audit trail for logins. Uses the raw request headers (rather than
+        // the audit.ts/next-headers helper) because `request` here is the
+        // actual incoming Request object NextAuth hands to Credentials
+        // providers — the most reliable source of IP/UA at this point in the
+        // auth flow. Best-effort only, same as above.
+        try {
+          const ipAddress =
+            request?.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+            request?.headers.get("x-real-ip") ||
+            null;
+          const userAgent = request?.headers.get("user-agent") || null;
+          await prisma.auditLog.create({
+            data: {
+              actorId: admin.id,
+              actorName: admin.name,
+              actorEmail: admin.email,
+              actorRole: admin.role,
+              action: "LOGIN",
+              entityType: "Admin",
+              entityId: admin.id,
+              description: `${admin.name} signed in.`,
+              ipAddress,
+              userAgent,
+            },
+          });
+        } catch (error) {
+          console.error("[auth] Failed to record login audit log (non-fatal):", error);
         }
 
         return {

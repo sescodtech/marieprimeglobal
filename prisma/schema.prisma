@@ -17,19 +17,40 @@ datasource db {
 
 enum AdminRole {
   SUPER_ADMIN
-  EDITOR
+  ADMIN
+  STAFF
+}
+
+enum AdminStatus {
+  ACTIVE
+  SUSPENDED
 }
 
 model Admin {
-  id                 String              @id @default(cuid())
-  name               String
-  email              String              @unique
-  passwordHash       String
-  role               AdminRole           @default(EDITOR)
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  lastLoginAt        DateTime?
+  id              String      @id @default(cuid())
+  name            String
+  email           String      @unique
+  passwordHash    String
+  role            AdminRole   @default(STAFF)
+  status          AdminStatus @default(ACTIVE)
+  // Grants an ADMIN (never a STAFF) permission to create/edit/suspend other
+  // ADMIN accounts. Ignored for SUPER_ADMIN, who can always manage anyone.
+  canManageAdmins Boolean     @default(false)
+  suspendedAt     DateTime?
+  // Self-relation so every account (except the original Super Admin) records
+  // who created it — used for the audit trail, not for permissions.
+  createdBy       Admin?      @relation("AdminCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById     String?
+  createdAdmins   Admin[]     @relation("AdminCreatedBy")
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  lastLoginAt     DateTime?
+
   passwordResetTokens PasswordResetToken[]
+  auditLogs           AuditLog[]
+  notifications       Notification[]
+  assignedApplications ServiceApplication[]
+  applicationNotes     ApplicationNote[]
 }
 
 // Single-use, time-limited tokens for the "Forgot password" flow. A row is
@@ -242,4 +263,169 @@ model SeoSetting {
   keywords        String? // comma-separated
   ogImageUrl      String?
   updatedAt       DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Phase 6 — Enterprise RBAC: audit log & notification scaffold
+// ---------------------------------------------------------------------------
+
+// Append-only record of every sensitive action taken in the admin dashboard
+// (logins, logouts, user management, role changes). Snapshots the actor's
+// name/email/role at the time of the action so the trail stays readable even
+// if that account is later renamed, role-changed, or deleted.
+model AuditLog {
+  id          String   @id @default(cuid())
+  actor       Admin?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  actorId     String?
+  actorName   String
+  actorEmail  String
+  actorRole   String
+  action      String // e.g. "LOGIN", "USER_CREATED", "ROLE_CHANGED", "USER_SUSPENDED"
+  entityType  String? // e.g. "Admin"
+  entityId    String?
+  description String?  @db.Text
+  ipAddress   String?
+  userAgent   String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  @@index([actorId])
+  @@index([createdAt])
+}
+
+// Notification architecture is intentionally scaffolded only in this phase —
+// no channel is wired up to actually send yet. This reserves the data model
+// now so Email, System, SMS and WhatsApp notifications can be turned on in a
+// later phase without another migration.
+enum NotificationChannel {
+  EMAIL
+  SYSTEM
+  SMS
+  WHATSAPP
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model Notification {
+  id               String              @id @default(cuid())
+  recipient        Admin?              @relation(fields: [recipientAdminId], references: [id], onDelete: Cascade)
+  recipientAdminId String?
+  channel          NotificationChannel @default(SYSTEM)
+  status           NotificationStatus  @default(PENDING)
+  title            String
+  body             String              @db.Text
+  metadata         Json?
+  createdAt        DateTime            @default(now())
+  sentAt           DateTime?
+
+  @@index([recipientAdminId])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 2 — Client Application Portal
+// ---------------------------------------------------------------------------
+
+enum ServiceApplicationType {
+  VISA
+  PROOF_OF_FUNDS
+  FLIGHT_BOOKING
+  HOTEL_RESERVATION
+  TRAVEL_INSURANCE
+  LOGISTICS
+  PROCUREMENT
+  EVENT_COORDINATION
+  BEAUTY_SERVICES
+}
+
+enum ServiceApplicationStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  ADDITIONAL_DOCS_REQUIRED
+  DOCUMENTS_RECEIVED
+  PROCESSING
+  APPROVED
+  REJECTED
+  COMPLETED
+}
+
+// One row per client application submitted through the public /apply flow.
+// `formData` holds the full dynamic-form payload (keyed by field id, as
+// defined in src/lib/applicationForms/config.ts) so every service's form can
+// share one table without a migration per service.
+model ServiceApplication {
+  id              String                   @id @default(cuid())
+  referenceNumber String                   @unique
+  serviceType     ServiceApplicationType
+  serviceTitle    String // snapshot of the service's display name at submission time
+  status          ServiceApplicationStatus @default(SUBMITTED)
+  applicantName   String
+  applicantEmail  String
+  applicantPhone  String
+  formData        Json
+  assignedStaff   Admin?                   @relation(fields: [assignedStaffId], references: [id], onDelete: SetNull)
+  assignedStaffId String?
+  submittedAt     DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+
+  documents     ApplicationDocument[]
+  statusHistory ApplicationStatusEvent[]
+  notes         ApplicationNote[]
+
+  @@index([status])
+  @@index([serviceType])
+  @@index([applicantEmail])
+}
+
+model ApplicationDocument {
+  id            String             @id @default(cuid())
+  application   ServiceApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  applicationId String
+  docType       String // e.g. "validId", "utilityBill", "passportPhoto", "signature", "supportingDocument"
+  label         String
+  fileUrl       String
+  publicId      String? // Cloudinary public_id — lets a document be deleted from storage, not just unlinked
+  mimeType      String?
+  createdAt     DateTime           @default(now())
+
+  @@index([applicationId])
+}
+
+// Append-only timeline shown both in the admin detail page and on the public
+// tracking page (minus any internal-only notes).
+model ApplicationStatusEvent {
+  id            String                   @id @default(cuid())
+  application   ServiceApplication       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  applicationId String
+  status        ServiceApplicationStatus
+  note          String?                  @db.Text
+  actorName     String? // null = automated/system event (e.g. initial submission)
+  createdAt     DateTime                 @default(now())
+
+  @@index([applicationId])
+}
+
+model ApplicationNote {
+  id            String             @id @default(cuid())
+  application   ServiceApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  applicationId String
+  author        Admin?             @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId      String?
+  authorName    String
+  body          String             @db.Text
+  // Public notes surface on the client-facing tracking page; everything else
+  // is internal-only, per the "Internal Notes" / "Public Notes" distinction.
+  isPublic      Boolean            @default(false)
+  createdAt     DateTime           @default(now())
+
+  @@index([applicationId])
+}
+
+// Backs the MPG-{year}-{000001} reference number sequence. One row per year,
+// incremented atomically so numbers are never duplicated or skipped oddly.
+model ReferenceCounter {
+  year  Int @id
+  count Int @default(0)
 }
