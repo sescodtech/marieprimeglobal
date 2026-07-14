@@ -71,6 +71,15 @@ export default async function AdminUsersPage() {
                     <Link href={`/admin/users/${u.id}`} className="text-forest-700 hover:text-forest-900" title="Edit">
                       <Pencil size={16} />
                     </Link>
+                    {actor.role === "SUPER_ADMIN" && u.role !== "SUPER_ADMIN" && (
+                      <Link
+                        href={`/admin/users/${u.id}/permissions`}
+                        className="text-forest-700 hover:text-forest-900"
+                        title="Permissions"
+                      >
+                        <ShieldCheck size={16} />
+                      </Link>
+                    )}
                     <Link
                       href={`/admin/users/${u.id}#reset-password`}
                       className="text-forest-700 hover:text-forest-900"

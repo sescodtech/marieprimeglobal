@@ -46,6 +46,12 @@ model Admin {
   updatedAt       DateTime    @updatedAt
   lastLoginAt     DateTime?
 
+  // Profile (Phase 3.5) — self-service for any admin; recoveryEmail is
+  // Super-Admin-editable only, same as the primary login email.
+  phone         String?
+  avatarUrl     String?
+  recoveryEmail String?
+
   passwordResetTokens PasswordResetToken[]
   auditLogs           AuditLog[]
   notifications       Notification[]
@@ -53,6 +59,23 @@ model Admin {
   applicationNotes     ApplicationNote[]
   assignedEnquiries    Enquiry[]
   enquiryNotes         EnquiryNote[]
+  permissionGrants     AdminPermissionGrant[]
+}
+
+// Dynamic, database-backed permission grants (Phase 3.5) — the source of
+// truth for what an ADMIN or STAFF account can do, replacing the old
+// hardcoded role -> permission map. SUPER_ADMIN bypasses this entirely and
+// always has every permission; it's the one deliberately-hardcoded
+// exception, per spec ("Super Admin remains the only unrestricted account").
+model AdminPermissionGrant {
+  id         String   @id @default(cuid())
+  admin      Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  adminId    String
+  permission String
+  createdAt  DateTime @default(now())
+
+  @@unique([adminId, permission])
+  @@index([adminId])
 }
 
 // Single-use, time-limited tokens for the "Forgot password" flow. A row is
@@ -159,10 +182,65 @@ model JobApplication {
   updatedAt      DateTime          @updatedAt
 }
 
+enum SubscriberStatus {
+  SUBSCRIBED
+  UNSUBSCRIBED
+}
+
 model NewsletterSubscriber {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id             String           @id @default(cuid())
+  email          String           @unique
+  name           String?
+  status         SubscriberStatus @default(SUBSCRIBED)
+  unsubscribedAt DateTime?
+  createdAt      DateTime         @default(now())
+
+  recipientRecords NewsletterRecipient[]
+}
+
+enum NewsletterStatus {
+  DRAFT
+  SCHEDULED
+  SENDING
+  SENT
+  FAILED
+}
+
+model Newsletter {
+  id             String           @id @default(cuid())
+  subject        String
+  message        String           @db.Text
+  status         NewsletterStatus @default(DRAFT)
+  scheduledFor   DateTime?
+  sentAt         DateTime?
+  recipientCount Int              @default(0)
+  sentCount      Int              @default(0)
+  failedCount    Int              @default(0)
+  createdById    String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  recipients NewsletterRecipient[]
+}
+
+enum NewsletterRecipientStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model NewsletterRecipient {
+  id           String                    @id @default(cuid())
+  newsletter   Newsletter                @relation(fields: [newsletterId], references: [id], onDelete: Cascade)
+  newsletterId String
+  subscriber   NewsletterSubscriber      @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+  subscriberId String
+  status       NewsletterRecipientStatus @default(PENDING)
+  sentAt       DateTime?
+  error        String?
+
+  @@unique([newsletterId, subscriberId])
+  @@index([newsletterId])
 }
 
 model JobListing {
@@ -247,6 +325,12 @@ enum ServiceInterest {
   TRAVEL_LOAN
   STUDY_ABROAD
   BUSINESS_REGISTRATION
+  HOTEL_RESERVATION
+  TRAVEL_INSURANCE
+  LOGISTICS
+  PROCUREMENT
+  EVENT_COORDINATION
+  BEAUTY_SERVICES
   GENERAL_ENQUIRY
 }
 
@@ -401,6 +485,11 @@ model ServiceApplication {
   formData        Json
   assignedStaff   Admin?                   @relation(fields: [assignedStaffId], references: [id], onDelete: SetNull)
   assignedStaffId String?
+  // Secure, tokenized link sent to the client when additional documents are
+  // requested — lets them upload without an account. Regenerated (and the
+  // old one invalidated) each time additional documents are requested.
+  uploadToken          String?   @unique
+  uploadTokenExpiresAt DateTime?
   submittedAt     DateTime                 @default(now())
   updatedAt       DateTime                 @updatedAt
 
@@ -424,6 +513,7 @@ model ApplicationDocument {
   mimeType      String?
   createdAt     DateTime           @default(now())
 
+  @@unique([applicationId, docType])
   @@index([applicationId])
 }
 
@@ -462,4 +552,51 @@ model ApplicationNote {
 model ReferenceCounter {
   year  Int @id
   count Int @default(0)
+}
+
+// ---------------------------------------------------------------------------
+// Phase 3 — configurable per-service document requirements
+// ---------------------------------------------------------------------------
+
+// Keyed by ServiceApplicationType rather than a Service row's id, since one
+// service (Proof of Funds) has no matching CMS Service page at all. This is
+// what lets a Super Admin add/remove/reconfigure documents for any service
+// from the dashboard — the wizard and submit route both read from here
+// first, falling back to the built-in defaults in
+// src/lib/applicationForms/config.ts only if nothing's been configured yet.
+model ServiceDocumentRequirement {
+  id          String                 @id @default(cuid())
+  serviceType ServiceApplicationType
+  // Stable key stored on ApplicationDocument.docType — do not change this on
+  // an existing row once applications have been submitted against it.
+  docKey      String
+  name        String
+  description String?                @db.Text
+  isRequired  Boolean                @default(true)
+  fileTypes   String                 @default("image/jpeg,image/png,application/pdf")
+  maxSizeMb   Int                    @default(8)
+  order       Int                    @default(0)
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  @@unique([serviceType, docKey])
+  @@index([serviceType])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 3.5 — Email template management
+// ---------------------------------------------------------------------------
+
+// One row per email "kind" the system sends. Super Admin can edit
+// subject/body with {{variables}}; sendX() helpers in src/lib/email.ts check
+// here first and fall back to the built-in copy if nothing's configured yet
+// — the same safe-fallback pattern used for ServiceDocumentRequirement.
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  key       String   @unique // e.g. "APPLICATION_RECEIVED", "PASSWORD_RESET"
+  name      String // human label shown in the admin UI
+  subject   String
+  bodyHtml  String   @db.Text
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }

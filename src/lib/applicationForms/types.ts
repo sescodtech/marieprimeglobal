@@ -42,6 +42,7 @@ export type DocumentFieldConfig = {
   required?: boolean;
   accept: string; // input `accept` attribute
   helpText?: string;
+  maxSizeBytes?: number; // defaults to 8MB if omitted — see MAX_UPLOAD_BYTES_DEFAULT
 };
 
 export type ApplicantContact = { name: string; email: string; phone: string };

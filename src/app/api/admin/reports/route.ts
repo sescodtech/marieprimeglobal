@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import * as XLSX from "xlsx";
+import PDFDocument from "pdfkit";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { hasPermission, PERMISSIONS } from "@/lib/permissions";
+import { hasGrantedPermission, PERMISSIONS } from "@/lib/permissions";
+import { getEffectivePermissions } from "@/lib/permissionGrants";
 import { STATUS_LABELS } from "@/lib/applicationForms/status";
 
 type Row = Record<string, string | number>;
@@ -22,6 +24,69 @@ function toExcelBuffer(rows: Row[], sheetName: string): Buffer {
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
   return XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+}
+
+/** Simple landscape table PDF — columns sized evenly across the page width,
+ *  with a light header row and a new page started automatically once rows
+ *  run off the bottom. Good enough for a data export; not a design piece. */
+function toPdfBuffer(rows: Row[], title: string): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({ margin: 30, size: "A4", layout: "landscape" });
+    const chunks: Buffer[] = [];
+    doc.on("data", (chunk) => chunks.push(chunk));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+
+    doc.fontSize(16).fillColor("#1B4332").text(title, { align: "left" });
+    doc.moveDown(0.5);
+
+    if (rows.length === 0) {
+      doc.fontSize(10).fillColor("#374151").text("No data for the selected range.");
+      doc.end();
+      return;
+    }
+
+    const headers = Object.keys(rows[0]);
+    const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+    const colWidth = pageWidth / headers.length;
+    const rowHeight = 20;
+
+    function drawHeader(y: number) {
+      doc.fontSize(9).fillColor("#ffffff");
+      doc.rect(doc.page.margins.left, y, pageWidth, rowHeight).fill("#1B4332");
+      doc.fillColor("#ffffff");
+      headers.forEach((h, i) => {
+        doc.text(h, doc.page.margins.left + i * colWidth + 4, y + 6, { width: colWidth - 8, ellipsis: true });
+      });
+    }
+
+    let y = doc.y;
+    drawHeader(y);
+    y += rowHeight;
+
+    doc.fontSize(8.5);
+    rows.forEach((row, rowIndex) => {
+      if (y + rowHeight > doc.page.height - doc.page.margins.bottom) {
+        doc.addPage();
+        y = doc.page.margins.top;
+        drawHeader(y);
+        y += rowHeight;
+      }
+      if (rowIndex % 2 === 0) {
+        doc.rect(doc.page.margins.left, y, pageWidth, rowHeight).fill("#F5F1E8");
+      }
+      doc.fillColor("#1f2937");
+      headers.forEach((h, i) => {
+        doc.text(String(row[h] ?? ""), doc.page.margins.left + i * colWidth + 4, y + 6, {
+          width: colWidth - 8,
+          ellipsis: true,
+        });
+      });
+      y += rowHeight;
+    });
+
+    doc.end();
+  });
 }
 
 async function buildRows(type: string, from?: Date, to?: Date): Promise<{ rows: Row[]; filename: string }> {
@@ -104,7 +169,14 @@ async function buildRows(type: string, from?: Date, to?: Date): Promise<{ rows: 
 
 export async function GET(request: Request) {
   const session = await auth();
-  if (!session?.user || !hasPermission(session.user.role, PERMISSIONS.EXPORT_REPORTS)) {
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  }
+  const permissions = await getEffectivePermissions(session.user.id, session.user.role);
+  const canExport =
+    hasGrantedPermission(permissions, PERMISSIONS.EXPORT_REPORTS) ||
+    hasGrantedPermission(permissions, PERMISSIONS.EXPORT_APPLICATIONS);
+  if (!canExport) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
@@ -124,6 +196,16 @@ export async function GET(request: Request) {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "Content-Disposition": `attachment; filename="${filename}.xlsx"`,
+      },
+    });
+  }
+
+  if (format === "pdf") {
+    const buffer = await toPdfBuffer(rows, filename.replace(/-/g, " "));
+    return new NextResponse(new Uint8Array(buffer), {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="${filename}.pdf"`,
       },
     });
   }

@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getEffectivePermissions } from "@/lib/permissionGrants";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { GlobalSearchBar } from "@/components/admin/GlobalSearchBar";
 import { NotificationBell, type NotificationItem } from "@/components/admin/NotificationBell";
@@ -9,6 +10,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   let notifications: NotificationItem[] = [];
   let unreadCount = 0;
+  const permissions = session?.user?.id
+    ? await getEffectivePermissions(session.user.id, session.user.role)
+    : [];
   if (session?.user?.id) {
     const [unread, count] = await Promise.all([
       prisma.notification.findMany({
@@ -30,7 +34,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="flex min-h-screen flex-col bg-cream-100 font-body lg:flex-row">
-      <AdminSidebar role={session?.user?.role} />
+      <AdminSidebar role={session?.user?.role} permissions={permissions} />
       {/* min-w-0 stops a wide child (e.g. a table) from stretching this flex
           item and forcing the whole page to scroll horizontally. */}
       <div className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto">

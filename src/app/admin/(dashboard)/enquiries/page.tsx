@@ -4,7 +4,9 @@ import { format } from "date-fns";
 import type { EnquiryStatus, Prisma } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { hasPermission, PERMISSIONS } from "@/lib/permissions";
+import { hasGrantedPermission, PERMISSIONS } from "@/lib/permissions";
+import { getEffectivePermissions } from "@/lib/permissionGrants";
+import { ENQUIRY_SERVICE_LABELS as serviceLabels } from "@/lib/enquiryServiceLabels";
 
 const statusLabels: Record<EnquiryStatus, string> = {
   NEW: "New",
@@ -20,15 +22,6 @@ const statusStyles: Record<EnquiryStatus, string> = {
   CLOSED: "bg-ink-500/10 text-ink-500",
 };
 
-const serviceLabels: Record<string, string> = {
-  FLIGHT_BOOKING: "Flight Booking",
-  VISA_IMMIGRATION: "Visa & Immigration",
-  TRAVEL_LOAN: "Travel Loan",
-  STUDY_ABROAD: "Study Abroad",
-  BUSINESS_REGISTRATION: "Business Registration",
-  GENERAL_ENQUIRY: "General Enquiry",
-};
-
 export default async function AdminEnquiriesPage({
   searchParams,
 }: {
@@ -36,7 +29,8 @@ export default async function AdminEnquiriesPage({
 }) {
   const session = await auth();
   if (!session?.user) redirect("/admin/login");
-  if (!hasPermission(session.user.role, PERMISSIONS.MANAGE_ENQUIRIES)) {
+  const permissions = await getEffectivePermissions(session.user.id, session.user.role);
+  if (!hasGrantedPermission(permissions, PERMISSIONS.VIEW_ENQUIRIES) && !hasGrantedPermission(permissions, PERMISSIONS.MANAGE_ENQUIRIES)) {
     redirect("/admin?error=unauthorized");
   }
 

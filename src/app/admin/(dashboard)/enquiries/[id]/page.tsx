@@ -4,20 +4,13 @@ import { format } from "date-fns";
 import { ArrowLeft, Mail, Phone } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { hasPermission, PERMISSIONS } from "@/lib/permissions";
+import { hasGrantedPermission, PERMISSIONS } from "@/lib/permissions";
+import { getEffectivePermissions } from "@/lib/permissionGrants";
 import { changeEnquiryStatus, updateEnquiryNote, assignEnquiryStaff } from "@/lib/actions/enquiries";
 import { EnquiryStatusSelect } from "@/components/admin/EnquiryStatusSelect";
 import { StaffAssignSelect } from "@/components/admin/StaffAssignSelect";
 import { AddEnquiryNoteForm } from "@/components/admin/AddEnquiryNoteForm";
-
-const serviceLabels: Record<string, string> = {
-  FLIGHT_BOOKING: "Flight Booking & Travel Solutions",
-  VISA_IMMIGRATION: "Visa & Immigration Assistance",
-  TRAVEL_LOAN: "Travel Loan Assistance",
-  STUDY_ABROAD: "Study Abroad Support",
-  BUSINESS_REGISTRATION: "Business Registration Services",
-  GENERAL_ENQUIRY: "General Enquiry",
-};
+import { ENQUIRY_SERVICE_LABELS as serviceLabels } from "@/lib/enquiryServiceLabels";
 
 export default async function EnquiryDetailPage({
   params,
@@ -26,7 +19,8 @@ export default async function EnquiryDetailPage({
 }) {
   const session = await auth();
   if (!session?.user) redirect("/admin/login");
-  if (!hasPermission(session.user.role, PERMISSIONS.MANAGE_ENQUIRIES)) {
+  const permissions = await getEffectivePermissions(session.user.id, session.user.role);
+  if (!hasGrantedPermission(permissions, PERMISSIONS.VIEW_ENQUIRIES) && !hasGrantedPermission(permissions, PERMISSIONS.MANAGE_ENQUIRIES)) {
     redirect("/admin?error=unauthorized");
   }
 
@@ -40,7 +34,7 @@ export default async function EnquiryDetailPage({
   });
   if (!enquiry) notFound();
 
-  const canAssignStaff = hasPermission(session.user.role, PERMISSIONS.ASSIGN_STAFF);
+  const canAssignStaff = hasGrantedPermission(permissions, PERMISSIONS.ASSIGN_STAFF);
   const staffOptions = canAssignStaff
     ? (
         await prisma.admin.findMany({

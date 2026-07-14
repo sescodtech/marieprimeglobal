@@ -18,57 +18,64 @@ import {
   Users,
   ScrollText,
   ClipboardList,
+  FileStack,
   BarChart3,
   FileBarChart,
   Award,
+  MessageSquareText,
+  UserCog,
   HelpCircle,
   Mail,
   Menu,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { hasPermission, PERMISSIONS, type Permission } from "@/lib/permissions";
+import { hasGrantedPermission, PERMISSIONS, type Permission } from "@/lib/permissions";
 import { SignOutButton } from "@/components/admin/SignOutButton";
 
 const contentNavItems: { href: string; label: string; icon: typeof LayoutDashboard; permission: Permission | null }[] = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, permission: null },
   { href: "/admin/services", label: "Services", icon: Briefcase, permission: PERMISSIONS.MANAGE_SERVICES },
+  { href: "/admin/application-forms", label: "Application Forms", icon: FileStack, permission: PERMISSIONS.MANAGE_SERVICES },
   { href: "/admin/blog", label: "Blog", icon: Newspaper, permission: PERMISSIONS.MANAGE_BLOG },
-  { href: "/admin/newsletter", label: "Newsletter", icon: Mail, permission: null },
+  { href: "/admin/newsletter", label: "Newsletter", icon: Mail, permission: PERMISSIONS.CREATE_NEWSLETTER },
   { href: "/admin/careers", label: "Careers", icon: UsersRound, permission: PERMISSIONS.MANAGE_CAREERS },
   { href: "/admin/faq", label: "FAQs", icon: HelpCircle, permission: PERMISSIONS.MANAGE_FAQS },
   { href: "/admin/testimonials", label: "Testimonials", icon: Quote, permission: PERMISSIONS.MANAGE_TESTIMONIALS },
   { href: "/admin/director", label: "Director Profile", icon: UserCircle, permission: null },
-  { href: "/admin/media", label: "Media Library", icon: ImageIcon, permission: null },
-  { href: "/admin/enquiries", label: "Enquiries", icon: Inbox, permission: PERMISSIONS.MANAGE_ENQUIRIES },
+  { href: "/admin/media", label: "Media Library", icon: ImageIcon, permission: PERMISSIONS.UPLOAD_IMAGES },
+  { href: "/admin/enquiries", label: "Enquiries", icon: Inbox, permission: PERMISSIONS.VIEW_ENQUIRIES },
   { href: "/admin/seo", label: "SEO Settings", icon: Search, permission: PERMISSIONS.MANAGE_SETTINGS },
   { href: "/admin/settings", label: "Site Settings", icon: Settings, permission: PERMISSIONS.MANAGE_SETTINGS },
+  { href: "/admin/email-templates", label: "Email Templates", icon: MessageSquareText, permission: PERMISSIONS.MANAGE_EMAIL_TEMPLATES },
 ];
 
-const accountNavItem = { href: "/admin/account", label: "Account", icon: KeyRound };
+const accountNavItem = { href: "/admin/profile", label: "Profile", icon: UserCog };
 
-export function AdminSidebar({ role }: { role?: string | null }) {
+export function AdminSidebar({ role, permissions }: { role?: string | null; permissions: Permission[] }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  const can = (permission: Permission) => hasGrantedPermission(permissions, permission);
+
   const navItems = [
-    ...contentNavItems.filter((item) => !item.permission || hasPermission(role, item.permission)),
-    ...(hasPermission(role, PERMISSIONS.VIEW_APPLICATIONS) || hasPermission(role, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS)
+    ...contentNavItems.filter((item) => !item.permission || can(item.permission)),
+    ...(can(PERMISSIONS.VIEW_APPLICATIONS) || can(PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS)
       ? [{ href: "/admin/applications", label: "Applications", icon: ClipboardList }]
       : []),
-    ...(hasPermission(role, PERMISSIONS.VIEW_APPLICATIONS) || hasPermission(role, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS)
+    ...(can(PERMISSIONS.VIEW_APPLICATIONS) || can(PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS)
       ? [{ href: "/admin/staff-performance", label: "Staff Performance", icon: Award }]
       : []),
-    ...(hasPermission(role, PERMISSIONS.VIEW_ANALYTICS)
+    ...(can(PERMISSIONS.VIEW_ANALYTICS)
       ? [{ href: "/admin/analytics", label: "Analytics", icon: BarChart3 }]
       : []),
-    ...(hasPermission(role, PERMISSIONS.VIEW_REPORTS)
+    ...(can(PERMISSIONS.VIEW_REPORTS)
       ? [{ href: "/admin/reports", label: "Reports", icon: FileBarChart }]
       : []),
-    ...(hasPermission(role, PERMISSIONS.MANAGE_STAFF)
+    ...(can(PERMISSIONS.MANAGE_STAFF) || can(PERMISSIONS.CREATE_STAFF) || can(PERMISSIONS.EDIT_USERS)
       ? [{ href: "/admin/users", label: "Users", icon: Users }]
       : []),
-    ...(hasPermission(role, PERMISSIONS.VIEW_AUDIT_LOGS)
+    ...(role === "SUPER_ADMIN"
       ? [{ href: "/admin/audit-log", label: "Audit Log", icon: ScrollText }]
       : []),
     accountNavItem,

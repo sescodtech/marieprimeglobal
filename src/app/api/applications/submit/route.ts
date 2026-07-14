@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServiceApplicationConfig } from "@/lib/applicationForms/config";
+import { getDocumentRequirements } from "@/lib/applicationForms/documents";
 import { buildApplicationSchema } from "@/lib/applicationForms/schema";
 import { generateReferenceNumber } from "@/lib/applicationForms/referenceNumber";
 import { sendApplicationConfirmationEmail, sendApplicationAdminNotification } from "@/lib/email";
@@ -46,7 +47,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const missingDocs = config.documents.filter((d) => d.required && !documents?.[d.id]?.url);
+  const documentRequirements = await getDocumentRequirements(config.type);
+
+  const missingDocs = documentRequirements.filter((d) => d.required && !documents?.[d.id]?.url);
   if (missingDocs.length > 0) {
     return NextResponse.json(
       { error: `Please upload: ${missingDocs.map((d) => d.label).join(", ")}.` },
@@ -62,7 +65,7 @@ export async function POST(request: Request) {
   try {
     const referenceNumber = await generateReferenceNumber();
 
-    const documentEntries = config.documents
+    const documentEntries = documentRequirements
       .filter((d) => documents?.[d.id]?.url)
       .map((d) => {
         const doc = documents![d.id];

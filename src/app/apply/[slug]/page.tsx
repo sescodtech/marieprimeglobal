@@ -4,6 +4,7 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Reveal } from "@/components/ui/Reveal";
 import { prisma } from "@/lib/prisma";
 import { getServiceTypeFromPathSlug, SERVICE_APPLICATION_CONFIGS } from "@/lib/applicationForms/config";
+import { getDocumentRequirements } from "@/lib/applicationForms/documents";
 import { ApplyFlow } from "@/components/apply/ApplyFlow";
 import type { ServiceBenefit } from "@/lib/servicePages";
 
@@ -44,6 +45,7 @@ export default async function ApplyServicePage({ params }: { params: Promise<Par
   const title = cmsService?.title ?? config.title;
   const description = cmsService?.description ?? config.summary;
   const benefits = asBenefitList(cmsService?.benefits);
+  const documents = await getDocumentRequirements(type);
 
   return (
     <>
@@ -67,7 +69,7 @@ export default async function ApplyServicePage({ params }: { params: Promise<Par
               description={description}
               benefits={benefits}
               sections={config.sections}
-              documents={config.documents}
+              documents={documents}
             />
           </Reveal>
         </div>

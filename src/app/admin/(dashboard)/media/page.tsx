@@ -1,12 +1,28 @@
 import Image from "next/image";
 import { Trash2 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { requirePermission } from "@/lib/actions/require-admin";
+import { hasGrantedPermission, PERMISSIONS } from "@/lib/permissions";
 import { deleteMediaAsset } from "@/lib/actions/media";
 import { MediaUploader } from "@/components/admin/MediaUploader";
 import { CopyUrlField } from "@/components/admin/CopyUrlField";
+import { ReplaceMediaButton } from "@/components/admin/ReplaceMediaButton";
 
-export default async function MediaLibraryPage() {
-  const assets = await prisma.mediaAsset.findMany({ orderBy: { uploadedAt: "desc" } });
+export default async function MediaLibraryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const actor = await requirePermission(PERMISSIONS.UPLOAD_IMAGES);
+  const canDelete = hasGrantedPermission(actor.permissions, PERMISSIONS.DELETE_IMAGES);
+  const { q } = await searchParams;
+
+  const assets = await prisma.mediaAsset.findMany({
+    where: q?.trim()
+      ? { OR: [{ fileName: { contains: q.trim(), mode: "insensitive" } }, { altText: { contains: q.trim(), mode: "insensitive" } }] }
+      : {},
+    orderBy: { uploadedAt: "desc" },
+  });
 
   return (
     <div>
@@ -21,13 +37,21 @@ export default async function MediaLibraryPage() {
         <MediaUploader />
       </div>
 
+      <form method="GET" className="mt-6 max-w-xs">
+        <input type="text" name="q" defaultValue={q} placeholder="Search by filename…" className="input" />
+      </form>
+
       {assets.length === 0 ? (
         <p className="mt-10 rounded-stub bg-cream-50 p-6 sm:p-10 text-center text-sm text-ink-500 shadow-card">
-          No media uploaded yet. Upload your first image above.
-          <br />
-          <span className="mt-1 block text-xs text-ink-300">
-            Requires CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET in .env.
-          </span>
+          {q ? "No media matched your search." : "No media uploaded yet. Upload your first image above."}
+          {!q && (
+            <>
+              <br />
+              <span className="mt-1 block text-xs text-ink-300">
+                Requires CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET in .env.
+              </span>
+            </>
+          )}
         </p>
       ) : (
         <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -49,11 +73,16 @@ export default async function MediaLibraryPage() {
                 <p className="truncate text-xs text-ink-500">{asset.fileName}</p>
                 <div className="mt-2 flex items-center justify-between gap-2">
                   <CopyUrlField url={asset.url} />
-                  <form action={deleteMediaAsset.bind(null, asset.id)}>
-                    <button type="submit" className="text-red-500 hover:text-red-700" aria-label="Delete">
-                      <Trash2 size={15} />
-                    </button>
-                  </form>
+                  <div className="flex items-center gap-3">
+                    <ReplaceMediaButton assetId={asset.id} />
+                    {canDelete && (
+                      <form action={deleteMediaAsset.bind(null, asset.id)}>
+                        <button type="submit" className="text-red-500 hover:text-red-700" aria-label="Delete">
+                          <Trash2 size={15} />
+                        </button>
+                      </form>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

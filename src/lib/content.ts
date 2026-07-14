@@ -79,17 +79,54 @@ export async function getSiteSettingsMap() {
 export async function getContactInfo() {
   const map = await getSiteSettingsMap();
   return {
+    companyName: map.get("company_name") || "MariePrime Global Services",
     email: map.get("contact_email") || staticContent.contact.email,
     phone: map.get("contact_phone") || staticContent.contact.phone,
     whatsapp: map.get("contact_whatsapp") || staticContent.contact.whatsapp,
     address: map.get("contact_address") || staticContent.contact.address,
-    workingHours: staticContent.contact.workingHours,
+    workingHours: map.get("working_hours") || staticContent.contact.workingHours,
     socials: {
       instagram: map.get("social_instagram") || staticContent.contact.socials.instagram,
       linkedin: map.get("social_linkedin") || staticContent.contact.socials.linkedin,
       facebook: map.get("social_facebook") || staticContent.contact.socials.facebook,
       tiktok: map.get("social_tiktok") || staticContent.contact.socials.tiktok,
+      x: map.get("social_x") || "",
+      youtube: map.get("social_youtube") || "",
     },
+  };
+}
+
+export async function getBrandingSettings() {
+  const map = await getSiteSettingsMap();
+  return {
+    logoUrl: map.get("site_logo_url") || "",
+    darkLogoUrl: map.get("dark_logo_url") || "",
+    faviconUrl: map.get("favicon_url") || "",
+  };
+}
+
+export async function getEmailSettings() {
+  const map = await getSiteSettingsMap();
+  return {
+    senderName: map.get("email_sender_name") || "MariePrime Global",
+    replyTo: map.get("email_reply_to") || "",
+    notificationEmail: map.get("email_notification_to") || process.env.NOTIFY_EMAIL_TO || "",
+  };
+}
+
+export async function getUploadSettings() {
+  const map = await getSiteSettingsMap();
+  return {
+    maxSizeMb: Number(map.get("upload_max_size_mb")) || 8,
+    allowedTypes: map.get("upload_allowed_types") || "image/jpeg,image/png,application/pdf",
+  };
+}
+
+export async function getSecuritySettings() {
+  const map = await getSiteSettingsMap();
+  return {
+    sessionTimeoutMinutes: Number(map.get("security_session_timeout_minutes")) || 480,
+    passwordMinLength: Number(map.get("security_password_min_length")) || 8,
   };
 }
 

@@ -1,15 +1,8 @@
 import { Resend } from "resend";
+import { ENQUIRY_SERVICE_LABELS as serviceLabels } from "@/lib/enquiryServiceLabels";
+import { getEmailTemplate, renderTemplate } from "@/lib/emailTemplates";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-
-const serviceLabels: Record<string, string> = {
-  FLIGHT_BOOKING: "Flight Booking & Travel Solutions",
-  VISA_IMMIGRATION: "Visa & Immigration Assistance",
-  TRAVEL_LOAN: "Travel Loan Assistance",
-  STUDY_ABROAD: "Study Abroad Support",
-  BUSINESS_REGISTRATION: "Business Registration Services",
-  GENERAL_ENQUIRY: "General Enquiry",
-};
 
 export async function sendEnquiryNotification(enquiry: {
   id: string;
@@ -69,6 +62,26 @@ export async function sendEnquiryConfirmationEmail(enquiry: {
 
   const contactEmail = process.env.NOTIFY_EMAIL_TO || "mariaiyabi@gmail.com";
 
+  const template = await getEmailTemplate("ENQUIRY_RECEIVED");
+  if (template) {
+    const vars = {
+      clientName: enquiry.fullName,
+      serviceName: serviceLabels[enquiry.serviceInterest] ?? enquiry.serviceInterest,
+      companyName: "MariePrime Global",
+    };
+    try {
+      await resend.emails.send({
+        from: "MariePrime Global <notifications@marieprimeglobal.com>",
+        to: enquiry.email,
+        subject: renderTemplate(template.subject, vars),
+        html: renderTemplate(template.bodyHtml, vars),
+      });
+    } catch (error) {
+      console.error("[email] failed to send enquiry confirmation email (template):", error);
+    }
+    return;
+  }
+
   try {
     await resend.emails.send({
       from: "MariePrime Global <notifications@marieprimeglobal.com>",
@@ -103,6 +116,22 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
     console.warn(
       `[email] RESEND_API_KEY not set — password reset link for ${to}: ${resetUrl}`
     );
+    return;
+  }
+
+  const template = await getEmailTemplate("PASSWORD_RESET");
+  if (template) {
+    const vars = { companyName: "MariePrime Global", resetUrl };
+    try {
+      await resend.emails.send({
+        from: "MariePrime Admin <notifications@marieprimeglobal.com>",
+        to,
+        subject: renderTemplate(template.subject, vars),
+        html: renderTemplate(template.bodyHtml, vars),
+      });
+    } catch (error) {
+      console.error("[email] failed to send password reset email (template):", error);
+    }
     return;
   }
 
@@ -202,6 +231,27 @@ export async function sendApplicationConfirmationEmail(application: {
   const contactEmail = process.env.NOTIFY_EMAIL_TO || "mariaiyabi@gmail.com";
   const trackUrl = `${siteUrl}/track?ref=${encodeURIComponent(application.referenceNumber)}`;
 
+  const template = await getEmailTemplate("APPLICATION_RECEIVED");
+  if (template) {
+    const vars = {
+      clientName: application.applicantName,
+      referenceNumber: application.referenceNumber,
+      serviceName: application.serviceTitle,
+      companyName: "MariePrime Global",
+    };
+    try {
+      await resend.emails.send({
+        from: "MariePrime Global <notifications@marieprimeglobal.com>",
+        to: application.applicantEmail,
+        subject: renderTemplate(template.subject, vars),
+        html: renderTemplate(template.bodyHtml, vars),
+      });
+    } catch (error) {
+      console.error("[email] failed to send application confirmation email (template):", error);
+    }
+    return;
+  }
+
   try {
     await resend.emails.send({
       from: "MariePrime Global <notifications@marieprimeglobal.com>",
@@ -295,6 +345,39 @@ export async function sendApplicationStatusUpdateEmail(application: {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://marieprimeglobal.com";
   const trackUrl = `${siteUrl}/track?ref=${encodeURIComponent(application.referenceNumber)}`;
 
+  const templateKey =
+    application.statusLabel === "Approved" || application.statusLabel === "Completed"
+      ? "APPLICATION_APPROVED"
+      : application.statusLabel === "Rejected"
+        ? "APPLICATION_REJECTED"
+        : application.statusLabel === "Documents Received"
+          ? "DOCUMENTS_RECEIVED"
+          : null;
+
+  if (templateKey) {
+    const template = await getEmailTemplate(templateKey);
+    if (template) {
+      const vars = {
+        clientName: application.applicantName,
+        referenceNumber: application.referenceNumber,
+        serviceName: application.serviceTitle,
+        status: application.statusLabel,
+        companyName: "MariePrime Global",
+      };
+      try {
+        await resend.emails.send({
+          from: "MariePrime Global <notifications@marieprimeglobal.com>",
+          to: application.applicantEmail,
+          subject: renderTemplate(template.subject, vars),
+          html: renderTemplate(template.bodyHtml, vars),
+        });
+      } catch (error) {
+        console.error("[email] failed to send application status update email (template):", error);
+      }
+      return;
+    }
+  }
+
   try {
     await resend.emails.send({
       from: "MariePrime Global <notifications@marieprimeglobal.com>",
@@ -317,5 +400,78 @@ export async function sendApplicationStatusUpdateEmail(application: {
     });
   } catch (error) {
     console.error("[email] failed to send application status update email:", error);
+  }
+}
+
+/** Sent when staff request additional documents — includes a secure,
+ *  tokenized link the client can use to upload without creating an account. */
+export async function sendAdditionalDocumentsRequestEmail(application: {
+  referenceNumber: string;
+  applicantName: string;
+  applicantEmail: string;
+  serviceTitle: string;
+  note: string;
+  uploadToken: string;
+}) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://marieprimeglobal.com";
+  const uploadUrl = `${siteUrl}/upload/${application.uploadToken}`;
+
+  if (!resend) {
+    console.warn(
+      `[email] RESEND_API_KEY not set — additional-documents request for ${application.applicantEmail}: ${uploadUrl}`
+    );
+    return;
+  }
+
+  const template = await getEmailTemplate("DOCUMENTS_REQUESTED");
+  if (template) {
+    const vars = {
+      clientName: application.applicantName,
+      referenceNumber: application.referenceNumber,
+      serviceName: application.serviceTitle,
+      companyName: "MariePrime Global",
+      note: application.note,
+      uploadUrl,
+    };
+    try {
+      await resend.emails.send({
+        from: "MariePrime Global <notifications@marieprimeglobal.com>",
+        to: application.applicantEmail,
+        subject: renderTemplate(template.subject, vars),
+        html: renderTemplate(template.bodyHtml, vars),
+      });
+    } catch (error) {
+      console.error("[email] failed to send additional-documents request email (template):", error);
+    }
+    return;
+  }
+
+  try {
+    await resend.emails.send({
+      from: "MariePrime Global <notifications@marieprimeglobal.com>",
+      to: application.applicantEmail,
+      subject: `Action needed — additional documents for ${application.referenceNumber}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px;">
+          <h2 style="color:#1B4332;">We need a bit more from you</h2>
+          <p>Hi ${escapeHtml(application.applicantName)},</p>
+          <p>
+            To continue processing your application for <strong>${escapeHtml(application.serviceTitle)}</strong>
+            (${escapeHtml(application.referenceNumber)}), please provide the following:
+          </p>
+          <p style="background:#F5F1E8; padding:12px 16px; border-radius:8px;">${escapeHtml(application.note).replace(/\n/g, "<br/>")}</p>
+          <p style="margin-top:24px;">
+            <a href="${uploadUrl}" style="background:#1B4332; color:#fff; padding:12px 22px; border-radius:8px; text-decoration:none; display:inline-block;">
+              Upload documents
+            </a>
+          </p>
+          <p style="margin-top:16px; font-size: 13px; color: #6b7280;">
+            This link is unique to your application and doesn't require an account. It expires in 14 days.
+          </p>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("[email] failed to send additional-documents request email:", error);
   }
 }

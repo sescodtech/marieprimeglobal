@@ -7,7 +7,8 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requirePermission, requireSuperAdmin } from "@/lib/actions/require-admin";
 import { logAudit } from "@/lib/audit";
-import { assignableRoles, canManageRole, PERMISSIONS } from "@/lib/permissions";
+import { assignableRoles, canManageRole, PERMISSIONS, ALL_PERMISSIONS, type Permission } from "@/lib/permissions";
+import { seedDefaultPermissions, setPermissions } from "@/lib/permissionGrants";
 
 const USERS_PATH = "/admin/users";
 
@@ -50,6 +51,10 @@ export async function createUser(_prevState: FormState, formData: FormData): Pro
   const created = await prisma.admin.create({
     data: { name, email, passwordHash, role, createdById: actor.id },
   });
+
+  if (role === "ADMIN" || role === "STAFF") {
+    await seedDefaultPermissions(created.id, role);
+  }
 
   await logAudit({
     actor,
@@ -249,10 +254,31 @@ export async function resetUserPassword(
 }
 
 /**
- * Super Admin only: grants or revokes an Admin's permission to manage other
- * Admins (create/edit/suspend/delete). Never applies to Staff, who never
- * manage anyone regardless of this flag.
+ * Super Admin only: replaces an ADMIN or STAFF account's entire permission
+ * grant set. This is what makes permission changes take effect immediately
+ * — the next request that account makes re-resolves its permissions from
+ * the database, no redeploy or re-login required.
  */
+export async function setUserPermissions(id: string, permissions: string[]) {
+  const actor = await requireSuperAdmin();
+
+  const target = await prisma.admin.findUnique({ where: { id } });
+  if (!target) return;
+  if (target.role === "SUPER_ADMIN") return; // Super Admin is never grant-based
+
+  const validPermissions = permissions.filter((p): p is Permission => (ALL_PERMISSIONS as string[]).includes(p));
+  await setPermissions(id, validPermissions);
+
+  await logAudit({
+    actor,
+    action: "PERMISSIONS_UPDATED",
+    entityType: "Admin",
+    entityId: id,
+    description: `${actor.name} updated permissions for ${target.name}.`,
+  });
+
+  revalidatePath(`${USERS_PATH}/${id}/permissions`);
+}
 export async function setCanManageAdmins(id: string, canManageAdmins: boolean) {
   const actor = await requireSuperAdmin();
 

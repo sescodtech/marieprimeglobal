@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { cloudinary } from "@/lib/cloudinary";
+import { getDocumentRequirements, MAX_UPLOAD_BYTES_DEFAULT } from "@/lib/applicationForms/documents";
+import type { ServiceApplicationType } from "@/lib/applicationForms/types";
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "application/pdf"];
-const MAX_SIZE_BYTES = 8 * 1024 * 1024; // 8MB
+const FALLBACK_ALLOWED_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 
 function uploadToCloudinary(buffer: Buffer, fileName: string, mimeType: string): Promise<{ url: string; publicId: string }> {
   const resourceType = mimeType === "application/pdf" ? "raw" : "image";
@@ -29,20 +30,43 @@ function uploadToCloudinary(buffer: Buffer, fileName: string, mimeType: string):
  * submitted. The file is not linked to an application yet; the wizard holds
  * the returned url/publicId in memory and sends them along with the final
  * submission in /api/applications/submit.
+ *
+ * If `serviceType` + `docKey` are supplied, this validates the file against
+ * that specific document's Super-Admin-configured file types and max size
+ * (never trusting a client-supplied limit) — falling back to the global
+ * defaults if they're missing or don't resolve to a known requirement.
  */
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get("file");
+    const serviceType = formData.get("serviceType");
+    const docKey = formData.get("docKey");
 
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "No file provided." }, { status: 400 });
     }
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      return NextResponse.json({ error: "Files must be a JPG, PNG or PDF." }, { status: 400 });
+
+    let allowedTypes: string[] = FALLBACK_ALLOWED_TYPES;
+    let maxSizeBytes = MAX_UPLOAD_BYTES_DEFAULT;
+
+    if (typeof serviceType === "string" && typeof docKey === "string") {
+      const requirements = await getDocumentRequirements(serviceType as ServiceApplicationType);
+      const requirement = requirements.find((r) => r.id === docKey);
+      if (requirement) {
+        allowedTypes = requirement.accept.split(",").map((t) => t.trim()).filter(Boolean);
+        maxSizeBytes = requirement.maxSizeBytes ?? MAX_UPLOAD_BYTES_DEFAULT;
+      }
     }
-    if (file.size > MAX_SIZE_BYTES) {
-      return NextResponse.json({ error: "Files must be under 8MB." }, { status: 400 });
+
+    if (!allowedTypes.includes(file.type)) {
+      return NextResponse.json({ error: "That file type isn't accepted for this document." }, { status: 400 });
+    }
+    if (file.size > maxSizeBytes) {
+      return NextResponse.json(
+        { error: `Files must be under ${Math.round(maxSizeBytes / (1024 * 1024))}MB.` },
+        { status: 400 }
+      );
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());

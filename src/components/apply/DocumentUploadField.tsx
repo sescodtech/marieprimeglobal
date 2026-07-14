@@ -16,10 +16,11 @@ export type DocFieldState = {
 
 export const EMPTY_DOC_STATE: DocFieldState = { status: "empty", progress: 0 };
 
-const MAX_SIZE_BYTES = 8 * 1024 * 1024;
+const DEFAULT_MAX_SIZE_BYTES = 8 * 1024 * 1024;
 
 function uploadFile(
   file: File,
+  extra: { serviceType: string; docKey: string },
   onProgress: (pct: number) => void
 ): Promise<{ url: string; publicId: string; mimeType: string; fileName: string }> {
   return new Promise((resolve, reject) => {
@@ -46,6 +47,8 @@ function uploadFile(
     xhr.onerror = () => reject(new Error("Upload failed. Check your connection and try again."));
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("serviceType", extra.serviceType);
+    formData.append("docKey", extra.docKey);
     xhr.send(formData);
   });
 }
@@ -62,18 +65,21 @@ function deleteFile(publicId: string, mimeType?: string) {
 
 export function DocumentUploadField({
   config,
+  serviceType,
   value,
   onChange,
 }: {
   config: DocumentFieldConfig;
+  serviceType: string;
   value: DocFieldState;
   onChange: (next: DocFieldState) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const maxSizeBytes = config.maxSizeBytes ?? DEFAULT_MAX_SIZE_BYTES;
 
   async function handleFile(file: File) {
-    if (file.size > MAX_SIZE_BYTES) {
-      onChange({ status: "error", progress: 0, error: "File must be under 8MB." });
+    if (file.size > maxSizeBytes) {
+      onChange({ status: "error", progress: 0, error: `File must be under ${Math.round(maxSizeBytes / (1024 * 1024))}MB.` });
       return;
     }
 
@@ -85,7 +91,9 @@ export function DocumentUploadField({
 
     onChange({ status: "uploading", progress: 0 });
     try {
-      const result = await uploadFile(file, (progress) => onChange({ status: "uploading", progress }));
+      const result = await uploadFile(file, { serviceType, docKey: config.id }, (progress) =>
+        onChange({ status: "uploading", progress })
+      );
       onChange({ status: "uploaded", progress: 100, ...result });
     } catch (error) {
       onChange({

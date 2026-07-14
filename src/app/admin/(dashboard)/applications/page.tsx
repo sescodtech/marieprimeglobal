@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import type { Prisma } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { hasPermission, PERMISSIONS } from "@/lib/permissions";
+import { hasGrantedPermission, PERMISSIONS } from "@/lib/permissions";
+import { getEffectivePermissions } from "@/lib/permissionGrants";
 import { STATUS_LABELS, statusBadgeClass, type ServiceApplicationStatus } from "@/lib/applicationForms/status";
 
 const TABS: { key: string; label: string }[] = [
@@ -45,8 +46,9 @@ export default async function AdminApplicationsPage({
   if (!session?.user) redirect("/admin/login");
 
   const role = session.user.role;
-  const canViewAll = hasPermission(role, PERMISSIONS.VIEW_APPLICATIONS);
-  const canViewAssignedOnly = hasPermission(role, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS);
+  const permissions = await getEffectivePermissions(session.user.id, role);
+  const canViewAll = hasGrantedPermission(permissions, PERMISSIONS.VIEW_APPLICATIONS);
+  const canViewAssignedOnly = hasGrantedPermission(permissions, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS);
   if (!canViewAll && !canViewAssignedOnly) redirect("/admin?error=unauthorized");
 
   const { status, q, range } = await searchParams;

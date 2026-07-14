@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { hasPermission, PERMISSIONS } from "@/lib/permissions";
+import { hasGrantedPermission, PERMISSIONS } from "@/lib/permissions";
+import { getEffectivePermissions } from "@/lib/permissionGrants";
 
 type Row = {
   id: string;
@@ -46,9 +47,10 @@ export default async function StaffPerformancePage() {
   const session = await auth();
   if (!session?.user) redirect("/admin/login");
   const role = session.user.role;
+  const permissions = await getEffectivePermissions(session.user.id, role);
 
-  const canViewAll = hasPermission(role, PERMISSIONS.VIEW_APPLICATIONS);
-  const canViewOwn = hasPermission(role, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS);
+  const canViewAll = hasGrantedPermission(permissions, PERMISSIONS.VIEW_APPLICATIONS);
+  const canViewOwn = hasGrantedPermission(permissions, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS);
   if (!canViewAll && !canViewOwn) redirect("/admin?error=unauthorized");
 
   let rows: Row[];

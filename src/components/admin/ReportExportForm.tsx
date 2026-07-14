@@ -8,7 +8,7 @@ export function ReportExportForm({ reportTypes }: { reportTypes: { value: string
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
 
-  function buildUrl(format: "csv" | "xlsx") {
+  function buildUrl(format: "csv" | "xlsx" | "pdf") {
     const params = new URLSearchParams({ type, format });
     if (from) params.set("from", from);
     if (to) params.set("to", to);
@@ -43,7 +43,7 @@ export function ReportExportForm({ reportTypes }: { reportTypes: { value: string
         </div>
       )}
 
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <a
           href={buildUrl("csv")}
           className="inline-flex items-center gap-2 rounded-stub bg-forest-700 px-5 py-2.5 text-sm font-semibold text-cream-50 hover:bg-forest-800"
@@ -57,6 +57,13 @@ export function ReportExportForm({ reportTypes }: { reportTypes: { value: string
         >
           <Download size={15} />
           Export Excel
+        </a>
+        <a
+          href={buildUrl("pdf")}
+          className="inline-flex items-center gap-2 rounded-stub border border-forest-700/25 px-5 py-2.5 text-sm font-semibold text-forest-700 hover:border-forest-700"
+        >
+          <Download size={15} />
+          Export PDF
         </a>
       </div>
     </div>

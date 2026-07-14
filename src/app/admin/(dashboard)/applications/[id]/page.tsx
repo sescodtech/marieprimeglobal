@@ -3,7 +3,8 @@ import { redirect, notFound } from "next/navigation";
 import { ArrowLeft, Download, FileText } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { hasPermission, PERMISSIONS } from "@/lib/permissions";
+import { hasGrantedPermission, PERMISSIONS } from "@/lib/permissions";
+import { getEffectivePermissions } from "@/lib/permissionGrants";
 import { getServiceApplicationConfig } from "@/lib/applicationForms/config";
 import { STATUS_LABELS, statusBadgeClass } from "@/lib/applicationForms/status";
 import { StatusUpdateForm } from "@/components/admin/applications/StatusUpdateForm";
@@ -29,9 +30,11 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
   if (!application) notFound();
 
   const role = session.user.role;
-  const canReviewAll = hasPermission(role, PERMISSIONS.REVIEW_APPLICATIONS);
-  const canAssignStaff = hasPermission(role, PERMISSIONS.ASSIGN_STAFF);
-  const canViewAssignedOnly = hasPermission(role, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS);
+  const permissions = await getEffectivePermissions(session.user.id, role);
+  const canReviewAll = hasGrantedPermission(permissions, PERMISSIONS.REVIEW_APPLICATIONS);
+  const canAssignStaff = hasGrantedPermission(permissions, PERMISSIONS.ASSIGN_STAFF);
+  const canViewAssignedOnly = hasGrantedPermission(permissions, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS);
+  const canDownloadDocuments = hasGrantedPermission(permissions, PERMISSIONS.DOWNLOAD_DOCUMENTS);
   const isAssignedToMe = application.assignedStaffId === session.user.id;
 
   if (!canReviewAll && !(canViewAssignedOnly && isAssignedToMe)) {
@@ -105,15 +108,17 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
                       <FileText size={15} className="text-forest-700" />
                       {doc.label}
                     </span>
-                    <a
-                      href={doc.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-forest-700 hover:underline"
-                    >
-                      <Download size={13} />
-                      Download
-                    </a>
+                    {canDownloadDocuments && (
+                      <a
+                        href={doc.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-forest-700 hover:underline"
+                      >
+                        <Download size={13} />
+                        Download
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>

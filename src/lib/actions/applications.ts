@@ -1,13 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { randomBytes } from "crypto";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin, requirePermission } from "@/lib/actions/require-admin";
 import { logAudit } from "@/lib/audit";
 import { PERMISSIONS } from "@/lib/permissions";
 import { STATUS_LABELS, TERMINAL_STATUSES } from "@/lib/applicationForms/status";
-import { sendApplicationStatusUpdateEmail } from "@/lib/email";
+import { sendApplicationStatusUpdateEmail, sendAdditionalDocumentsRequestEmail } from "@/lib/email";
 import { createNotification } from "@/lib/notifications";
 
 const STATUS_VALUES = [
@@ -123,8 +124,14 @@ export async function requestAdditionalDocuments(
   const application = await prisma.serviceApplication.findUnique({ where: { id } });
   if (!application) return { error: "That application no longer exists." };
 
+  const uploadToken = randomBytes(24).toString("hex");
+  const uploadTokenExpiresAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // 14 days
+
   await prisma.$transaction([
-    prisma.serviceApplication.update({ where: { id }, data: { status: "ADDITIONAL_DOCS_REQUIRED" } }),
+    prisma.serviceApplication.update({
+      where: { id },
+      data: { status: "ADDITIONAL_DOCS_REQUIRED", uploadToken, uploadTokenExpiresAt },
+    }),
     prisma.applicationStatusEvent.create({
       data: { applicationId: id, status: "ADDITIONAL_DOCS_REQUIRED", note: noteText, actorName: actor.name },
     }),
@@ -138,13 +145,13 @@ export async function requestAdditionalDocuments(
     description: `${actor.name} requested additional documents for ${application.referenceNumber}: ${noteText}`,
   });
 
-  void sendApplicationStatusUpdateEmail({
+  void sendAdditionalDocumentsRequestEmail({
     referenceNumber: application.referenceNumber,
     applicantName: application.applicantName,
     applicantEmail: application.applicantEmail,
     serviceTitle: application.serviceTitle,
-    statusLabel: STATUS_LABELS.ADDITIONAL_DOCS_REQUIRED,
     note: noteText,
+    uploadToken,
   });
 
   revalidatePath(applicationPath(id));

@@ -2,7 +2,8 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { hasPermission, PERMISSIONS } from "@/lib/permissions";
+import { hasGrantedPermission, PERMISSIONS } from "@/lib/permissions";
+import { getEffectivePermissions } from "@/lib/permissionGrants";
 
 type ResultGroup = { label: string; items: { title: string; subtitle?: string; href: string }[] };
 
@@ -14,6 +15,7 @@ export default async function GlobalSearchPage({
   const session = await auth();
   if (!session?.user) redirect("/admin/login");
   const role = session.user.role;
+  const permissions = await getEffectivePermissions(session.user.id, role);
 
   const { q } = await searchParams;
   const term = q?.trim() ?? "";
@@ -22,11 +24,11 @@ export default async function GlobalSearchPage({
   if (term.length >= 2) {
     const ci = { contains: term, mode: "insensitive" as const };
 
-    if (hasPermission(role, PERMISSIONS.VIEW_APPLICATIONS) || hasPermission(role, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS)) {
+    if (hasGrantedPermission(permissions, PERMISSIONS.VIEW_APPLICATIONS) || hasGrantedPermission(permissions, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS)) {
       const apps = await prisma.serviceApplication.findMany({
         where: {
           OR: [{ referenceNumber: ci }, { applicantName: ci }, { applicantEmail: ci }, { applicantPhone: ci }],
-          ...(hasPermission(role, PERMISSIONS.VIEW_APPLICATIONS) ? {} : { assignedStaffId: session.user.id }),
+          ...(hasGrantedPermission(permissions, PERMISSIONS.VIEW_APPLICATIONS) ? {} : { assignedStaffId: session.user.id }),
         },
         take: 8,
       });
@@ -42,7 +44,7 @@ export default async function GlobalSearchPage({
       }
     }
 
-    if (hasPermission(role, PERMISSIONS.MANAGE_ENQUIRIES)) {
+    if (hasGrantedPermission(permissions, PERMISSIONS.MANAGE_ENQUIRIES)) {
       const enquiries = await prisma.enquiry.findMany({
         where: { OR: [{ fullName: ci }, { email: ci }, { phone: ci }, { subject: ci }] },
         take: 8,
@@ -55,7 +57,7 @@ export default async function GlobalSearchPage({
       }
     }
 
-    if (hasPermission(role, PERMISSIONS.MANAGE_SERVICES)) {
+    if (hasGrantedPermission(permissions, PERMISSIONS.MANAGE_SERVICES)) {
       const services = await prisma.service.findMany({ where: { title: ci }, take: 8 });
       if (services.length > 0) {
         groups.push({
@@ -65,7 +67,7 @@ export default async function GlobalSearchPage({
       }
     }
 
-    if (hasPermission(role, PERMISSIONS.MANAGE_STAFF)) {
+    if (hasGrantedPermission(permissions, PERMISSIONS.MANAGE_STAFF)) {
       const staff = await prisma.admin.findMany({ where: { OR: [{ name: ci }, { email: ci }] }, take: 8 });
       if (staff.length > 0) {
         groups.push({
@@ -75,7 +77,7 @@ export default async function GlobalSearchPage({
       }
     }
 
-    if (hasPermission(role, PERMISSIONS.MANAGE_BLOG)) {
+    if (hasGrantedPermission(permissions, PERMISSIONS.MANAGE_BLOG)) {
       const posts = await prisma.blogPost.findMany({ where: { title: ci }, take: 8 });
       if (posts.length > 0) {
         groups.push({
@@ -85,7 +87,7 @@ export default async function GlobalSearchPage({
       }
     }
 
-    if (hasPermission(role, PERMISSIONS.MANAGE_TESTIMONIALS)) {
+    if (hasGrantedPermission(permissions, PERMISSIONS.MANAGE_TESTIMONIALS)) {
       const testimonials = await prisma.testimonial.findMany({ where: { clientName: ci }, take: 8 });
       if (testimonials.length > 0) {
         groups.push({
@@ -95,7 +97,7 @@ export default async function GlobalSearchPage({
       }
     }
 
-    if (hasPermission(role, PERMISSIONS.MANAGE_FAQS)) {
+    if (hasGrantedPermission(permissions, PERMISSIONS.MANAGE_FAQS)) {
       const faqs = await prisma.faq.findMany({ where: { question: ci }, take: 8 });
       if (faqs.length > 0) {
         groups.push({

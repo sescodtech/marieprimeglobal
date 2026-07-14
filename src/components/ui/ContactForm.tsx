@@ -6,23 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, CheckCircle2 } from "lucide-react";
-
-const serviceOptions = [
-  { value: "FLIGHT_BOOKING", label: "Flight Booking & Travel Solutions" },
-  { value: "VISA_IMMIGRATION", label: "Visa & Immigration Assistance" },
-  { value: "TRAVEL_LOAN", label: "Travel Loan Assistance" },
-  { value: "STUDY_ABROAD", label: "Study Abroad Support" },
-  { value: "BUSINESS_REGISTRATION", label: "Business Registration Services" },
-  { value: "GENERAL_ENQUIRY", label: "General Enquiry" },
-];
-
-// Maps a Service CMS slug (e.g. from ?service=visa-travel-assistance) to the
-// closest matching enquiry category, so arriving from a service page
-// auto-selects the right option instead of always defaulting to General.
-const SLUG_TO_SERVICE_INTEREST: Record<string, string> = {
-  "visa-travel-assistance": "VISA_IMMIGRATION",
-  "flight-booking": "FLIGHT_BOOKING",
-};
+import { ENQUIRY_SERVICE_OPTIONS as serviceOptions, SLUG_TO_SERVICE_INTEREST } from "@/lib/enquiryServiceLabels";
 
 const schema = z.object({
   fullName: z.string().min(2, "Enter your full name"),

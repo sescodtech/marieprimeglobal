@@ -17,16 +17,19 @@ import {
 } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { hasPermission, PERMISSIONS } from "@/lib/permissions";
+import { hasGrantedPermission, PERMISSIONS } from "@/lib/permissions";
+import { getEffectivePermissions } from "@/lib/permissionGrants";
+import { RecentActivityWidget } from "@/components/admin/RecentActivityWidget";
 
 export default async function AdminOverviewPage() {
   const session = await auth();
   const role = session?.user?.role;
-  const canViewApplications = hasPermission(role, PERMISSIONS.VIEW_APPLICATIONS);
-  const canViewAssignedOnly = hasPermission(role, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS);
-  const canManageEnquiries = hasPermission(role, PERMISSIONS.MANAGE_ENQUIRIES);
-  const canManageServices = hasPermission(role, PERMISSIONS.MANAGE_SERVICES);
-  const canManageStaff = hasPermission(role, PERMISSIONS.MANAGE_STAFF);
+  const permissions = session?.user?.id ? await getEffectivePermissions(session.user.id, role ?? "") : [];
+  const canViewApplications = hasGrantedPermission(permissions, PERMISSIONS.VIEW_APPLICATIONS);
+  const canViewAssignedOnly = hasGrantedPermission(permissions, PERMISSIONS.VIEW_ASSIGNED_APPLICATIONS);
+  const canManageEnquiries = hasGrantedPermission(permissions, PERMISSIONS.MANAGE_ENQUIRIES);
+  const canManageServices = hasGrantedPermission(permissions, PERMISSIONS.MANAGE_SERVICES);
+  const canManageStaff = hasGrantedPermission(permissions, PERMISSIONS.MANAGE_STAFF);
 
   // ---- Executive KPI cards (Admin / Super Admin) ----
   if (canViewApplications) {
@@ -124,11 +127,11 @@ export default async function AdminOverviewPage() {
             ))}
           </div>
         </div>
+
+        {role === "SUPER_ADMIN" && <RecentActivityWidget />}
       </div>
     );
   }
-
-  // ---- Staff: personal queue snapshot ----
   if (canViewAssignedOnly && session?.user?.id) {
     const [assigned, pendingMine, completedMine, recentAssigned] = await Promise.all([
       prisma.serviceApplication.count({ where: { assignedStaffId: session.user.id } }),

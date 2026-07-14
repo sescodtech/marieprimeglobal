@@ -263,6 +263,7 @@ export function ApplicationWizard({
                     <DocumentUploadField
                       key={doc.id}
                       config={doc}
+                      serviceType={serviceType}
                       value={docState[doc.id] ?? EMPTY_DOC_STATE}
                       onChange={(next) => setDocState((prev) => ({ ...prev, [doc.id]: next }))}
                     />
