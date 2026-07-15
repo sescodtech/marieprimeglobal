@@ -44,7 +44,12 @@ export default async function SiteSettingsPage() {
               <textarea name="contact_address" defaultValue={contact.address} rows={2} className="input resize-none" />
             </Field>
             <Field label="Working hours">
-              <input name="working_hours" defaultValue={contact.workingHours} className="input" placeholder="Mon–Fri, 9am–5pm WAT" />
+              <input
+                name="working_hours"
+                defaultValue={typeof contact.workingHours === "string" ? contact.workingHours : ""}
+                className="input"
+                placeholder="Mon–Fri, 9am–5pm WAT"
+              />
             </Field>
           </div>
         </section>

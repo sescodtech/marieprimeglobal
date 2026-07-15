@@ -133,12 +133,16 @@ export async function Footer() {
             Working Hours
           </h4>
           <div className="mt-4 flex flex-wrap gap-x-10 gap-y-2 text-sm">
-            {contact.workingHours.map((row) => (
-              <div key={row.days} className="flex items-baseline gap-2 whitespace-nowrap">
-                <span className="text-cream-200/80">{row.days}</span>
-                <span className="font-medium text-cream-100/90">{row.hours}</span>
-              </div>
-            ))}
+            {typeof contact.workingHours === "string" ? (
+              <span className="font-medium text-cream-100/90">{contact.workingHours}</span>
+            ) : (
+              contact.workingHours.map((row) => (
+                <div key={row.days} className="flex items-baseline gap-2 whitespace-nowrap">
+                  <span className="text-cream-200/80">{row.days}</span>
+                  <span className="font-medium text-cream-100/90">{row.hours}</span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
