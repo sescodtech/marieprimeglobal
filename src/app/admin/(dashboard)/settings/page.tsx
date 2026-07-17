@@ -5,20 +5,18 @@ import {
   getEmailSettings,
   getUploadSettings,
   getSecuritySettings,
-  getGlobalFormControls,
 } from "@/lib/content";
 import { updateSiteSettings } from "@/lib/actions/settings";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 
 export default async function SiteSettingsPage() {
-  const [contact, hero, branding, email, upload, security, formControls] = await Promise.all([
+  const [contact, hero, branding, email, upload, security] = await Promise.all([
     getContactInfo(),
     getHomeHero(),
     getBrandingSettings(),
     getEmailSettings(),
     getUploadSettings(),
     getSecuritySettings(),
-    getGlobalFormControls(),
   ]);
 
   return (
@@ -46,7 +44,12 @@ export default async function SiteSettingsPage() {
               <textarea name="contact_address" defaultValue={contact.address} rows={2} className="input resize-none" />
             </Field>
             <Field label="Working hours">
-              <input name="working_hours" defaultValue={contact.workingHours} className="input" placeholder="Mon–Fri, 9am–5pm WAT" />
+              <input
+                name="working_hours"
+                defaultValue={typeof contact.workingHours === "string" ? contact.workingHours : ""}
+                className="input"
+                placeholder="Mon–Fri, 9am–5pm WAT"
+              />
             </Field>
           </div>
         </section>
@@ -129,28 +132,6 @@ export default async function SiteSettingsPage() {
             </Field>
             <Field label="Minimum password length">
               <input name="security_password_min_length" type="number" min={8} max={64} defaultValue={security.passwordMinLength} className="input" />
-            </Field>
-          </div>
-        </section>
-
-        <section className="rounded-stub bg-cream-50 p-5 sm:p-8 shadow-card ring-1 ring-forest-900/5">
-          <h2 className="font-display text-lg font-semibold text-forest-900">Website Form Control — Global</h2>
-          <p className="mt-1 text-xs text-ink-500">
-            Overrides every service at once. Turning applications off site-wide hides every Apply button
-            regardless of a service's own setting.
-          </p>
-          <div className="mt-5 space-y-5">
-            <Field label="Applications (site-wide)">
-              <select name="global_applications_enabled" defaultValue={String(formControls.applicationsEnabled)} className="input">
-                <option value="true">Enabled</option>
-                <option value="false">Disabled</option>
-              </select>
-            </Field>
-            <Field label="Enquiries (site-wide)">
-              <select name="global_enquiries_enabled" defaultValue={String(formControls.enquiriesEnabled)} className="input">
-                <option value="true">Enabled</option>
-                <option value="false">Disabled</option>
-              </select>
             </Field>
           </div>
         </section>
