@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 
-export const SEO_PAGE_KEYS = ["home", "about", "services", "visa", "contact", "blog", "careers", "faq"] as const;
+const SEO_PAGE_KEYS = ["home", "about", "services", "visa", "contact", "blog", "careers", "faq"] as const;
 
 const schema = z.object({
   page: z.enum(SEO_PAGE_KEYS),
