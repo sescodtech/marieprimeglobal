@@ -40,7 +40,53 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (admin.status === "SUSPENDED") return null;
 
         const valid = await bcrypt.compare(password, admin.passwordHash);
-        if (!valid) return null;
+        if (!valid) {
+          // Best-effort only — a failed login must still resolve to "no
+          // access" even if logging/notifying it has a problem.
+          try {
+            const ipAddress =
+              request?.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+              request?.headers.get("x-real-ip") ||
+              null;
+            const userAgent = request?.headers.get("user-agent") || null;
+            await prisma.auditLog.create({
+              data: {
+                actorId: admin.id,
+                actorName: admin.name,
+                actorEmail: admin.email,
+                actorRole: admin.role,
+                action: "LOGIN_FAILED",
+                entityType: "Admin",
+                entityId: admin.id,
+                description: `Failed login attempt for ${admin.email}.`,
+                ipAddress,
+                userAgent,
+              },
+            });
+            const superAdmins = await prisma.admin.findMany({
+              where: { status: "ACTIVE", role: "SUPER_ADMIN" },
+              select: { id: true },
+            });
+            await Promise.all(
+              superAdmins.map((sa) =>
+                prisma.notification.create({
+                  data: {
+                    recipientAdminId: sa.id,
+                    title: "Failed login attempt",
+                    body: `A failed login attempt was made for ${admin.email}${ipAddress ? ` from ${ipAddress}` : ""}.`,
+                    category: "SECURITY",
+                    channel: "SYSTEM",
+                    status: "SENT",
+                    sentAt: new Date(),
+                  },
+                })
+              )
+            );
+          } catch (error) {
+            console.error("[auth] failed to record failed login attempt (non-fatal):", error);
+          }
+          return null;
+        }
 
         // Best-effort only — a failure here must never block a successful
         // login.

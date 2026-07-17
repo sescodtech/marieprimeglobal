@@ -130,6 +130,16 @@ export async function getSecuritySettings() {
   };
 }
 
+/** Website Form Control Center — global kill-switches for every service at
+ *  once, independent of each service's own applicationMode. */
+export async function getGlobalFormControls() {
+  const map = await getSiteSettingsMap();
+  return {
+    applicationsEnabled: map.get("global_applications_enabled") !== "false",
+    enquiriesEnabled: map.get("global_enquiries_enabled") !== "false",
+  };
+}
+
 /**
  * Logo used across the site (Header, etc). Preference order:
  * 1. Admin Dashboard upload (Settings → Branding), stored in SiteSetting.
@@ -149,8 +159,28 @@ export async function getSiteLogoSetting() {
   return map.get("site_logo_url") || "";
 }
 
-export async function getSeoSetting(page: "home" | "about" | "services" | "contact" | "blog" | "careers" | "faq") {
+export async function getSeoSetting(
+  page: "home" | "about" | "services" | "visa" | "contact" | "blog" | "careers" | "faq"
+) {
   return prisma.seoSetting.findUnique({ where: { page } });
+}
+
+export async function getGlobalSeoSettings() {
+  const map = await getSiteSettingsMap();
+  return {
+    siteTitle: map.get("seo_site_title") || "MariePrime Global Services",
+    metaDescription: map.get("seo_meta_description") || "",
+    keywords: map.get("seo_keywords") || "",
+    canonicalUrl: map.get("seo_canonical_url") || "",
+    ogImageUrl: map.get("seo_og_image_url") || "",
+    twitterImageUrl: map.get("seo_twitter_image_url") || "",
+    googleVerification: map.get("seo_google_verification") || "",
+    bingVerification: map.get("seo_bing_verification") || "",
+    facebookVerification: map.get("seo_facebook_verification") || "",
+    gaId: map.get("seo_ga_id") || "",
+    gtmId: map.get("seo_gtm_id") || "",
+    fbPixelId: map.get("seo_fb_pixel_id") || "",
+  };
 }
 
 export async function getHomeHero() {

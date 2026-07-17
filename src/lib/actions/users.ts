@@ -9,6 +9,7 @@ import { requirePermission, requireSuperAdmin } from "@/lib/actions/require-admi
 import { logAudit } from "@/lib/audit";
 import { assignableRoles, canManageRole, PERMISSIONS, ALL_PERMISSIONS, type Permission } from "@/lib/permissions";
 import { seedDefaultPermissions, setPermissions } from "@/lib/permissionGrants";
+import { notifySuperAdmins, createNotification } from "@/lib/notifications";
 
 const USERS_PATH = "/admin/users";
 
@@ -62,6 +63,13 @@ export async function createUser(_prevState: FormState, formData: FormData): Pro
     entityType: "Admin",
     entityId: created.id,
     description: `${actor.name} created a ${role.replace("_", " ").toLowerCase()} account for ${name} (${email}).`,
+  });
+
+  void notifySuperAdmins({
+    title: role === "ADMIN" ? "Admin created" : "Staff created",
+    body: `${actor.name} created a ${role.toLowerCase()} account for ${name} (${email}).`,
+    link: `/admin/users/${created.id}`,
+    category: "USERS",
   });
 
   revalidatePath(USERS_PATH);
@@ -275,6 +283,14 @@ export async function setUserPermissions(id: string, permissions: string[]) {
     entityType: "Admin",
     entityId: id,
     description: `${actor.name} updated permissions for ${target.name}.`,
+  });
+
+  void createNotification({
+    recipientAdminId: id,
+    title: "Your permissions were updated",
+    body: `${actor.name} changed what you can access. Refresh the page if something looks different.`,
+    link: "/admin",
+    category: "USERS",
   });
 
   revalidatePath(`${USERS_PATH}/${id}/permissions`);

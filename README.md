@@ -31,9 +31,127 @@ Content is now CMS-driven where it matters most:
 
 ## Fastest path to live (no local setup required)
 
+You don't need to run this on your machine first. Here's the direct route:
+
+**1. Get a database (5 min) — Supabase**
+
+Yes, create a new Supabase account (or new project if you already have one —
+doesn't need to be shared with any other project).
+
+1. Go to [supabase.com](https://supabase.com) → **Sign up** (GitHub login is fastest)
+2. **New Project** → name it `marieprime` → set a database password (save it
+   somewhere — you'll need it in the connection string) → choose a region
+   close to your users (e.g. an EU or US region close to Nigeria — Supabase
+   doesn't have an African region yet) → **Create new project**
+3. Wait ~2 minutes for it to provision
+4. Go to **Project Settings** (gear icon) → **Database**
+5. Under **Connection string**, you need **two** different strings:
+   - **Transaction pooler** (port `6543`) → this is your `DATABASE_URL`
+   - **Direct connection** (port `5432`) → this is your `DIRECT_URL`
+   - Supabase shows a URI with `[YOUR-PASSWORD]` in it — replace that with
+     the database password from step 2
+   - Add `?pgbouncer=true` to the end of the `DATABASE_URL` one specifically
+
+You'll paste both into Vercel's environment variables in step 5 below —
+Prisma needs the pooled one to run the app and the direct one to run
+migrations, that's just how Supabase's connection pooler works.
+
+**2. Get Cloudinary keys (1 min)**
+From your Cloudinary dashboard: Cloud Name, API Key, API Secret.
+
+**3. Get a Resend key (2 min)**
+[resend.com](https://resend.com) → API Keys → create one. This powers the
+"new enquiry" email notification — the site works without it too.
+
+**4. Push this folder to GitHub**
+Upload this project as a new GitHub repository (via GitHub's web uploader, or
+GitHub Desktop if you prefer not to use a terminal at all — either works,
+no `npm install` needed on your machine either way).
+
+**5. Import into Vercel**
+[vercel.com](https://vercel.com) → New Project → import the GitHub repo →
+before deploying, add these Environment Variables:
+
+| Variable | Value |
+|---|---|
+| `DATABASE_URL` | from step 1 (pooled, port 6543, with `?pgbouncer=true`) |
+| `DIRECT_URL` | from step 1 (direct, port 5432) |
+| `NEXTAUTH_URL` | `https://yourdomain.com` (or the `.vercel.app` URL for now) |
+| `NEXTAUTH_SECRET` | any long random string — e.g. mash the keyboard for 40 characters |
+| `CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` | from step 2 |
+| `RESEND_API_KEY` | from step 3 |
+| `NOTIFY_EMAIL_TO` | `mariaiyabi@gmail.com` |
+| `NEXT_PUBLIC_SITE_URL` | `https://yourdomain.com` |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | `2347069660521` |
+| `SEED_ADMIN_EMAIL` | `mariaiyabi@gmail.com` |
+| `SEED_ADMIN_PASSWORD` | pick a temporary password |
+| `SETUP_SECRET` | any long random string |
+
+Click **Deploy**. The build automatically runs `prisma generate` and
+`prisma migrate deploy`, so the database tables are created during the
+build — no local migration step.
+
+**6. Seed the database — one URL, no terminal**
+Once deployed, visit this in your browser (swap in your domain and secret):
+
+```
+https://yourdomain.com/api/setup?secret=YOUR_SETUP_SECRET
+```
+
+This creates the admin login and loads the six services, testimonials,
+director profile, contact info and SEO defaults. You'll see a JSON response
+confirming what was created. **Then delete the `SETUP_SECRET` env var in
+Vercel** (Settings → Environment Variables → remove it, redeploy) — this
+locks the endpoint so it can't be run again by anyone who finds the URL.
+
+**7. Log in**
+Go to `https://yourdomain.com/admin/login`, sign in with `SEED_ADMIN_EMAIL` /
+`SEED_ADMIN_PASSWORD`, then immediately go to **Account** and set a real
+password.
+
+**8. Point your domain at it**
+Vercel → your project → Settings → Domains → add `yourdomain.com`. Vercel
+shows you a DNS record to add at wherever the domain is registered
+(Namecheap, GoDaddy, etc.). Add it there — SSL is issued automatically once
+DNS resolves, usually within minutes to a couple of hours.
+
+That's it — live site, live admin dashboard, real data, no local dev server
+ever needed.
+
+## Local development (optional, if you want it later)
+
+```bash
+npm install
+cp .env.example .env
+npx prisma migrate dev --name init
+npx prisma db seed
+npm run dev
+```
 
 
-##  — Enquiry pipeline (complete)
+## Uploading the director's portrait
+
+Once Maria's AI-generated professional portrait is ready:
+
+1. Log into `/admin`
+2. Go to **Director Profile**
+3. Click **Upload photo** — it uploads directly to Cloudinary and shows a live preview
+4. Click **Save changes**
+
+The About page picks it up immediately (no redeploy needed).
+
+## Real company data already in place
+
+- Director: Maria Karinate Iyabi
+- Email: mariaiyabi@gmail.com
+- Phone / WhatsApp: +2347069660521
+- Address: House 12, 71 Road A Close, Festac Town, Lagos, Lagos State, Nigeria
+
+All editable from **Admin → Site Settings** and **Admin → Director Profile**
+without touching code. Social media links are still placeholders — update
+them in Site Settings once the real profiles are ready.
+
+## Phase 4 — Enquiry pipeline (complete)
 
 - Every contact form submission is saved to the `Enquiry` table and shows up
   instantly in **Admin → Enquiries** (list, status filter, detail view, status
@@ -43,7 +161,7 @@ Content is now CMS-driven where it matters most:
   admin dashboard. Set `RESEND_API_KEY` in `.env` to enable this — if it's
   unset, enquiries still save normally, the email is just skipped.
 
-## — SEO (complete)
+## Phase 5 — SEO (complete)
 
 - `sitemap.xml` — auto-generated from the four public routes (`src/app/sitemap.ts`)
 - `robots.txt` — allows all crawlers, disallows `/admin/` and `/api/` (`src/app/robots.ts`)
@@ -68,5 +186,8 @@ done:
 
 ## Notes
 
+- No "Proof of Funds" service is exposed publicly, per brief.
+- No video sections, per brief.
 - The contact form (`/contact`) already writes to the `Enquiry` table and
+  shows up in **Admin → Enquiries** immediately — no extra wiring needed.
 - Middleware protects every `/admin/*` route except `/admin/login`.

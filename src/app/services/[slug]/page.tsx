@@ -8,7 +8,8 @@ import { FaqAccordionGroup } from "@/components/faq/FaqAccordionGroup";
 import { prisma } from "@/lib/prisma";
 import { JsonLd } from "@/components/seo/JsonLd";
 import type { ServiceBenefit, ServiceProcessStep, ServiceFaq } from "@/lib/servicePages";
-import { getServiceTypeFromPathSlug } from "@/lib/applicationForms/config";
+import { getServiceControlState } from "@/lib/applicationForms/serviceFormControl";
+import { getGlobalFormControls } from "@/lib/content";
 
 type Params = { slug: string };
 
@@ -44,13 +45,12 @@ export default async function ServiceDetailPage({
 }) {
   const { slug } = await params;
   const service = await prisma.service.findUnique({ where: { slug } });
-  if (!service || !service.isPublished) notFound();
+  if (!service || !service.isPublished || service.isArchived) notFound();
 
   const benefits = asArray<ServiceBenefit>(service.benefits);
   const processSteps = asArray<ServiceProcessStep>(service.process);
-  const applicationType = getServiceTypeFromPathSlug(slug) && service.applicationMode !== "ENQUIRY_ONLY"
-    ? getServiceTypeFromPathSlug(slug)
-    : null;
+  const globalControls = await getGlobalFormControls();
+  const controlState = getServiceControlState(service, slug, globalControls);
   const faqs = asArray<ServiceFaq>(service.faqs);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://marieprimeglobal.com";
@@ -112,14 +112,16 @@ export default async function ServiceDetailPage({
           </Reveal>
 
           <Reveal delay={0.18} className="mt-9 flex flex-wrap justify-center gap-4">
-            {applicationType && (
-              <Button href={`/apply/${slug}`} variant="primary">
+            {controlState.showApply && controlState.applyHref && (
+              <Button href={controlState.applyHref} variant="primary">
                 Apply now
               </Button>
             )}
-            <Button href="/contact" variant="secondary">
-              Enquire about this service
-            </Button>
+            {controlState.showEnquiry && (
+              <Button href={`/contact?service=${slug}`} variant="secondary">
+                Enquire about this service
+              </Button>
+            )}
           </Reveal>
         </div>
       </section>
@@ -219,14 +221,16 @@ export default async function ServiceDetailPage({
             Ready to start with {service.title.toLowerCase()}?
           </h2>
           <div className="mt-7 flex flex-wrap justify-center gap-4">
-            {applicationType && (
-              <Button href={`/apply/${slug}`} variant="secondary">
+            {controlState.showApply && controlState.applyHref && (
+              <Button href={controlState.applyHref} variant="secondary">
                 Apply now
               </Button>
             )}
-            <Button href="/contact" variant="secondary">
-              Submit an enquiry
-            </Button>
+            {controlState.showEnquiry && (
+              <Button href={`/contact?service=${slug}`} variant="secondary">
+                Submit an enquiry
+              </Button>
+            )}
           </div>
         </Reveal>
       </section>

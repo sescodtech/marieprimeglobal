@@ -7,6 +7,7 @@ import { requirePermission } from "@/lib/actions/require-admin";
 import { PERMISSIONS } from "@/lib/permissions";
 import { logAudit } from "@/lib/audit";
 import { sendNewsletterBatch } from "@/lib/newsletterSender";
+import { notifyAdminsWithPermission } from "@/lib/notifications";
 
 const emailSchema = z.string().email();
 
@@ -22,12 +23,21 @@ export async function subscribeToNewsletter(
   }
 
   try {
+    const existing = await prisma.newsletterSubscriber.findUnique({ where: { email: parsed.data } });
     await prisma.newsletterSubscriber.upsert({
       where: { email: parsed.data },
       // Re-subscribing after a prior unsubscribe should reactivate them.
       update: { status: "SUBSCRIBED", unsubscribedAt: null },
       create: { email: parsed.data },
     });
+    if (!existing) {
+      void notifyAdminsWithPermission(PERMISSIONS.MANAGE_SUBSCRIBERS, {
+        title: "New newsletter subscriber",
+        body: parsed.data,
+        link: "/admin/newsletter",
+        category: "NEWSLETTER",
+      });
+    }
     revalidatePath("/admin/newsletter");
     return { success: true, message: "You're subscribed." };
   } catch (error) {

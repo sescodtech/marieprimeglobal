@@ -4,11 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/actions/require-admin";
 import { PERMISSIONS } from "@/lib/permissions";
 import { deleteService, toggleServicePublished, toggleServiceArchived } from "@/lib/actions/services";
-
-const APPLICATION_MODE_LABELS: Record<string, string> = {
-  ONLINE_APPLICATION: "Online Application",
-  ENQUIRY_ONLY: "Enquiry Only",
-};
+import { APPLICATION_MODE_LABELS, SERVICE_STATUS_LABELS } from "@/lib/applicationForms/serviceFormControl";
 
 export default async function AdminServicesPage({
   searchParams,
@@ -59,6 +55,7 @@ export default async function AdminServicesPage({
               <th className="px-5 py-3 font-mono text-xs uppercase tracking-wider">Route</th>
               <th className="px-5 py-3 font-mono text-xs uppercase tracking-wider">Title</th>
               <th className="px-5 py-3 font-mono text-xs uppercase tracking-wider">Application Mode</th>
+              <th className="px-5 py-3 font-mono text-xs uppercase tracking-wider">Service Status</th>
               <th className="px-5 py-3 font-mono text-xs uppercase tracking-wider">Status</th>
               <th className="px-5 py-3 font-mono text-xs uppercase tracking-wider text-right">
                 Actions
@@ -68,7 +65,7 @@ export default async function AdminServicesPage({
           <tbody>
             {services.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-5 py-8 text-center text-ink-500">
+                <td colSpan={6} className="px-5 py-8 text-center text-ink-500">
                   No services yet. Add your first one, or run the seed script.
                 </td>
               </tr>
@@ -85,6 +82,7 @@ export default async function AdminServicesPage({
                   )}
                 </td>
                 <td className="px-5 py-4 text-xs text-ink-500">{APPLICATION_MODE_LABELS[service.applicationMode]}</td>
+                <td className="px-5 py-4 text-xs text-ink-500">{SERVICE_STATUS_LABELS[service.status]}</td>
                 <td className="px-5 py-4">
                   <form action={toggleServicePublished.bind(null, service.id, !service.isPublished)}>
                     <button

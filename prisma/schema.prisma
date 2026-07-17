@@ -110,8 +110,24 @@ model SiteSetting {
 }
 
 enum ServiceApplicationMode {
-  ONLINE_APPLICATION
+  APPLY_ONLY
   ENQUIRY_ONLY
+  APPLY_AND_ENQUIRY
+  HIDDEN
+}
+
+enum ServiceStatus {
+  ACTIVE
+  CLOSED
+  MAINTENANCE
+  COMING_SOON
+}
+
+enum ApplyRedirectTarget {
+  CONTACT
+  ENQUIRY
+  SERVICE_DETAILS
+  CUSTOM
 }
 
 model Service {
@@ -129,7 +145,12 @@ model Service {
   faqs            Json? // ServiceFaq[] — { question, answer }[]
   requirements    Json? // string[] — plain-language list of what a client needs to apply
   processingTime  String? // e.g. "3–5 business days"
-  applicationMode ServiceApplicationMode @default(ONLINE_APPLICATION)
+  applicationMode ServiceApplicationMode @default(APPLY_ONLY)
+  status          ServiceStatus          @default(ACTIVE)
+  showApplyButton Boolean                @default(true)
+  showEnquiryButton Boolean              @default(true)
+  applyRedirect     ApplyRedirectTarget  @default(SERVICE_DETAILS)
+  applyRedirectUrl  String?
   icon            String? // icon key rendered on the frontend
   imageUrl        String?
   bannerUrl       String?
@@ -371,11 +392,15 @@ model EnquiryNote {
 
 model SeoSetting {
   id              String   @id @default(cuid())
-  page            String   @unique // "home" | "about" | "services" | "contact" | "blog" | "careers" | "faq"
+  page            String   @unique // "home" | "about" | "services" | "visa" | "contact" | "blog" | "careers" | "faq"
   metaTitle       String
   metaDescription String
   keywords        String? // comma-separated
+  canonicalUrl    String?
   ogImageUrl      String?
+  twitterImageUrl String?
+  noIndex         Boolean  @default(false)
+  noFollow        Boolean  @default(false)
   updatedAt       DateTime @updatedAt
 }
 
@@ -432,6 +457,7 @@ model Notification {
   title            String
   body             String              @db.Text
   link             String? // e.g. /admin/applications/{id} — where clicking the notification goes
+  category         String              @default("SYSTEM") // Applications | Enquiries | Documents | Newsletter | Users | Media | Settings | Security | AuditLogs | System
   isRead           Boolean             @default(false)
   readAt           DateTime?
   metadata         Json?
@@ -440,6 +466,7 @@ model Notification {
 
   @@index([recipientAdminId])
   @@index([recipientAdminId, isRead])
+  @@index([recipientAdminId, category])
 }
 
 // ---------------------------------------------------------------------------
@@ -599,4 +626,93 @@ model EmailTemplate {
   bodyHtml  String   @db.Text
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Phase 4 — Popup Manager, Announcement Bar
+// ---------------------------------------------------------------------------
+
+enum PopupType {
+  PROMOTION
+  NEWSLETTER
+  TRAVEL_UPDATE
+  VISA_UPDATE
+  HOLIDAY_NOTICE
+  INFORMATION
+  GENERAL_ANNOUNCEMENT
+}
+
+enum PopupDisplayRule {
+  ENTIRE_WEBSITE
+  HOMEPAGE_ONLY
+  SPECIFIC_PAGE
+  SPECIFIC_SERVICE
+  SPECIFIC_BLOG
+}
+
+enum PopupTriggerRule {
+  AFTER_SECONDS
+  AFTER_SCROLL_PERCENT
+  EXIT_INTENT
+  FIRST_VISIT
+  ONCE_PER_SESSION
+  ALWAYS
+}
+
+model Popup {
+  id           String           @id @default(cuid())
+  title        String
+  subtitle     String?
+  description  String?          @db.Text
+  buttonText   String?
+  buttonLink   String?
+  imageUrl     String?
+  bgColor      String           @default("#0B0F1A")
+  textColor    String           @default("#FFFFFF")
+  isEnabled    Boolean          @default(true)
+  startDate    DateTime?
+  endDate      DateTime?
+  popupType    PopupType        @default(GENERAL_ANNOUNCEMENT)
+  displayRule  PopupDisplayRule @default(ENTIRE_WEBSITE)
+  // Holds the slug/path this popup is scoped to when displayRule is
+  // SPECIFIC_PAGE / SPECIFIC_SERVICE / SPECIFIC_BLOG. Ignored otherwise.
+  displayTarget String?
+  triggerRule   PopupTriggerRule @default(AFTER_SECONDS)
+  // Seconds for AFTER_SECONDS, percent (0-100) for AFTER_SCROLL_PERCENT.
+  // Ignored for the other trigger rules.
+  triggerValue  Int              @default(5)
+  views         Int              @default(0)
+  clicks        Int              @default(0)
+  closes        Int              @default(0)
+  order         Int              @default(0)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+enum AnnouncementDisplayRule {
+  ENTIRE_WEBSITE
+  HOMEPAGE
+  SELECTED_PAGES
+}
+
+model Announcement {
+  id           String                  @id @default(cuid())
+  title        String
+  message      String                  @db.Text
+  icon         String?
+  buttonText   String?
+  buttonLink   String?
+  bgColor      String                  @default("#1B4332")
+  textColor    String                  @default("#FFFFFF")
+  priority     Int                     @default(0)
+  isEnabled    Boolean                 @default(true)
+  isArchived   Boolean                 @default(false)
+  startDate    DateTime?
+  endDate      DateTime?
+  displayRule  AnnouncementDisplayRule @default(ENTIRE_WEBSITE)
+  selectedPages Json? // string[] of page paths, used when displayRule = SELECTED_PAGES
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+
+  @@index([isEnabled, isArchived])
 }

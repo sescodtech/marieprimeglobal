@@ -19,8 +19,11 @@ export async function generateMetadata(): Promise<Metadata> {
     description:
       seo?.metaDescription ??
       "MariePrime Global Services manages flight booking, visa and immigration assistance, travel loans, study abroad support and business registration — handled with precision.",
-    alternates: { canonical: "/" },
+    keywords: seo?.keywords ? seo.keywords.split(",").map((k) => k.trim()) : undefined,
+    alternates: { canonical: seo?.canonicalUrl || "/" },
+    robots: { index: !(seo?.noIndex ?? false), follow: !(seo?.noFollow ?? false) },
     openGraph: seo?.ogImageUrl ? { images: [seo.ogImageUrl] } : undefined,
+    twitter: seo?.twitterImageUrl ? { card: "summary_large_image", images: [seo.twitterImageUrl] } : undefined,
   };
 }
 

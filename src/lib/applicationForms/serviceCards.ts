@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { SERVICE_APPLICATION_CONFIGS, SERVICE_APPLICATION_TYPES, getApplicationPathSlug } from "./config";
+import { getServiceControlState } from "./serviceFormControl";
+import { getGlobalFormControls } from "@/lib/content";
 import type { ServiceApplicationType } from "./types";
 
 const ICON_KEY_BY_TYPE: Record<ServiceApplicationType, string> = {
@@ -37,16 +39,18 @@ export async function getApplyServiceCards(): Promise<ApplyServiceCard[]> {
     where: { slug: { in: cmsSlugs }, isPublished: true, isArchived: false },
   });
   const cmsBySlug = new Map(cmsServices.map((s) => [s.slug, s]));
+  const globalControls = await getGlobalFormControls();
 
   return SERVICE_APPLICATION_TYPES.filter((type) => {
     const config = SERVICE_APPLICATION_CONFIGS[type];
-    // Proof of Funds has no CMS record, so it's always available online.
-    if (!config.cmsSlug) return true;
+    // Proof of Funds has no CMS record, so it's always available online
+    // (subject only to the global applications switch).
+    if (!config.cmsSlug) return globalControls.applicationsEnabled;
     const cms = cmsBySlug.get(config.cmsSlug);
     // If the service hasn't been published/found yet, still show it using
-    // the built-in fallback copy rather than silently dropping it — but if
-    // it exists and is explicitly enquiry-only, respect that setting.
-    return cms ? cms.applicationMode !== "ENQUIRY_ONLY" : true;
+    // the built-in fallback copy rather than silently dropping it.
+    if (!cms) return globalControls.applicationsEnabled;
+    return getServiceControlState(cms, config.cmsSlug, globalControls).showApply;
   }).map((type) => {
     const config = SERVICE_APPLICATION_CONFIGS[type];
     const cms = config.cmsSlug ? cmsBySlug.get(config.cmsSlug) : undefined;

@@ -89,12 +89,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
       title: "Documents received",
       body: `${application.referenceNumber} — the client uploaded the requested documents.`,
       link: `/admin/applications/${application.id}`,
+      category: "DOCUMENTS",
     });
   } else {
     void notifyAdminsWithPermission(PERMISSIONS.VIEW_APPLICATIONS, {
       title: "Documents received",
       body: `${application.referenceNumber} — the client uploaded the requested documents.`,
       link: `/admin/applications/${application.id}`,
+      category: "DOCUMENTS",
     });
   }
 

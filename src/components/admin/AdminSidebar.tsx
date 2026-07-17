@@ -23,6 +23,8 @@ import {
   FileBarChart,
   Award,
   MessageSquareText,
+  MessageSquareWarning,
+  Megaphone,
   UserCog,
   HelpCircle,
   Mail,
@@ -48,6 +50,8 @@ const contentNavItems: { href: string; label: string; icon: typeof LayoutDashboa
   { href: "/admin/seo", label: "SEO Settings", icon: Search, permission: PERMISSIONS.MANAGE_SETTINGS },
   { href: "/admin/settings", label: "Site Settings", icon: Settings, permission: PERMISSIONS.MANAGE_SETTINGS },
   { href: "/admin/email-templates", label: "Email Templates", icon: MessageSquareText, permission: PERMISSIONS.MANAGE_EMAIL_TEMPLATES },
+  { href: "/admin/popups", label: "Popup Manager", icon: MessageSquareWarning, permission: PERMISSIONS.MANAGE_SETTINGS },
+  { href: "/admin/announcements", label: "Announcement Bar", icon: Megaphone, permission: PERMISSIONS.MANAGE_SETTINGS },
 ];
 
 const accountNavItem = { href: "/admin/profile", label: "Profile", icon: UserCog };

@@ -4,11 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/actions/require-admin";
 import { PERMISSIONS } from "@/lib/permissions";
 import { SERVICE_APPLICATION_CONFIGS, SERVICE_APPLICATION_TYPES } from "@/lib/applicationForms/config";
-
-const APPLICATION_MODE_LABELS: Record<string, string> = {
-  ONLINE_APPLICATION: "Online Application",
-  ENQUIRY_ONLY: "Enquiry Only",
-};
+import { APPLICATION_MODE_LABELS } from "@/lib/applicationForms/serviceFormControl";
 
 export default async function ApplicationFormsPage() {
   await requirePermission(PERMISSIONS.MANAGE_SERVICES);
@@ -47,7 +43,7 @@ export default async function ApplicationFormsPage() {
                   <span className="font-display text-base font-semibold text-forest-900">{cms?.title ?? config.title}</span>
                 </div>
                 <p className="mt-1 text-xs text-ink-500">
-                  {cms ? APPLICATION_MODE_LABELS[cms.applicationMode] : APPLICATION_MODE_LABELS.ONLINE_APPLICATION}
+                  {cms ? APPLICATION_MODE_LABELS[cms.applicationMode] : APPLICATION_MODE_LABELS.APPLY_ONLY}
                   {" · "}
                   {docCount} document{docCount === 1 ? "" : "s"}
                   {!isConfigured && " (defaults)"}

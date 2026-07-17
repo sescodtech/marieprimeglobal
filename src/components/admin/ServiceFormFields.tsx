@@ -113,11 +113,57 @@ export function ServiceFormFields({ service }: { service?: Service }) {
         </Field>
       </div>
 
-      <div className="rounded-stub bg-forest-700/5 p-4">
+      <div className="rounded-stub bg-forest-700/5 p-4 space-y-5">
         <Field label="Application mode — how clients start with this service">
-          <select name="applicationMode" defaultValue={service?.applicationMode ?? "ONLINE_APPLICATION"} className="input">
-            <option value="ONLINE_APPLICATION">Online application (shows "Apply Now" + "Make an Enquiry")</option>
-            <option value="ENQUIRY_ONLY">Enquiry only (hides "Apply Now", shows only "Make an Enquiry")</option>
+          <select name="applicationMode" defaultValue={service?.applicationMode ?? "APPLY_ONLY"} className="input">
+            <option value="APPLY_ONLY">Apply only</option>
+            <option value="ENQUIRY_ONLY">Enquiry only</option>
+            <option value="APPLY_AND_ENQUIRY">Apply + Enquiry</option>
+            <option value="HIDDEN">Hidden (neither button shown, applications not advertised)</option>
+          </select>
+        </Field>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          <label className="flex items-center gap-2 text-sm text-ink-700">
+            <input
+              type="checkbox"
+              name="showApplyButton"
+              defaultChecked={service?.showApplyButton ?? true}
+              className="h-4 w-4 rounded border-forest-900/30 text-forest-700"
+            />
+            Show Apply button
+          </label>
+          <label className="flex items-center gap-2 text-sm text-ink-700">
+            <input
+              type="checkbox"
+              name="showEnquiryButton"
+              defaultChecked={service?.showEnquiryButton ?? true}
+              className="h-4 w-4 rounded border-forest-900/30 text-forest-700"
+            />
+            Show Enquiry button
+          </label>
+        </div>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field label="Apply button redirects to">
+            <select name="applyRedirect" defaultValue={service?.applyRedirect ?? "SERVICE_DETAILS"} className="input">
+              <option value="SERVICE_DETAILS">Service details (default apply flow)</option>
+              <option value="CONTACT">Contact page</option>
+              <option value="ENQUIRY">Enquiry form (pre-filled to this service)</option>
+              <option value="CUSTOM">Custom URL</option>
+            </select>
+          </Field>
+          <Field label="Custom URL (only used when redirect is Custom URL)">
+            <input name="applyRedirectUrl" defaultValue={service?.applyRedirectUrl ?? ""} className="input" placeholder="https://…" />
+          </Field>
+        </div>
+
+        <Field label="Service status">
+          <select name="status" defaultValue={service?.status ?? "ACTIVE"} className="input">
+            <option value="ACTIVE">Active</option>
+            <option value="CLOSED">Closed</option>
+            <option value="MAINTENANCE">Maintenance</option>
+            <option value="COMING_SOON">Coming soon</option>
           </select>
         </Field>
       </div>

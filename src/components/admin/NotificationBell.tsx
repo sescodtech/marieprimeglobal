@@ -72,6 +72,11 @@ export function NotificationBell({ notifications, unreadCount }: { notifications
                 ))
               )}
             </div>
+            <div className="border-t border-forest-900/10 px-4 py-2.5 text-center">
+              <Link href="/admin/notifications" className="text-xs font-semibold text-forest-700 hover:underline">
+                View all notifications
+              </Link>
+            </div>
           </div>
         </>
       )}

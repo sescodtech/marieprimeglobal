@@ -96,11 +96,18 @@ export async function updateApplicationStatus(
   });
 
   if (application.assignedStaffId && application.assignedStaffId !== actor.id) {
+    const title =
+      parsedStatus.data === "APPROVED"
+        ? "Application approved"
+        : parsedStatus.data === "REJECTED"
+          ? "Application rejected"
+          : "Application status changed";
     void createNotification({
       recipientAdminId: application.assignedStaffId,
-      title: "Application status changed",
+      title,
       body: `${application.referenceNumber} is now "${STATUS_LABELS[parsedStatus.data]}".`,
       link: applicationPath(id),
+      category: "APPLICATIONS",
     });
   }
 
@@ -192,6 +199,7 @@ export async function assignStaff(id: string, staffId: string) {
       title: "Application assigned to you",
       body: `${application.referenceNumber} (${application.serviceTitle}) was assigned to you by ${actor.name}.`,
       link: applicationPath(id),
+      category: "APPLICATIONS",
     });
   }
 

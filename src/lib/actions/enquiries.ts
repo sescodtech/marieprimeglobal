@@ -22,6 +22,17 @@ export async function updateEnquiryStatus(id: string, status: EnquiryStatus) {
     entityId: id,
     description: `${actor.name} changed ${enquiry.fullName}'s enquiry status to ${status}.`,
   });
+
+  if (status === "CLOSED" && enquiry.assignedStaffId && enquiry.assignedStaffId !== actor.id) {
+    void createNotification({
+      recipientAdminId: enquiry.assignedStaffId,
+      title: "Enquiry closed",
+      body: `${enquiry.fullName}'s enquiry has been closed.`,
+      link: `/admin/enquiries/${id}`,
+      category: "ENQUIRIES",
+    });
+  }
+
   revalidatePath("/admin/enquiries");
   revalidatePath(`/admin/enquiries/${id}`);
 }
@@ -89,6 +100,7 @@ export async function assignEnquiryStaff(id: string, staffId: string) {
       title: "Enquiry assigned to you",
       body: `${enquiry.fullName}'s enquiry was assigned to you by ${actor.name}.`,
       link: `/admin/enquiries/${id}`,
+      category: "ENQUIRIES",
     });
   }
 

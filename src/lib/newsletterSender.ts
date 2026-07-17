@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { Resend } from "resend";
 import { getEmailTemplate, renderTemplate } from "@/lib/emailTemplates";
+import { notifyAdminsWithPermission } from "@/lib/notifications";
+import { PERMISSIONS } from "@/lib/permissions";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -99,5 +101,12 @@ export async function sendNewsletterBatch(newsletterId: string, subscriberIds?: 
       sentCount,
       failedCount,
     },
+  });
+
+  void notifyAdminsWithPermission(PERMISSIONS.SEND_NEWSLETTER, {
+    title: "Newsletter sent",
+    body: `"${newsletter.subject}" was sent to ${sentCount} subscriber(s)${failedCount > 0 ? ` (${failedCount} failed)` : ""}.`,
+    link: "/admin/newsletter",
+    category: "NEWSLETTER",
   });
 }

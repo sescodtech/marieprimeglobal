@@ -111,6 +111,7 @@ export async function POST(request: Request) {
       title: "New application submitted",
       body: `${application.applicantName} applied for ${application.serviceTitle} (${application.referenceNumber}).`,
       link: `/admin/applications/${application.id}`,
+      category: "APPLICATIONS",
     });
 
     return NextResponse.json({ id: application.id, referenceNumber: application.referenceNumber }, { status: 201 });

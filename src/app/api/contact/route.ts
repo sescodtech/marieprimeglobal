@@ -52,6 +52,7 @@ export async function POST(request: Request) {
       title: "New enquiry received",
       body: `${enquiry.fullName} submitted a new enquiry${enquiry.subject ? `: ${enquiry.subject}` : "."}`,
       link: `/admin/enquiries/${enquiry.id}`,
+      category: "ENQUIRIES",
     });
 
     return NextResponse.json({ id: enquiry.id }, { status: 201 });

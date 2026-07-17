@@ -3,6 +3,7 @@
 import { requirePermission } from "@/lib/actions/require-admin";
 import { PERMISSIONS } from "@/lib/permissions";
 import { logAudit } from "@/lib/audit";
+import { notifySuperAdmins } from "@/lib/notifications";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -32,6 +33,8 @@ const SETTINGS_MAP: Record<string, string> = {
   upload_allowed_types: "upload",
   security_session_timeout_minutes: "security",
   security_password_min_length: "security",
+  global_applications_enabled: "form_control",
+  global_enquiries_enabled: "form_control",
 };
 
 export async function updateSiteSettings(formData: FormData) {
@@ -57,6 +60,13 @@ export async function updateSiteSettings(formData: FormData) {
     action: "SETTINGS_UPDATED",
     entityType: "SiteSetting",
     description: `${actor.name} updated site settings.`,
+  });
+
+  void notifySuperAdmins({
+    title: "Settings changed",
+    body: `${actor.name} updated site settings.`,
+    link: "/admin/settings",
+    category: "SETTINGS",
   });
 
   revalidatePath("/admin/settings");

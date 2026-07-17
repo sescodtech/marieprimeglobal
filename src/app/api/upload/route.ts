@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { cloudinary } from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
+import { notifyAdminsWithPermission } from "@/lib/notifications";
+import { PERMISSIONS } from "@/lib/permissions";
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -57,6 +59,13 @@ export async function POST(request: Request) {
         width: uploadResult.width,
         height: uploadResult.height,
       },
+    });
+
+    void notifyAdminsWithPermission(PERMISSIONS.UPLOAD_IMAGES, {
+      title: "Media uploaded",
+      body: `${session.user.name ?? "Someone"} uploaded "${asset.fileName}" to the Media Library.`,
+      link: "/admin/media",
+      category: "MEDIA",
     });
 
     return NextResponse.json({ asset }, { status: 201 });

@@ -4,6 +4,8 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Reveal } from "@/components/ui/Reveal";
 import { prisma } from "@/lib/prisma";
 import { getServiceTypeFromPathSlug, SERVICE_APPLICATION_CONFIGS } from "@/lib/applicationForms/config";
+import { getServiceControlState } from "@/lib/applicationForms/serviceFormControl";
+import { getGlobalFormControls } from "@/lib/content";
 import { getDocumentRequirements } from "@/lib/applicationForms/documents";
 import { ApplyFlow } from "@/components/apply/ApplyFlow";
 import type { ServiceBenefit } from "@/lib/servicePages";
@@ -35,11 +37,19 @@ export default async function ApplyServicePage({ params }: { params: Promise<Par
   const config = SERVICE_APPLICATION_CONFIGS[type];
   const cmsService = config.cmsSlug ? await prisma.service.findUnique({ where: { slug: config.cmsSlug } }) : null;
 
-  // Super Admin can configure a service as "Enquiry Only" — Apply Now is
-  // hidden site-wide for it, and a direct visit here goes to the enquiry
-  // form instead. No "unavailable" message, just the right form.
-  if (cmsService?.applicationMode === "ENQUIRY_ONLY") {
-    redirect(`/contact?service=${config.cmsSlug}`);
+  // Super Admin can configure a service's mode, status, and global on/off
+  // switches — respect all of them here, exactly like the public service
+  // page does. No "unavailable" message, ever: either redirect to the
+  // enquiry form (when that's still allowed) or 404 (when nothing is).
+  if (cmsService) {
+    const globalControls = await getGlobalFormControls();
+    const controlState = getServiceControlState(cmsService, config.cmsSlug!, globalControls);
+    if (!controlState.showApply) {
+      if (controlState.showEnquiry) {
+        redirect(`/contact?service=${config.cmsSlug}`);
+      }
+      notFound();
+    }
   }
 
   const title = cmsService?.title ?? config.title;
