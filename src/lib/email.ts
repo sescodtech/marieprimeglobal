@@ -4,6 +4,15 @@ import { getEmailTemplate, renderTemplate } from "@/lib/emailTemplates";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
+// Sender address is env-driven rather than hardcoded so it can point at a
+// verified test domain (e.g. during Resend domain verification) without a
+// code change — just set EMAIL_FROM_ADDRESS in .env / Vercel and redeploy.
+// Falls back to the production MariePrime domain once that's verified.
+const EMAIL_FROM_ADDRESS = process.env.EMAIL_FROM_ADDRESS || "notifications@marieprimeglobal.com";
+const FROM_WEBSITE = `MariePrime Website <${EMAIL_FROM_ADDRESS}>`;
+const FROM_GLOBAL = `MariePrime Global <${EMAIL_FROM_ADDRESS}>`;
+const FROM_ADMIN = `MariePrime Admin <${EMAIL_FROM_ADDRESS}>`;
+
 export async function sendEnquiryNotification(enquiry: {
   id: string;
   fullName: string;
@@ -22,7 +31,7 @@ export async function sendEnquiryNotification(enquiry: {
 
   try {
     await resend.emails.send({
-      from: "MariePrime Website <notifications@marieprimeglobal.com>",
+      from: FROM_WEBSITE,
       to: notifyTo,
       replyTo: enquiry.email,
       subject: `New enquiry: ${enquiry.fullName} — ${serviceLabels[enquiry.serviceInterest] ?? enquiry.serviceInterest}`,
@@ -71,7 +80,7 @@ export async function sendEnquiryConfirmationEmail(enquiry: {
     };
     try {
       await resend.emails.send({
-        from: "MariePrime Global <notifications@marieprimeglobal.com>",
+        from: FROM_GLOBAL,
         to: enquiry.email,
         subject: renderTemplate(template.subject, vars),
         html: renderTemplate(template.bodyHtml, vars),
@@ -84,7 +93,7 @@ export async function sendEnquiryConfirmationEmail(enquiry: {
 
   try {
     await resend.emails.send({
-      from: "MariePrime Global <notifications@marieprimeglobal.com>",
+      from: FROM_GLOBAL,
       to: enquiry.email,
       subject: "We've received your enquiry",
       html: `
@@ -124,7 +133,7 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
     const vars = { companyName: "MariePrime Global", resetUrl };
     try {
       await resend.emails.send({
-        from: "MariePrime Admin <notifications@marieprimeglobal.com>",
+        from: FROM_ADMIN,
         to,
         subject: renderTemplate(template.subject, vars),
         html: renderTemplate(template.bodyHtml, vars),
@@ -137,7 +146,7 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
 
   try {
     await resend.emails.send({
-      from: "MariePrime Admin <notifications@marieprimeglobal.com>",
+      from: FROM_ADMIN,
       to,
       subject: "Reset your MariePrime admin password",
       html: `
@@ -187,7 +196,7 @@ export async function sendJobApplicationNotification(application: {
 
   try {
     await resend.emails.send({
-      from: "MariePrime Website <notifications@marieprimeglobal.com>",
+      from: FROM_WEBSITE,
       to: notifyTo,
       replyTo: application.email,
       subject: `New job application: ${application.fullName} — ${application.jobTitle}`,
@@ -241,7 +250,7 @@ export async function sendApplicationConfirmationEmail(application: {
     };
     try {
       await resend.emails.send({
-        from: "MariePrime Global <notifications@marieprimeglobal.com>",
+        from: FROM_GLOBAL,
         to: application.applicantEmail,
         subject: renderTemplate(template.subject, vars),
         html: renderTemplate(template.bodyHtml, vars),
@@ -254,7 +263,7 @@ export async function sendApplicationConfirmationEmail(application: {
 
   try {
     await resend.emails.send({
-      from: "MariePrime Global <notifications@marieprimeglobal.com>",
+      from: FROM_GLOBAL,
       to: application.applicantEmail,
       subject: `Application received — ${application.referenceNumber}`,
       html: `
@@ -301,7 +310,7 @@ export async function sendApplicationAdminNotification(application: {
 
   try {
     await resend.emails.send({
-      from: "MariePrime Website <notifications@marieprimeglobal.com>",
+      from: FROM_WEBSITE,
       to: notifyTo,
       replyTo: application.applicantEmail,
       subject: `New application: ${application.applicantName} — ${application.serviceTitle} (${application.referenceNumber})`,
@@ -366,7 +375,7 @@ export async function sendApplicationStatusUpdateEmail(application: {
       };
       try {
         await resend.emails.send({
-          from: "MariePrime Global <notifications@marieprimeglobal.com>",
+          from: FROM_GLOBAL,
           to: application.applicantEmail,
           subject: renderTemplate(template.subject, vars),
           html: renderTemplate(template.bodyHtml, vars),
@@ -380,7 +389,7 @@ export async function sendApplicationStatusUpdateEmail(application: {
 
   try {
     await resend.emails.send({
-      from: "MariePrime Global <notifications@marieprimeglobal.com>",
+      from: FROM_GLOBAL,
       to: application.applicantEmail,
       subject: `Application update — ${application.referenceNumber}`,
       html: `
@@ -435,7 +444,7 @@ export async function sendAdditionalDocumentsRequestEmail(application: {
     };
     try {
       await resend.emails.send({
-        from: "MariePrime Global <notifications@marieprimeglobal.com>",
+        from: FROM_GLOBAL,
         to: application.applicantEmail,
         subject: renderTemplate(template.subject, vars),
         html: renderTemplate(template.bodyHtml, vars),
@@ -448,7 +457,7 @@ export async function sendAdditionalDocumentsRequestEmail(application: {
 
   try {
     await resend.emails.send({
-      from: "MariePrime Global <notifications@marieprimeglobal.com>",
+      from: FROM_GLOBAL,
       to: application.applicantEmail,
       subject: `Action needed — additional documents for ${application.referenceNumber}`,
       html: `
