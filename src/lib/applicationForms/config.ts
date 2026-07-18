@@ -9,6 +9,12 @@ import {
   CABIN_CLASS_OPTIONS,
   ROOM_PREFERENCE_OPTIONS,
   TRAVEL_INSURANCE_COVERAGE_OPTIONS,
+  FUNDING_SOURCE_OPTIONS,
+  TRAVEL_PACKAGE_TYPE_OPTIONS,
+  LOAN_PURPOSE_OPTIONS,
+  EMPLOYMENT_STATUS_OPTIONS,
+  ADMISSION_STATUS_OPTIONS,
+  BUSINESS_STRUCTURE_OPTIONS,
 } from "./options";
 
 const GENERAL_DOCUMENTS = [
@@ -28,12 +34,43 @@ const GENERAL_DOCUMENTS = [
   },
 ];
 
+// One config per real service seeded in servicePages.ts (cmsSlug below must
+// match that file's `slug` field exactly), plus PROOF_OF_FUNDS, which is a
+// standalone add-on with no CMS page of its own.
 export const SERVICE_APPLICATION_CONFIGS: Record<ServiceApplicationType, ServiceApplicationConfig> = {
+  STUDY_ABROAD: {
+    type: "STUDY_ABROAD",
+    cmsSlug: "study-abroad",
+    title: "Study Abroad",
+    summary: "School selection, admissions guidance and travel planning for international students.",
+    documents: [
+      { id: "validId", label: "Valid means of identification", required: true, accept: "image/jpeg,image/png,application/pdf" },
+      { id: "academicTranscript", label: "Most recent academic transcript", required: true, accept: "image/jpeg,image/png,application/pdf" },
+      { id: "supportingDocument", label: "Supporting document (optional)", required: false, accept: "image/jpeg,image/png,application/pdf" },
+    ],
+    sections: [
+      contactSection(),
+      {
+        id: "studyDetails",
+        title: "Study Plans",
+        fields: [
+          { id: "highestQualification", label: "Highest qualification completed", type: "text", required: true, placeholder: "e.g. WAEC, BSc, HND" },
+          { id: "fieldOfStudy", label: "Preferred field of study", type: "text", required: true },
+          { id: "preferredCountries", label: "Preferred destination countries", type: "text", required: true, placeholder: "e.g. UK, Canada, USA" },
+          { id: "preferredIntake", label: "Preferred intake", type: "text", required: true, placeholder: "e.g. September 2027" },
+          { id: "fundingSource", label: "Funding source", type: "select", required: true, options: FUNDING_SOURCE_OPTIONS },
+          { id: "additionalNotes", label: "Anything else we should know", type: "textarea", required: false },
+        ],
+      },
+    ],
+    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
+  },
+
   VISA: {
     type: "VISA",
-    cmsSlug: "visa-travel-assistance",
-    title: "Visa Application & Travel Assistance",
-    summary: "Professional visa processing and complete travel documentation support.",
+    cmsSlug: "visa-assistance",
+    title: "Visa Assistance",
+    summary: "Guided visa applications for tourist, business, work and study routes.",
     documents: GENERAL_DOCUMENTS,
     sections: [
       contactSection(),
@@ -53,6 +90,238 @@ export const SERVICE_APPLICATION_CONFIGS: Record<ServiceApplicationType, Service
             required: false,
             helpText: "Any prior visa approvals, refusals, or overstays — country and year, if any.",
           },
+        ],
+      },
+    ],
+    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
+  },
+
+  TRAVEL_PACKAGES: {
+    type: "TRAVEL_PACKAGES",
+    cmsSlug: "travel-packages",
+    title: "Travel Packages",
+    summary: "Flights, stays and logistics assembled into one coordinated itinerary.",
+    documents: GENERAL_DOCUMENTS,
+    sections: [
+      contactSection(),
+      {
+        id: "packageDetails",
+        title: "Package Details",
+        fields: [
+          { id: "destination", label: "Destination", type: "text", required: true },
+          { id: "travelStartDate", label: "Travel start date", type: "date", required: true },
+          { id: "travelEndDate", label: "Travel end date", type: "date", required: true },
+          { id: "travellerCount", label: "Number of travellers", type: "number", required: true },
+          { id: "packageType", label: "Package type", type: "select", required: true, options: TRAVEL_PACKAGE_TYPE_OPTIONS },
+          { id: "budget", label: "Approximate budget", type: "number", required: false },
+          { id: "specialRequests", label: "Special requests", type: "textarea", required: false },
+        ],
+      },
+    ],
+    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
+  },
+
+  FLIGHT_BOOKING: {
+    type: "FLIGHT_BOOKING",
+    cmsSlug: "flight-reservations",
+    title: "Flight Reservations",
+    summary: "Flights sourced, compared and booked across major airlines, with in-transit support.",
+    documents: GENERAL_DOCUMENTS,
+    sections: [
+      contactSection(),
+      {
+        id: "flightDetails",
+        title: "Flight Details",
+        fields: [
+          { id: "departure", label: "Departure city/airport", type: "text", required: true },
+          { id: "destination", label: "Destination city/airport", type: "text", required: true },
+          { id: "travelDate", label: "Travel date", type: "date", required: true },
+          { id: "returnDate", label: "Return date (if round trip)", type: "date", required: false },
+          { id: "passengers", label: "Number of passengers", type: "number", required: true },
+          { id: "cabinClass", label: "Cabin class", type: "select", required: true, options: CABIN_CLASS_OPTIONS },
+        ],
+      },
+    ],
+    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
+  },
+
+  HOTEL_RESERVATION: {
+    type: "HOTEL_RESERVATION",
+    cmsSlug: "hotel-bookings",
+    title: "Hotel Bookings",
+    summary: "Accommodation sourced and confirmed to match your itinerary and budget.",
+    documents: GENERAL_DOCUMENTS,
+    sections: [
+      contactSection(),
+      {
+        id: "hotelDetails",
+        title: "Reservation Details",
+        fields: [
+          { id: "destination", label: "Destination / city", type: "text", required: true },
+          { id: "checkInDate", label: "Check-in date", type: "date", required: true },
+          { id: "checkOutDate", label: "Check-out date", type: "date", required: true },
+          { id: "numberOfGuests", label: "Number of guests", type: "number", required: true },
+          { id: "roomPreference", label: "Room preference", type: "select", required: true, options: ROOM_PREFERENCE_OPTIONS },
+        ],
+      },
+    ],
+    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
+  },
+
+  TRAVEL_INSURANCE: {
+    type: "TRAVEL_INSURANCE",
+    cmsSlug: "travel-insurance",
+    title: "Travel Insurance",
+    summary: "Cover matched to your destination, trip length and visa requirements.",
+    documents: GENERAL_DOCUMENTS,
+    sections: [
+      contactSection(),
+      {
+        id: "insuranceDetails",
+        title: "Coverage Details",
+        fields: [
+          { id: "destination", label: "Destination", type: "text", required: true },
+          { id: "travelStartDate", label: "Travel start date", type: "date", required: true },
+          { id: "travelEndDate", label: "Travel end date", type: "date", required: true },
+          { id: "numberOfTravelers", label: "Number of travelers", type: "number", required: true },
+          { id: "coverageType", label: "Coverage type", type: "select", required: true, options: TRAVEL_INSURANCE_COVERAGE_OPTIONS },
+          {
+            id: "existingMedicalConditions",
+            label: "Existing medical conditions (optional)",
+            type: "textarea",
+            required: false,
+            helpText: "Only if relevant to your coverage — leave blank if none.",
+          },
+        ],
+      },
+    ],
+    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
+  },
+
+  SCHOLARSHIP_ASSISTANCE: {
+    type: "SCHOLARSHIP_ASSISTANCE",
+    cmsSlug: "scholarship-assistance",
+    title: "Scholarship Assistance",
+    summary: "Funding opportunities matched to your profile, with hands-on application support.",
+    documents: [
+      { id: "validId", label: "Valid means of identification", required: true, accept: "image/jpeg,image/png,application/pdf" },
+      { id: "academicTranscript", label: "Most recent academic transcript", required: true, accept: "image/jpeg,image/png,application/pdf" },
+      { id: "supportingDocument", label: "Supporting document (optional)", required: false, accept: "image/jpeg,image/png,application/pdf" },
+    ],
+    sections: [
+      contactSection(),
+      {
+        id: "scholarshipDetails",
+        title: "Academic Profile",
+        fields: [
+          { id: "fieldOfStudy", label: "Field of study", type: "text", required: true },
+          { id: "preferredCountries", label: "Preferred destination countries", type: "text", required: true },
+          { id: "currentQualification", label: "Current/highest qualification", type: "text", required: true },
+          { id: "gpaOrGrade", label: "GPA / grade average", type: "text", required: false },
+          { id: "fundingNeed", label: "What level of funding are you seeking?", type: "textarea", required: true, placeholder: "e.g. Full tuition, partial, living costs only" },
+        ],
+      },
+    ],
+    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
+  },
+
+  TRAVEL_LOANS: {
+    type: "TRAVEL_LOANS",
+    cmsSlug: "travel-loans",
+    title: "Travel Loans",
+    summary: "Structured financing for flights, visas and relocation costs.",
+    documents: [
+      { id: "validId", label: "Valid means of identification", required: true, accept: "image/jpeg,image/png,application/pdf" },
+      { id: "proofOfIncome", label: "Proof of income (optional)", required: false, accept: "image/jpeg,image/png,application/pdf" },
+    ],
+    sections: [
+      contactSection(),
+      {
+        id: "loanDetails",
+        title: "Financing Needs",
+        fields: [
+          { id: "loanPurpose", label: "What is this financing for?", type: "select", required: true, options: LOAN_PURPOSE_OPTIONS },
+          { id: "amountNeeded", label: "Amount needed", type: "number", required: true },
+          { id: "employmentStatus", label: "Employment status", type: "select", required: true, options: EMPLOYMENT_STATUS_OPTIONS },
+          { id: "requiredByDate", label: "Funds needed by", type: "date", required: true },
+        ],
+      },
+    ],
+    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
+  },
+
+  EDUCATION_LOANS: {
+    type: "EDUCATION_LOANS",
+    cmsSlug: "education-loans",
+    title: "Education Loans",
+    summary: "Tuition financing coordinated with your visa's financial proof requirements.",
+    documents: [
+      { id: "validId", label: "Valid means of identification", required: true, accept: "image/jpeg,image/png,application/pdf" },
+      { id: "admissionLetter", label: "Admission letter (if available)", required: false, accept: "image/jpeg,image/png,application/pdf" },
+    ],
+    sections: [
+      contactSection(),
+      {
+        id: "educationLoanDetails",
+        title: "Tuition Financing Needs",
+        fields: [
+          { id: "institution", label: "Institution", type: "text", required: true },
+          { id: "programme", label: "Programme / course", type: "text", required: true },
+          { id: "tuitionAmount", label: "Total tuition amount", type: "number", required: true },
+          { id: "admissionStatus", label: "Admission status", type: "select", required: true, options: ADMISSION_STATUS_OPTIONS },
+          { id: "visaDeadline", label: "Visa or tuition deadline (if known)", type: "date", required: false },
+        ],
+      },
+    ],
+    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
+  },
+
+  CORPORATE_TRAVEL: {
+    type: "CORPORATE_TRAVEL",
+    cmsSlug: "corporate-travel",
+    title: "Corporate Travel",
+    summary: "Managed flights, stays and logistics for business travellers and teams.",
+    documents: GENERAL_DOCUMENTS.map((d) => ({ ...d, required: false })), // a company contact may not have personal ID handy at enquiry stage
+    sections: [
+      contactSection(),
+      {
+        id: "corporateDetails",
+        title: "Company & Trip Details",
+        fields: [
+          { id: "companyName", label: "Company name", type: "text", required: true },
+          { id: "travellerCount", label: "Number of travellers", type: "number", required: true },
+          { id: "destinations", label: "Destination(s)", type: "text", required: true },
+          { id: "travelDates", label: "Travel dates", type: "text", required: true, placeholder: "e.g. 12–18 Sept 2027" },
+          { id: "budgetBand", label: "Approved travel budget band (optional)", type: "text", required: false },
+          { id: "notes", label: "Additional notes", type: "textarea", required: false },
+        ],
+      },
+    ],
+    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
+  },
+
+  BUSINESS_REGISTRATION: {
+    type: "BUSINESS_REGISTRATION",
+    cmsSlug: "business-registration",
+    title: "Business Registration Services",
+    summary: "Company name reservation, incorporation and regulatory registration for new businesses.",
+    documents: [
+      { id: "validId", label: "Valid means of identification", required: true, accept: "image/jpeg,image/png,application/pdf" },
+      { id: "passportPhoto", label: "Passport photograph", required: true, accept: "image/jpeg,image/png" },
+      { id: "supportingDocument", label: "Supporting document (optional)", required: false, accept: "image/jpeg,image/png,application/pdf" },
+    ],
+    sections: [
+      contactSection(),
+      {
+        id: "businessDetails",
+        title: "Business Details",
+        fields: [
+          { id: "proposedBusinessName", label: "Proposed business name", type: "text", required: true },
+          { id: "alternativeBusinessName", label: "Alternative business name", type: "text", required: false },
+          { id: "businessStructure", label: "Business structure", type: "select", required: true, options: BUSINESS_STRUCTURE_OPTIONS },
+          { id: "businessAddress", label: "Proposed business address", type: "textarea", required: true },
+          { id: "businessObjectives", label: "Nature of business / objectives", type: "textarea", required: true },
+          { id: "numberOfDirectors", label: "Number of directors/partners", type: "number", required: true },
         ],
       },
     ],
@@ -135,173 +404,6 @@ export const SERVICE_APPLICATION_CONFIGS: Record<ServiceApplicationType, Service
       email: v.email ?? "",
       phone: v.phone ?? "",
     }),
-  },
-
-  FLIGHT_BOOKING: {
-    type: "FLIGHT_BOOKING",
-    cmsSlug: "flight-booking",
-    title: "Flight Booking",
-    summary: "Domestic and international flight reservations with competitive pricing.",
-    documents: GENERAL_DOCUMENTS,
-    sections: [
-      contactSection(),
-      {
-        id: "flightDetails",
-        title: "Flight Details",
-        fields: [
-          { id: "departure", label: "Departure city/airport", type: "text", required: true },
-          { id: "destination", label: "Destination city/airport", type: "text", required: true },
-          { id: "travelDate", label: "Travel date", type: "date", required: true },
-          { id: "returnDate", label: "Return date (if round trip)", type: "date", required: false },
-          { id: "passengers", label: "Number of passengers", type: "number", required: true },
-          { id: "cabinClass", label: "Cabin class", type: "select", required: true, options: CABIN_CLASS_OPTIONS },
-        ],
-      },
-    ],
-    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
-  },
-
-  HOTEL_RESERVATION: {
-    type: "HOTEL_RESERVATION",
-    cmsSlug: "hotel-reservations",
-    title: "Hotel Reservations",
-    summary: "Comfortable accommodation booking across local and international destinations.",
-    documents: GENERAL_DOCUMENTS,
-    sections: [
-      contactSection(),
-      {
-        id: "hotelDetails",
-        title: "Reservation Details",
-        fields: [
-          { id: "destination", label: "Destination / city", type: "text", required: true },
-          { id: "checkInDate", label: "Check-in date", type: "date", required: true },
-          { id: "checkOutDate", label: "Check-out date", type: "date", required: true },
-          { id: "numberOfGuests", label: "Number of guests", type: "number", required: true },
-          { id: "roomPreference", label: "Room preference", type: "select", required: true, options: ROOM_PREFERENCE_OPTIONS },
-        ],
-      },
-    ],
-    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
-  },
-
-  TRAVEL_INSURANCE: {
-    type: "TRAVEL_INSURANCE",
-    cmsSlug: "travel-insurance",
-    title: "Travel Insurance",
-    summary: "Reliable travel insurance plans that protect you before and during every journey.",
-    documents: GENERAL_DOCUMENTS,
-    sections: [
-      contactSection(),
-      {
-        id: "insuranceDetails",
-        title: "Coverage Details",
-        fields: [
-          { id: "destination", label: "Destination", type: "text", required: true },
-          { id: "travelStartDate", label: "Travel start date", type: "date", required: true },
-          { id: "travelEndDate", label: "Travel end date", type: "date", required: true },
-          { id: "numberOfTravelers", label: "Number of travelers", type: "number", required: true },
-          { id: "coverageType", label: "Coverage type", type: "select", required: true, options: TRAVEL_INSURANCE_COVERAGE_OPTIONS },
-          {
-            id: "existingMedicalConditions",
-            label: "Existing medical conditions (optional)",
-            type: "textarea",
-            required: false,
-            helpText: "Only if relevant to your coverage — leave blank if none.",
-          },
-        ],
-      },
-    ],
-    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
-  },
-
-  LOGISTICS: {
-    type: "LOGISTICS",
-    cmsSlug: "logistics",
-    title: "Logistics",
-    summary: "Efficient cargo, delivery and logistics solutions locally and internationally.",
-    documents: GENERAL_DOCUMENTS,
-    sections: [
-      contactSection(),
-      {
-        id: "logisticsDetails",
-        title: "Shipment Details",
-        fields: [
-          { id: "pickupAddress", label: "Pickup address", type: "textarea", required: true },
-          { id: "deliveryAddress", label: "Delivery address", type: "textarea", required: true },
-          { id: "packageDescription", label: "Package description", type: "textarea", required: true },
-          { id: "weight", label: "Weight (kg)", type: "number", required: true },
-          { id: "deliveryDate", label: "Preferred delivery date", type: "date", required: true },
-        ],
-      },
-    ],
-    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
-  },
-
-  PROCUREMENT: {
-    type: "PROCUREMENT",
-    cmsSlug: "procurement-merchandise",
-    title: "Procurement & General Merchandise",
-    summary: "Reliable sourcing and procurement solutions for organizations and individuals.",
-    documents: GENERAL_DOCUMENTS,
-    sections: [
-      contactSection(),
-      {
-        id: "procurementDetails",
-        title: "Order Details",
-        fields: [
-          { id: "itemDescription", label: "Item description", type: "textarea", required: true },
-          { id: "quantity", label: "Quantity", type: "number", required: true },
-          { id: "budget", label: "Budget", type: "number", required: true },
-          { id: "deliveryAddress", label: "Delivery address", type: "textarea", required: true },
-        ],
-      },
-    ],
-    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
-  },
-
-  EVENT_COORDINATION: {
-    type: "EVENT_COORDINATION",
-    cmsSlug: "event-coordination",
-    title: "Event Coordination",
-    summary: "Professional planning and coordination for business trips, conferences and special occasions.",
-    documents: GENERAL_DOCUMENTS,
-    sections: [
-      contactSection(),
-      {
-        id: "eventDetails",
-        title: "Event Details",
-        fields: [
-          { id: "eventType", label: "Event type", type: "text", required: true, placeholder: "e.g. Wedding, conference, birthday" },
-          { id: "location", label: "Location", type: "text", required: true },
-          { id: "guestCount", label: "Guest count", type: "number", required: true },
-          { id: "eventDate", label: "Event date", type: "date", required: true },
-          { id: "specialRequests", label: "Special requests", type: "textarea", required: false },
-        ],
-      },
-    ],
-    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
-  },
-
-  BEAUTY_SERVICES: {
-    type: "BEAUTY_SERVICES",
-    cmsSlug: "beauty-services",
-    title: "Beauty Services",
-    summary: "Professional beauty and personal care services delivered with excellence.",
-    documents: GENERAL_DOCUMENTS.map((d) => ({ ...d, required: false })), // rarely need ID for a beauty booking
-    sections: [
-      contactSection(),
-      {
-        id: "beautyDetails",
-        title: "Appointment Details",
-        fields: [
-          { id: "serviceRequired", label: "Service required", type: "text", required: true, placeholder: "e.g. Bridal makeup, hair styling" },
-          { id: "appointmentDate", label: "Appointment date", type: "date", required: true },
-          { id: "preferredTime", label: "Preferred time", type: "text", required: true, placeholder: "e.g. 10:00 AM" },
-          { id: "notes", label: "Notes", type: "textarea", required: false },
-        ],
-      },
-    ],
-    extractContact: (v) => ({ name: v.fullName ?? "", email: v.email ?? "", phone: v.phone ?? "" }),
   },
 };
 

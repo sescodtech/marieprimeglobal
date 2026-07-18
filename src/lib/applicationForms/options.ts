@@ -91,3 +91,46 @@ export const TRAVEL_INSURANCE_COVERAGE_OPTIONS: FieldOption[] = [
   { value: "Family", label: "Family" },
   { value: "Student", label: "Student" },
 ];
+
+export const FUNDING_SOURCE_OPTIONS: FieldOption[] = [
+  { value: "Self-funded", label: "Self-funded" },
+  { value: "Family/Sponsor", label: "Family / sponsor" },
+  { value: "Scholarship", label: "Scholarship" },
+  { value: "Education loan", label: "Education loan" },
+  { value: "Undecided", label: "Undecided / need guidance" },
+];
+
+export const TRAVEL_PACKAGE_TYPE_OPTIONS: FieldOption[] = [
+  { value: "Leisure/Family", label: "Leisure / family" },
+  { value: "Group", label: "Group" },
+  { value: "School trip", label: "School trip" },
+  { value: "Honeymoon", label: "Honeymoon" },
+];
+
+export const LOAN_PURPOSE_OPTIONS: FieldOption[] = [
+  { value: "Flight ticket", label: "Flight ticket" },
+  { value: "Visa fees", label: "Visa fees" },
+  { value: "Relocation costs", label: "Relocation costs" },
+  { value: "Combination", label: "Combination of the above" },
+];
+
+export const EMPLOYMENT_STATUS_OPTIONS: FieldOption[] = [
+  { value: "Employed", label: "Employed" },
+  { value: "Self-employed", label: "Self-employed" },
+  { value: "Business owner", label: "Business owner" },
+  { value: "Student", label: "Student" },
+  { value: "Unemployed", label: "Unemployed" },
+];
+
+export const ADMISSION_STATUS_OPTIONS: FieldOption[] = [
+  { value: "Conditional offer", label: "Conditional offer" },
+  { value: "Confirmed admission", label: "Confirmed admission" },
+  { value: "Not yet admitted", label: "Not yet admitted" },
+];
+
+export const BUSINESS_STRUCTURE_OPTIONS: FieldOption[] = [
+  { value: "Business Name (Sole Proprietorship)", label: "Business Name (Sole Proprietorship)" },
+  { value: "Limited Liability Company (LLC)", label: "Limited Liability Company (LLC)" },
+  { value: "Partnership", label: "Partnership" },
+  { value: "Incorporated Trustees (NGO)", label: "Incorporated Trustees (NGO)" },
+];

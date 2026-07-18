@@ -6,15 +6,18 @@ import { MonthlyBarChart, CategoryBarChart, StatusPieChart } from "@/components/
 import { ENQUIRY_SERVICE_LABELS } from "@/lib/enquiryServiceLabels";
 
 const SERVICE_TYPE_LABELS: Record<string, string> = {
-  VISA: "Visa",
-  PROOF_OF_FUNDS: "Proof of Funds",
-  FLIGHT_BOOKING: "Flight Booking",
-  HOTEL_RESERVATION: "Hotel Reservations",
+  STUDY_ABROAD: "Study Abroad",
+  VISA: "Visa Assistance",
+  TRAVEL_PACKAGES: "Travel Packages",
+  FLIGHT_BOOKING: "Flight Reservations",
+  HOTEL_RESERVATION: "Hotel Bookings",
   TRAVEL_INSURANCE: "Travel Insurance",
-  LOGISTICS: "Logistics",
-  PROCUREMENT: "Procurement",
-  EVENT_COORDINATION: "Event Coordination",
-  BEAUTY_SERVICES: "Beauty Services",
+  SCHOLARSHIP_ASSISTANCE: "Scholarship Assistance",
+  TRAVEL_LOANS: "Travel Loans",
+  EDUCATION_LOANS: "Education Loans",
+  CORPORATE_TRAVEL: "Corporate Travel",
+  BUSINESS_REGISTRATION: "Business Registration",
+  PROOF_OF_FUNDS: "Proof of Funds",
 };
 
 function monthLabel(date: Date) {

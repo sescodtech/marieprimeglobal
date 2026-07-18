@@ -3,16 +3,24 @@
 // being hand-coded — that's what makes the wizard, validation, review step,
 // and admin display all work generically off one definition per service.
 
+// Matches the 11 real services seeded from servicePages.ts, plus
+// PROOF_OF_FUNDS which is a standalone add-on with no CMS service page of
+// its own. LOGISTICS/PROCUREMENT/EVENT_COORDINATION/BEAUTY_SERVICES were
+// leftover boilerplate from a different template and are no longer part of
+// this union — nothing on the real site offers those services.
 export type ServiceApplicationType =
+  | "STUDY_ABROAD"
   | "VISA"
-  | "PROOF_OF_FUNDS"
+  | "TRAVEL_PACKAGES"
   | "FLIGHT_BOOKING"
   | "HOTEL_RESERVATION"
   | "TRAVEL_INSURANCE"
-  | "LOGISTICS"
-  | "PROCUREMENT"
-  | "EVENT_COORDINATION"
-  | "BEAUTY_SERVICES";
+  | "SCHOLARSHIP_ASSISTANCE"
+  | "TRAVEL_LOANS"
+  | "EDUCATION_LOANS"
+  | "CORPORATE_TRAVEL"
+  | "BUSINESS_REGISTRATION"
+  | "PROOF_OF_FUNDS";
 
 export type FieldType = "text" | "email" | "tel" | "date" | "textarea" | "select" | "number";
 

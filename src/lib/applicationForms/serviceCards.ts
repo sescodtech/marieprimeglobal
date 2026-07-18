@@ -5,14 +5,17 @@ import { getGlobalFormControls } from "@/lib/content";
 import type { ServiceApplicationType } from "./types";
 
 const ICON_KEY_BY_TYPE: Record<ServiceApplicationType, string> = {
+  STUDY_ABROAD: "study",
   VISA: "visa",
+  TRAVEL_PACKAGES: "package",
   FLIGHT_BOOKING: "flight",
   HOTEL_RESERVATION: "hotel",
   TRAVEL_INSURANCE: "insurance",
-  EVENT_COORDINATION: "event",
-  BEAUTY_SERVICES: "beauty",
-  PROCUREMENT: "procurement",
-  LOGISTICS: "logistics",
+  SCHOLARSHIP_ASSISTANCE: "scholarship",
+  TRAVEL_LOANS: "loan",
+  EDUCATION_LOANS: "loan",
+  CORPORATE_TRAVEL: "corporate",
+  BUSINESS_REGISTRATION: "business",
   PROOF_OF_FUNDS: "pof",
 };
 

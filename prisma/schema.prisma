@@ -348,11 +348,19 @@ enum ServiceInterest {
   BUSINESS_REGISTRATION
   HOTEL_RESERVATION
   TRAVEL_INSURANCE
+  TRAVEL_PACKAGES
+  SCHOLARSHIP_ASSISTANCE
+  EDUCATION_LOAN
+  CORPORATE_TRAVEL
+  GENERAL_ENQUIRY
+  // Deprecated: leftover boilerplate from a different template, never a
+  // real MariePrime service. Kept in the DB enum (Postgres can't drop enum
+  // values without recreating the type) but no longer used anywhere in the
+  // app — src/lib/enquiryServiceLabels.ts no longer maps to these.
   LOGISTICS
   PROCUREMENT
   EVENT_COORDINATION
   BEAUTY_SERVICES
-  GENERAL_ENQUIRY
 }
 
 model Enquiry {
@@ -474,11 +482,22 @@ model Notification {
 // ---------------------------------------------------------------------------
 
 enum ServiceApplicationType {
+  STUDY_ABROAD
   VISA
-  PROOF_OF_FUNDS
+  TRAVEL_PACKAGES
   FLIGHT_BOOKING
   HOTEL_RESERVATION
   TRAVEL_INSURANCE
+  SCHOLARSHIP_ASSISTANCE
+  TRAVEL_LOANS
+  EDUCATION_LOANS
+  CORPORATE_TRAVEL
+  BUSINESS_REGISTRATION
+  PROOF_OF_FUNDS
+  // Deprecated: leftover boilerplate from a different template, never a
+  // real MariePrime service. Kept in the DB enum (Postgres can't drop enum
+  // values without recreating the type) but no longer used anywhere in the
+  // app — src/lib/applicationForms/config.ts no longer has configs for these.
   LOGISTICS
   PROCUREMENT
   EVENT_COORDINATION
