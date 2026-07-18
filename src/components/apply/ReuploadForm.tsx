@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Loader2, CheckCircle2 } from "lucide-react";
-import type { DocumentFieldConfig, ServiceApplicationType } from "@/lib/applicationForms/types";
+import type { DocumentFieldConfig } from "@/lib/applicationForms/types";
 import { DocumentUploadField, EMPTY_DOC_STATE, type DocFieldState } from "@/components/apply/DocumentUploadField";
 
 export function ReuploadForm({
@@ -12,7 +12,13 @@ export function ReuploadForm({
   existing,
 }: {
   token: string;
-  serviceType: ServiceApplicationType;
+  // Plain string, not the app-level ServiceApplicationType: this always
+  // comes straight off an existing DB row (via the Prisma-generated enum),
+  // which can in principle still hold one of the deprecated
+  // LOGISTICS/PROCUREMENT/EVENT_COORDINATION/BEAUTY_SERVICES values kept
+  // around for migration safety. It's only ever forwarded to
+  // DocumentUploadField, which itself just wants a string.
+  serviceType: string;
   documents: DocumentFieldConfig[];
   existing: Record<string, { url: string; mimeType: string | null; fileName: string }>;
 }) {
