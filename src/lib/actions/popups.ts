@@ -102,6 +102,7 @@ export async function updatePopup(id: string, formData: FormData) {
   });
 
   revalidatePath(POPUPS_PATH);
+  revalidatePath(`${POPUPS_PATH}/${id}`);
   revalidatePath("/", "layout");
 }
 
